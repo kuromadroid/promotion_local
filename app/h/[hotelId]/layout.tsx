@@ -23,8 +23,7 @@ export default async function HotelLayout({
       <Header
         hotelId={hotel.id}
         hotelName={hotel.name}
-        serviceName={messages.serviceName}
-        stayingAtLabel={messages.stayingAt}
+        subtitle={messages.heroSubtitle}
       />
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
         {children}

@@ -35,7 +35,6 @@ interface ParsedRestaurantForm {
   openingHours: string | null;
   closedDays: string | null;
   isSponsored: boolean;
-  photos: string[];
   translations: { locale: Locale; name: string; description: string; recommendedDish: string | null }[];
   tagIds: string[];
   hotelIds: string[];
@@ -70,11 +69,6 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     });
   }
 
-  const photos = String(formData.get("photos") ?? "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-
   return {
     areaId: String(formData.get("area_id") ?? ""),
     priceMin: Number(formData.get("price_min") ?? 0),
@@ -88,11 +82,32 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     openingHours: emptyToNull(formData.get("opening_hours")),
     closedDays: emptyToNull(formData.get("closed_days")),
     isSponsored: formData.get("is_sponsored") === "on",
-    photos,
     translations,
     tagIds: formData.getAll("tag_ids").map(String),
     hotelIds: formData.getAll("hotel_ids").map(String),
   };
+}
+
+const PHOTO_BUCKET = "restaurant-photos";
+
+/** Uploads any selected image files to Supabase Storage and returns their public URLs. */
+async function uploadPhotoFiles(restaurantId: string, formData: FormData): Promise<string[]> {
+  const files = formData
+    .getAll("photo_files")
+    .filter((f): f is File => f instanceof File && f.size > 0);
+
+  const urls: string[] = [];
+  for (const file of files) {
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+    const path = `${restaurantId}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from(PHOTO_BUCKET)
+      .upload(path, file, { contentType: file.type || undefined });
+    if (error) throw error;
+    const { data } = supabaseAdmin.storage.from(PHOTO_BUCKET).getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
 }
 
 /** Links a restaurant to the given hotels, computing distance from each hotel's coordinates. */
@@ -138,6 +153,7 @@ async function syncHotelLinks(
 export async function createRestaurantAction(formData: FormData) {
   const parsed = parseRestaurantForm(formData);
   const id = crypto.randomUUID();
+  const photos = await uploadPhotoFiles(id, formData);
 
   const { error: insertError } = await supabaseAdmin.from("restaurants").insert({
     id,
@@ -153,7 +169,7 @@ export async function createRestaurantAction(formData: FormData) {
     opening_hours: parsed.openingHours,
     closed_days: parsed.closedDays,
     is_sponsored: parsed.isSponsored,
-    photos: parsed.photos,
+    photos,
   });
   if (insertError) throw insertError;
 
@@ -186,6 +202,14 @@ export async function createRestaurantAction(formData: FormData) {
 export async function updateRestaurantAction(id: string, formData: FormData) {
   const parsed = parseRestaurantForm(formData);
 
+  const existingPhotos = String(formData.get("existing_photos") ?? "")
+    .split("|")
+    .filter(Boolean);
+  const deletedPhotos = formData.getAll("delete_photos").map(String);
+  const keptPhotos = existingPhotos.filter((url) => !deletedPhotos.includes(url));
+  const newPhotos = await uploadPhotoFiles(id, formData);
+  const photos = [...keptPhotos, ...newPhotos];
+
   const { error: updateError } = await supabaseAdmin
     .from("restaurants")
     .update({
@@ -201,7 +225,7 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
       opening_hours: parsed.openingHours,
       closed_days: parsed.closedDays,
       is_sponsored: parsed.isSponsored,
-      photos: parsed.photos,
+      photos,
     })
     .eq("id", id);
   if (updateError) throw updateError;

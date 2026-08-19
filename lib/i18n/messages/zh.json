@@ -1,6 +1,7 @@
 {
   "serviceName": "Sapporo Bites",
   "tagline": "今晚在札幌吃点什么？",
+  "heroSubtitle": "推荐餐厅",
   "stayingAt": "您入住的酒店",
   "searchPlaceholder": "按店名或菜品搜索",
   "browseByArea": "按区域查找",

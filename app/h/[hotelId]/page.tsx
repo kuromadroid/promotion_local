@@ -55,13 +55,8 @@ export default async function HotelTopPage({
     <div className="space-y-8">
       <TrackOnMount event={{ eventName: "page_view", hotelId, language: locale }} />
 
-      <section className="rounded-2xl bg-(--color-navy) px-6 py-8 text-white sm:px-8 sm:py-10">
-        <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">
-          {t("tagline")}
-        </h1>
-        <div className="mt-5">
-          <SearchBar hotelId={hotelId} />
-        </div>
+      <section className="rounded-2xl bg-(--color-snow-muted) px-5 py-5 sm:px-6">
+        <SearchBar hotelId={hotelId} />
       </section>
 
       <section>

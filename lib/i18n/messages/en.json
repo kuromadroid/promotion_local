@@ -1,6 +1,7 @@
 {
   "serviceName": "Sapporo Bites",
   "tagline": "What should you eat in Sapporo tonight?",
+  "heroSubtitle": "Recommended restaurants",
   "stayingAt": "You're staying at",
   "searchPlaceholder": "Search by name or dish",
   "browseByArea": "Browse by area",

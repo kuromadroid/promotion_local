@@ -4,26 +4,24 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export function Header({
   hotelId,
   hotelName,
-  serviceName,
-  stayingAtLabel,
+  subtitle,
 }: {
   hotelId: string;
   hotelName: string;
-  serviceName: string;
-  stayingAtLabel: string;
+  subtitle: string;
 }) {
   return (
     <header className="bg-(--color-navy) text-white">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-        <Link href={`/h/${hotelId}`} className="flex flex-col leading-tight">
-          <span className="text-base font-bold tracking-tight">
-            {serviceName}
-          </span>
-          <span className="text-xs text-white/70">
-            {stayingAtLabel} — {hotelName}
-          </span>
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="flex justify-end border-b border-white/10 py-2.5">
+          <LanguageSwitcher />
+        </div>
+        <Link href={`/h/${hotelId}`} className="block py-6">
+          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">
+            {hotelName}
+          </h1>
+          <p className="mt-1.5 text-sm text-white/70">{subtitle}</p>
         </Link>
-        <LanguageSwitcher />
       </div>
     </header>
   );
