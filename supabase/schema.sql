@@ -95,6 +95,15 @@ alter table restaurant_tags enable row level security;
 alter table hotel_restaurants enable row level security;
 alter table events enable row level security;
 
+drop policy if exists "Public read access" on areas;
+drop policy if exists "Public read access" on tags;
+drop policy if exists "Public read access" on hotels;
+drop policy if exists "Public read access" on restaurants;
+drop policy if exists "Public read access" on restaurant_translations;
+drop policy if exists "Public read access" on restaurant_tags;
+drop policy if exists "Public read access" on hotel_restaurants;
+drop policy if exists "Public insert access" on events;
+
 create policy "Public read access" on areas for select using (true);
 create policy "Public read access" on tags for select using (true);
 create policy "Public read access" on hotels for select using (true);
