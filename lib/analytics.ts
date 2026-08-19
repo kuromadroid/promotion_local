@@ -1,14 +1,9 @@
 import { AnalyticsEvent } from "@/lib/types";
-
-const STORAGE_KEY = "sapporo_bites_events";
+import { supabase } from "@/lib/supabase/client";
 
 /**
- * V1 implementation: logs to console and appends to localStorage so the
- * event stream is inspectable during development/demo.
- *
- * To connect Supabase later, replace the body of this function with:
- *   await supabase.from("events").insert({ ...event, event_name: event.eventName })
- * No caller anywhere in the app needs to change.
+ * Logs to console for local visibility and writes to the Supabase `events`
+ * table (fire-and-forget — tracking failures should never block the UI).
  */
 export function trackEvent(
   event: Omit<AnalyticsEvent, "timestamp"> & { timestamp?: string }
@@ -18,22 +13,28 @@ export function trackEvent(
     timestamp: event.timestamp ?? new Date().toISOString(),
   };
 
-  if (typeof window === "undefined") {
-    // Server-side call (e.g. page_view from a server component) - just log.
-    // eslint-disable-next-line no-console
-    console.log("[analytics:server]", fullEvent);
-    return;
-  }
-
   // eslint-disable-next-line no-console
-  console.log("[analytics]", fullEvent);
-  try {
-    const existing = JSON.parse(
-      window.localStorage.getItem(STORAGE_KEY) ?? "[]"
-    ) as AnalyticsEvent[];
-    existing.push(fullEvent);
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
-  } catch {
-    // localStorage unavailable - non-fatal, tracking is best-effort.
-  }
+  console.log(
+    typeof window === "undefined" ? "[analytics:server]" : "[analytics]",
+    fullEvent
+  );
+
+  supabase
+    .from("events")
+    .insert({
+      event_name: fullEvent.eventName,
+      hotel_id: fullEvent.hotelId,
+      restaurant_id: fullEvent.restaurantId,
+      area_id: fullEvent.areaId,
+      tag_id: fullEvent.tagId,
+      language: fullEvent.language,
+      occurred_at: fullEvent.timestamp,
+      meta: fullEvent.meta,
+    })
+    .then(({ error }) => {
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[analytics] failed to record event", error);
+      }
+    });
 }

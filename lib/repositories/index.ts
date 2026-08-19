@@ -1,41 +1,62 @@
-import { areas } from "@/lib/data/areas";
-import { tags } from "@/lib/data/tags";
-import { hotels } from "@/lib/data/hotels";
-import { restaurants } from "@/lib/data/restaurants";
-import { restaurantTranslations } from "@/lib/data/restaurantTranslations";
-import { hotelRestaurants } from "@/lib/data/hotelRestaurants";
-import { Locale, RestaurantView, DEFAULT_LOCALE } from "@/lib/types";
-
-/**
- * Every function here reads from the in-memory dummy data arrays.
- * When Supabase is connected, only the bodies of these functions need to
- * change to `supabase.from(...).select(...)` calls — nothing in the
- * app/ or components/ layer needs to know the data source changed.
- */
+import { supabase } from "@/lib/supabase/client";
+import {
+  Locale,
+  RestaurantView,
+  DEFAULT_LOCALE,
+  Area,
+  Tag,
+  Hotel,
+} from "@/lib/types";
 
 function resolveName(record: Record<Locale, string>, locale: Locale) {
   return record[locale] ?? record.en ?? record[DEFAULT_LOCALE];
 }
 
-export async function getAreas() {
-  return [...areas].sort((a, b) => a.displayOrder - b.displayOrder);
+export async function getAreas(): Promise<Area[]> {
+  const { data, error } = await supabase
+    .from("areas")
+    .select("id, display_order, name")
+    .order("display_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    displayOrder: a.display_order,
+    name: a.name as Record<Locale, string>,
+  }));
 }
 
 export async function getAreasResolved(locale: Locale) {
-  return [...areas]
-    .sort((a, b) => a.displayOrder - b.displayOrder)
-    .map((a) => ({ id: a.id, name: resolveName(a.name, locale) }));
+  const areas = await getAreas();
+  return areas.map((a) => ({ id: a.id, name: resolveName(a.name, locale) }));
 }
 
-export async function getArea(areaId: string) {
-  return areas.find((a) => a.id === areaId) ?? null;
+export async function getArea(areaId: string): Promise<Area | null> {
+  const { data, error } = await supabase
+    .from("areas")
+    .select("id, display_order, name")
+    .eq("id", areaId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return {
+    id: data.id,
+    displayOrder: data.display_order,
+    name: data.name as Record<Locale, string>,
+  };
 }
 
-export async function getTags() {
-  return tags;
+export async function getTags(): Promise<Tag[]> {
+  const { data, error } = await supabase.from("tags").select("id, type, name");
+  if (error) throw error;
+  return (data ?? []).map((t) => ({
+    id: t.id,
+    type: t.type,
+    name: t.name as Record<Locale, string>,
+  }));
 }
 
 export async function getTagsResolved(locale: Locale) {
+  const tags = await getTags();
   return tags.map((tag) => ({
     id: tag.id,
     type: tag.type,
@@ -43,29 +64,35 @@ export async function getTagsResolved(locale: Locale) {
   }));
 }
 
-export async function getHotel(hotelId: string) {
-  return hotels.find((h) => h.id === hotelId) ?? null;
+export async function getHotel(hotelId: string): Promise<Hotel | null> {
+  const { data, error } = await supabase
+    .from("hotels")
+    .select("id, name, area_id, latitude, longitude")
+    .eq("id", hotelId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  return {
+    id: data.id,
+    name: data.name,
+    areaId: data.area_id,
+    latitude: data.latitude,
+    longitude: data.longitude,
+  };
 }
 
-export async function getAllHotels() {
-  return hotels;
-}
-
-function translate(restaurantId: string, locale: Locale) {
-  const exact = restaurantTranslations.find(
-    (t) => t.restaurantId === restaurantId && t.locale === locale
-  );
-  if (exact) return exact;
-  // Fallback chain: requested locale -> English -> Japanese
-  return (
-    restaurantTranslations.find(
-      (t) => t.restaurantId === restaurantId && t.locale === "en"
-    ) ??
-    restaurantTranslations.find(
-      (t) => t.restaurantId === restaurantId && t.locale === DEFAULT_LOCALE
-    ) ??
-    null
-  );
+export async function getAllHotels(): Promise<Hotel[]> {
+  const { data, error } = await supabase
+    .from("hotels")
+    .select("id, name, area_id, latitude, longitude");
+  if (error) throw error;
+  return (data ?? []).map((h) => ({
+    id: h.id,
+    name: h.name,
+    areaId: h.area_id,
+    latitude: h.latitude,
+    longitude: h.longitude,
+  }));
 }
 
 export interface RestaurantFilter {
@@ -75,25 +102,80 @@ export interface RestaurantFilter {
   sort?: "priority" | "distance" | "price_asc" | "price_desc";
 }
 
+interface RestaurantJoinRow {
+  distance_m: number;
+  walking_minutes: number;
+  display_priority: number;
+  is_visible: boolean;
+  restaurants: {
+    id: string;
+    area_id: string;
+    price_min: number;
+    price_max: number;
+    phone: string | null;
+    google_maps_url: string | null;
+    reservation_url: string | null;
+    instagram_url: string | null;
+    opening_hours: string | null;
+    closed_days: string | null;
+    is_sponsored: boolean;
+    photos: string[];
+    areas: { id: string; name: Record<Locale, string> } | null;
+    restaurant_translations: {
+      locale: Locale;
+      name: string;
+      description: string;
+      recommended_dish: string | null;
+    }[];
+    restaurant_tags: {
+      tags: { id: string; type: Tag["type"]; name: Record<Locale, string> } | null;
+    }[];
+  } | null;
+}
+
+/**
+ * Fetches every visible restaurant linked to a hotel, fully resolved for the
+ * given locale. Area/tag/sort filtering happens in-memory after the fetch,
+ * same as the V1 dummy-data implementation — dataset sizes here are small
+ * enough that this stays simple and correct.
+ */
 export async function getRestaurantsForHotel(
   hotelId: string,
   locale: Locale,
   filter: RestaurantFilter = {}
 ): Promise<RestaurantView[]> {
-  const links = hotelRestaurants.filter(
-    (l) => l.hotelId === hotelId && l.isVisible
-  );
+  const { data, error } = await supabase
+    .from("hotel_restaurants")
+    .select(
+      `distance_m, walking_minutes, display_priority, is_visible,
+       restaurants (
+         id, area_id, price_min, price_max, phone, google_maps_url, reservation_url, instagram_url, opening_hours, closed_days, is_sponsored, photos,
+         areas ( id, name ),
+         restaurant_translations ( locale, name, description, recommended_dish ),
+         restaurant_tags ( tags ( id, type, name ) )
+       )`
+    )
+    .eq("hotel_id", hotelId)
+    .eq("is_visible", true);
 
-  let views: RestaurantView[] = links
+  if (error) throw error;
+
+  let views: RestaurantView[] = ((data ?? []) as unknown as RestaurantJoinRow[])
     .map((link) => {
-      const restaurant = restaurants.find((r) => r.id === link.restaurantId);
-      if (!restaurant) return null;
-      const t = translate(restaurant.id, locale);
+      const r = link.restaurants;
+      if (!r || !r.areas) return null;
+
+      const translations = r.restaurant_translations ?? [];
+      const t =
+        translations.find((tr) => tr.locale === locale) ??
+        translations.find((tr) => tr.locale === "en") ??
+        translations.find((tr) => tr.locale === DEFAULT_LOCALE) ??
+        null;
       if (!t) return null;
-      const areaRaw = areas.find((a) => a.id === restaurant.areaId);
-      if (!areaRaw) return null;
-      const restaurantTags = tags
-        .filter((tag) => restaurant.tagIds.includes(tag.id))
+
+      const restaurantTags = (r.restaurant_tags ?? [])
+        .map((rt) => rt.tags)
+        .filter((tag): tag is NonNullable<typeof tag> => tag != null)
         .map((tag) => ({
           id: tag.id,
           type: tag.type,
@@ -101,25 +183,25 @@ export async function getRestaurantsForHotel(
         }));
 
       const view: RestaurantView = {
-        id: restaurant.id,
+        id: r.id,
         name: t.name,
         description: t.description,
-        recommendedDish: t.recommendedDish,
-        area: { id: areaRaw.id, name: resolveName(areaRaw.name, locale) },
-        priceMin: restaurant.priceMin,
-        priceMax: restaurant.priceMax,
-        photos: restaurant.photos,
+        recommendedDish: t.recommended_dish ?? undefined,
+        area: { id: r.areas.id, name: resolveName(r.areas.name, locale) },
+        priceMin: r.price_min,
+        priceMax: r.price_max,
+        photos: r.photos,
         tags: restaurantTags,
-        phone: restaurant.phone,
-        googleMapsUrl: restaurant.googleMapsUrl,
-        reservationUrl: restaurant.reservationUrl,
-        instagramUrl: restaurant.instagramUrl,
-        openingHours: restaurant.openingHours,
-        closedDays: restaurant.closedDays,
-        isSponsored: restaurant.isSponsored,
-        distanceMeters: link.distanceMeters,
-        walkingMinutes: link.walkingMinutes,
-        displayPriority: link.displayPriority,
+        phone: r.phone ?? undefined,
+        googleMapsUrl: r.google_maps_url ?? undefined,
+        reservationUrl: r.reservation_url ?? undefined,
+        instagramUrl: r.instagram_url ?? undefined,
+        openingHours: r.opening_hours ?? undefined,
+        closedDays: r.closed_days ?? undefined,
+        isSponsored: r.is_sponsored,
+        distanceMeters: link.distance_m,
+        walkingMinutes: link.walking_minutes,
+        displayPriority: link.display_priority,
       };
       return view;
     })
