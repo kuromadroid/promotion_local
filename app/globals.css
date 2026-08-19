@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/*
+  Design brief: a Sapporo hotel-guest restaurant guide.
+  Palette references the actual sensory contrast of the service: stepping out
+  of a hotel into a snow-quiet Sapporo night, drawn toward the warm lantern
+  light of an izakaya doorway. Navy = the hotel/night city. Coral = the warmth
+  and appetite of the restaurant itself. Kept to two dominant hues plus
+  neutrals so it reads calm, not like an ad banner.
+
+  Typography deliberately stays within the Noto Sans family rather than
+  pairing in a separate display face: the service must render four scripts
+  (ja/en/zh/ko) with consistent weight and rhythm, and a mismatched display
+  face would break or look foreign in CJK. Hierarchy instead comes from
+  weight + size contrast within one type family, set with intention.
+*/
+
+:root {
+  --color-snow: #faf9f6;
+  --color-snow-muted: #f1efe8;
+  --color-ink: #22262e;
+  --color-ink-soft: #5b6270;
+  --color-navy: #1e2a4a;
+  --color-navy-deep: #141d34;
+  --color-coral: #e8623f;
+  --color-coral-deep: #c94f30;
+  --color-gold: #c9a25d;
+  --color-line: #e4e1da;
+}
+
+@theme inline {
+  --color-snow: var(--color-snow);
+  --color-snow-muted: var(--color-snow-muted);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-navy: var(--color-navy);
+  --color-navy-deep: var(--color-navy-deep);
+  --color-coral: var(--color-coral);
+  --color-coral-deep: var(--color-coral-deep);
+  --color-gold: var(--color-gold);
+  --color-line: var(--color-line);
+  --font-sans: "Noto Sans JP", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: var(--color-snow);
+}
+
+body {
+  background: var(--color-snow);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-coral);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
