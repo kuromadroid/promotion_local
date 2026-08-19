@@ -4,8 +4,9 @@ import ja from "@/lib/i18n/messages/ja.json";
 import en from "@/lib/i18n/messages/en.json";
 import zh from "@/lib/i18n/messages/zh.json";
 import ko from "@/lib/i18n/messages/ko.json";
+import { LOCALE_COOKIE } from "@/lib/i18n/localeCookie";
 
-export const LOCALE_COOKIE = "sapporo_bites_locale";
+export { LOCALE_COOKIE };
 
 export const messagesByLocale: Record<Locale, Record<string, string>> = {
   ja,

@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { Locale } from "@/lib/types";
-import { LOCALE_COOKIE } from "@/lib/i18n/locale";
+import { LOCALE_COOKIE } from "@/lib/i18n/localeCookie";
 import { trackEvent } from "@/lib/analytics";
 
 interface LocaleContextValue {
