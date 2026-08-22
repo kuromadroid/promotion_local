@@ -1,9 +1,11 @@
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getHotel } from "@/lib/repositories";
 import { getMessages, getServerLocale, hasLocaleCookie } from "@/lib/i18n/locale";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { Header } from "@/components/Header";
 import { LanguageGate } from "@/components/LanguageGate";
+import { getIpFromHeaders, recordServerEvent } from "@/lib/serverAnalytics";
 
 export default async function HotelLayout({
   children,
@@ -17,6 +19,16 @@ export default async function HotelLayout({
   if (!hotel) notFound();
 
   if (!(await hasLocaleCookie())) {
+    const ip = getIpFromHeaders(await headers());
+    await recordServerEvent(
+      {
+        eventName: "page_view",
+        hotelId: hotel.id,
+        path: `/h/${hotel.id}`,
+        meta: { screen: "language_gate" },
+      },
+      ip
+    );
     return <LanguageGate hotelId={hotel.id} hotelName={hotel.name} />;
   }
 

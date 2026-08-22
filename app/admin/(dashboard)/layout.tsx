@@ -17,6 +17,9 @@ export default async function AdminDashboardLayout({
             Sapporo Bites 管理画面
           </Link>
           <nav className="flex items-center gap-5">
+            <Link href="/admin/hotels" className="text-sm text-white/80 hover:text-white">
+              ホテル管理
+            </Link>
             <Link href="/admin/analytics" className="text-sm text-white/80 hover:text-white">
               アクセス状況
             </Link>

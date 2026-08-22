@@ -22,8 +22,17 @@ interface EventRow {
   restaurant_id: string | null;
   path: string | null;
   ip_hash: string | null;
+  language: string | null;
+  meta: { screen?: string } | null;
   occurred_at: string;
 }
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  ja: "日本語",
+  en: "English",
+  zh: "中文",
+  ko: "한국어",
+};
 
 function countBy(rows: EventRow[], keyFn: (row: EventRow) => string | null): [string, number][] {
   const map = new Map<string, number>();
@@ -41,7 +50,7 @@ export default async function AdminAnalyticsPage() {
   const [{ data: events, error }, { data: translations }, { data: hotels }] = await Promise.all([
     supabaseAdmin
       .from("events")
-      .select("event_name, hotel_id, restaurant_id, path, ip_hash, occurred_at")
+      .select("event_name, hotel_id, restaurant_id, path, ip_hash, language, meta, occurred_at")
       .gte("occurred_at", since)
       .order("occurred_at", { ascending: false })
       .limit(MAX_ROWS),
@@ -60,6 +69,14 @@ export default async function AdminAnalyticsPage() {
   const byHotel = countBy(pageViews, (r) => r.hotel_id);
   const uniqueVisitors = new Set(rows.map((r) => r.ip_hash).filter(Boolean)).size;
   const totalClicks = rows.filter((r) => (CLICK_EVENTS as readonly string[]).includes(r.event_name)).length;
+
+  const languageGateViews = rows.filter(
+    (r) => r.event_name === "page_view" && r.meta?.screen === "language_gate"
+  ).length;
+  const languageSelections = countBy(
+    rows.filter((r) => r.event_name === "language_select"),
+    (r) => r.language
+  );
 
   const statsByRestaurant = new Map<string, RestaurantStats>();
   const bump = (id: string | null, key: keyof Omit<RestaurantStats, "id" | "totalClicks">) => {
@@ -118,6 +135,17 @@ export default async function AdminAnalyticsPage() {
             rows={byHotel}
             empty="まだデータがありません"
             renderLabel={([id]) => hotelNameById.get(id) ?? id}
+          />
+        </Panel>
+
+        <Panel title="言語選択画面">
+          <p className="mb-3 text-xs text-(--color-ink-soft)">
+            表示回数 <span className="font-bold tabular-nums text-(--color-ink)">{languageGateViews}</span>
+          </p>
+          <RankedList
+            rows={languageSelections}
+            empty="まだ選択されていません"
+            renderLabel={([code]) => LANGUAGE_LABELS[code] ?? code}
           />
         </Panel>
 
