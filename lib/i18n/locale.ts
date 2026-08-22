@@ -24,6 +24,13 @@ export async function getServerLocale(): Promise<Locale> {
   return DEFAULT_LOCALE;
 }
 
+/** True once the guest has explicitly picked a language (vs. never having visited). */
+export async function hasLocaleCookie(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const value = cookieStore.get(LOCALE_COOKIE)?.value;
+  return Boolean(value && LOCALES.includes(value as Locale));
+}
+
 export function getMessages(locale: Locale) {
   return messagesByLocale[locale] ?? messagesByLocale[DEFAULT_LOCALE];
 }

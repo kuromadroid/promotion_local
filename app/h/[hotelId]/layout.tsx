@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { getHotel } from "@/lib/repositories";
-import { getMessages, getServerLocale } from "@/lib/i18n/locale";
+import { getMessages, getServerLocale, hasLocaleCookie } from "@/lib/i18n/locale";
 import { LocaleProvider } from "@/components/LocaleProvider";
 import { Header } from "@/components/Header";
+import { LanguageGate } from "@/components/LanguageGate";
 
 export default async function HotelLayout({
   children,
@@ -14,6 +15,10 @@ export default async function HotelLayout({
   const { hotelId } = await params;
   const hotel = await getHotel(hotelId);
   if (!hotel) notFound();
+
+  if (!(await hasLocaleCookie())) {
+    return <LanguageGate hotelId={hotel.id} hotelName={hotel.name} />;
+  }
 
   const locale = await getServerLocale();
   const messages = getMessages(locale);
