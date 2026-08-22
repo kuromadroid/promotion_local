@@ -6,12 +6,15 @@ const MAX_ROWS = 8000;
 const CLICK_EVENTS = ["map_click", "reservation_click", "instagram_click", "phone_click"] as const;
 const VIEW_EVENTS = ["restaurant_view", "restaurant_detail_view"] as const;
 
-const EVENT_LABELS: Record<string, string> = {
-  map_click: "Google Mapsを開く",
-  reservation_click: "予約リンクをクリック",
-  instagram_click: "Instagramを開く",
-  phone_click: "電話をかける",
-};
+interface RestaurantStats {
+  id: string;
+  views: number;
+  map: number;
+  reservation: number;
+  instagram: number;
+  phone: number;
+  totalClicks: number;
+}
 
 interface EventRow {
   event_name: string;
@@ -54,17 +57,36 @@ export default async function AdminAnalyticsPage() {
 
   const pageViews = rows.filter((r) => r.event_name === "page_view");
   const byPath = countBy(rows, (r) => r.path).slice(0, 12);
-  const byRestaurant = countBy(
-    rows.filter((r) => (VIEW_EVENTS as readonly string[]).includes(r.event_name)),
-    (r) => r.restaurant_id
-  ).slice(0, 12);
-  const byClickType = countBy(
-    rows.filter((r) => (CLICK_EVENTS as readonly string[]).includes(r.event_name)),
-    (r) => r.event_name
-  );
   const byHotel = countBy(pageViews, (r) => r.hotel_id);
   const uniqueVisitors = new Set(rows.map((r) => r.ip_hash).filter(Boolean)).size;
   const totalClicks = rows.filter((r) => (CLICK_EVENTS as readonly string[]).includes(r.event_name)).length;
+
+  const statsByRestaurant = new Map<string, RestaurantStats>();
+  const bump = (id: string | null, key: keyof Omit<RestaurantStats, "id" | "totalClicks">) => {
+    if (!id) return;
+    const s = statsByRestaurant.get(id) ?? {
+      id,
+      views: 0,
+      map: 0,
+      reservation: 0,
+      instagram: 0,
+      phone: 0,
+      totalClicks: 0,
+    };
+    s[key] += 1;
+    statsByRestaurant.set(id, s);
+  };
+  for (const r of rows) {
+    if ((VIEW_EVENTS as readonly string[]).includes(r.event_name)) bump(r.restaurant_id, "views");
+    else if (r.event_name === "map_click") bump(r.restaurant_id, "map");
+    else if (r.event_name === "reservation_click") bump(r.restaurant_id, "reservation");
+    else if (r.event_name === "instagram_click") bump(r.restaurant_id, "instagram");
+    else if (r.event_name === "phone_click") bump(r.restaurant_id, "phone");
+  }
+  const restaurantStats = [...statsByRestaurant.values()]
+    .map((s) => ({ ...s, totalClicks: s.map + s.reservation + s.instagram + s.phone }))
+    .sort((a, b) => b.totalClicks - a.totalClicks || b.views - a.views);
+  const totalRestaurantViews = restaurantStats.reduce((sum, s) => sum + s.views, 0);
 
   return (
     <div className="space-y-8">
@@ -78,7 +100,7 @@ export default async function AdminAnalyticsPage() {
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatTile label="ページ閲覧数" value={pageViews.length} />
         <StatTile label="推定ユニーク訪問者" value={uniqueVisitors} />
-        <StatTile label="店舗閲覧数" value={byRestaurant.reduce((sum, [, n]) => sum + n, 0)} />
+        <StatTile label="店舗閲覧数" value={totalRestaurantViews} />
         <StatTile label="クリック合計" value={totalClicks} />
       </div>
 
@@ -99,22 +121,56 @@ export default async function AdminAnalyticsPage() {
           />
         </Panel>
 
-        <Panel title="よく見られている店舗">
-          <RankedList
-            rows={byRestaurant}
-            empty="まだデータがありません"
-            renderLabel={([id]) => restaurantNameById.get(id) ?? id}
-          />
-        </Panel>
-
-        <Panel title="クリックされた項目">
-          <RankedList
-            rows={byClickType}
-            empty="まだデータがありません"
-            renderLabel={([name]) => EVENT_LABELS[name] ?? name}
-          />
-        </Panel>
       </div>
+
+      <Panel title="店舗別 閲覧・クリック内訳">
+        {restaurantStats.length === 0 ? (
+          <p className="text-sm text-(--color-ink-soft)">まだデータがありません</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead>
+                <tr className="border-b border-(--color-line) text-left text-xs text-(--color-ink-soft)">
+                  <th className="py-2 pr-3 font-medium">店舗</th>
+                  <th className="px-3 py-2 text-right font-medium">閲覧</th>
+                  <th className="px-3 py-2 text-right font-medium">Maps</th>
+                  <th className="px-3 py-2 text-right font-medium">予約</th>
+                  <th className="px-3 py-2 text-right font-medium">Instagram</th>
+                  <th className="px-3 py-2 text-right font-medium">電話</th>
+                  <th className="py-2 pl-3 text-right font-medium">クリック計</th>
+                </tr>
+              </thead>
+              <tbody>
+                {restaurantStats.map((s) => (
+                  <tr key={s.id} className="border-b border-(--color-line) last:border-0">
+                    <td className="py-2.5 pr-3 font-medium text-(--color-ink)">
+                      {restaurantNameById.get(s.id) ?? s.id}
+                    </td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-(--color-ink-soft)">
+                      {s.views}
+                    </td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-(--color-ink-soft)">
+                      {s.map}
+                    </td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-(--color-ink-soft)">
+                      {s.reservation}
+                    </td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-(--color-ink-soft)">
+                      {s.instagram}
+                    </td>
+                    <td className="px-3 py-2.5 text-right tabular-nums text-(--color-ink-soft)">
+                      {s.phone}
+                    </td>
+                    <td className="py-2.5 pl-3 text-right font-bold tabular-nums text-(--color-coral-deep)">
+                      {s.totalClicks}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
     </div>
   );
 }
