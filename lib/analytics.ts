@@ -1,9 +1,9 @@
 import { AnalyticsEvent } from "@/lib/types";
-import { supabase } from "@/lib/supabase/client";
 
 /**
- * Logs to console for local visibility and writes to the Supabase `events`
- * table (fire-and-forget — tracking failures should never block the UI).
+ * Logs to console for local visibility and posts to /api/track, which
+ * de-duplicates by IP + event + target before writing to Supabase
+ * (fire-and-forget — tracking failures should never block the UI).
  */
 export function trackEvent(
   event: Omit<AnalyticsEvent, "timestamp"> & { timestamp?: string }
@@ -13,28 +13,24 @@ export function trackEvent(
     timestamp: event.timestamp ?? new Date().toISOString(),
   };
 
-  // eslint-disable-next-line no-console
-  console.log(
-    typeof window === "undefined" ? "[analytics:server]" : "[analytics]",
-    fullEvent
-  );
+  if (typeof window === "undefined") {
+    // eslint-disable-next-line no-console
+    console.log("[analytics:server]", fullEvent);
+    return;
+  }
 
-  supabase
-    .from("events")
-    .insert({
-      event_name: fullEvent.eventName,
-      hotel_id: fullEvent.hotelId,
-      restaurant_id: fullEvent.restaurantId,
-      area_id: fullEvent.areaId,
-      tag_id: fullEvent.tagId,
-      language: fullEvent.language,
-      occurred_at: fullEvent.timestamp,
-      meta: fullEvent.meta,
-    })
-    .then(({ error }) => {
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error("[analytics] failed to record event", error);
-      }
-    });
+  // eslint-disable-next-line no-console
+  console.log("[analytics]", fullEvent);
+
+  fetch("/api/track", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...fullEvent,
+      path: window.location.pathname + window.location.search,
+    }),
+    keepalive: true,
+  }).catch(() => {
+    // best-effort — tracking failures are non-fatal
+  });
 }

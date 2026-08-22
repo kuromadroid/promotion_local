@@ -16,11 +16,16 @@ export default async function AdminDashboardLayout({
           <Link href="/admin" className="font-bold">
             Sapporo Bites 管理画面
           </Link>
-          <form action={logoutAction}>
-            <button type="submit" className="text-sm text-white/70 hover:text-white">
-              ログアウト
-            </button>
-          </form>
+          <nav className="flex items-center gap-5">
+            <Link href="/admin/analytics" className="text-sm text-white/80 hover:text-white">
+              アクセス状況
+            </Link>
+            <form action={logoutAction}>
+              <button type="submit" className="text-sm text-white/70 hover:text-white">
+                ログアウト
+              </button>
+            </form>
+          </nav>
         </div>
       </header>
       <div className="max-w-5xl mx-auto px-4 py-8">{children}</div>

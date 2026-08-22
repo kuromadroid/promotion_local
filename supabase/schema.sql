@@ -76,9 +76,17 @@ create table if not exists events (
   area_id text,
   tag_id text,
   language text,
+  path text,
+  ip_hash text,
   occurred_at timestamptz not null default now(),
   meta jsonb
 );
+
+alter table events add column if not exists path text;
+alter table events add column if not exists ip_hash text;
+
+create index if not exists idx_events_dedup
+  on events (ip_hash, event_name, hotel_id, restaurant_id, occurred_at desc);
 
 -- ============================================================
 -- Row Level Security
@@ -112,7 +120,9 @@ create policy "Public read access" on restaurant_translations for select using (
 create policy "Public read access" on restaurant_tags for select using (true);
 create policy "Public read access" on hotel_restaurants for select using (true);
 
-create policy "Public insert access" on events for insert with check (true);
+-- Events are now written only via the server-side /api/track route (service_role),
+-- which applies IP-based de-duplication before inserting. No public insert policy.
+drop policy if exists "Public insert access" on events;
 
 -- ============================================================
 -- Seed data (equivalent to lib/data/*.ts dummy data)
