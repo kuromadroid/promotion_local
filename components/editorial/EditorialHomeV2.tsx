@@ -17,6 +17,7 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   { tagId: "seafood", label: { ja: "海鮮", en: "Seafood", zh: "海鲜", ko: "해산물" } },
   { tagId: "yakiniku", label: { ja: "焼き肉", en: "Yakiniku", zh: "烤肉", ko: "야키니쿠" } },
   { tagId: "izakaya", label: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" } },
+  { tagId: "bar", label: { ja: "BAR", en: "Bar", zh: "酒吧", ko: "바" } },
 ];
 
 function sceneKeysFor(r: RestaurantView): Exclude<SceneTag, "all">[] {
@@ -90,9 +91,6 @@ export function EditorialHomeV2({
   const soloRestaurants = restaurants
     .filter((r) => scenesByRestaurant.get(r.id)?.includes("solo"))
     .slice(0, 5);
-  const nearbyRestaurants = [...restaurants]
-    .sort((a, b) => a.walkingMinutes - b.walkingMinutes)
-    .slice(0, 4);
 
   const heroImages: HeroCollageImage[] =
     heroPhotos.length > 0
@@ -247,55 +245,14 @@ export function EditorialHomeV2({
           </section>
         )}
 
-        {/* 03. WALK */}
-        <section className={styles.section}>
-          <div className={styles.sectionHead}>
-            <div>
-              <h2>{t("walkSectionTitle")}</h2>
-              <p className={styles.lead}>{t("walkSectionSubtitle")}</p>
-            </div>
-            <div className={styles.index}>03 / WALK</div>
-          </div>
-
-          <div className={styles.walkPanel}>
-            <div className={styles.walkIntro}>
-              <h3>{t("walkIntroTitle")}</h3>
-              <p>{t("walkIntroBody")}</p>
-            </div>
-
-            <div className={styles.walkList}>
-              {nearbyRestaurants.map((r) => (
-                <div className={styles.walkRow} key={r.id}>
-                  <div className={styles.walkTime}>{r.walkingMinutes}分</div>
-                  <div>
-                    <div className={styles.walkName}>{r.name}</div>
-                    <div className={styles.walkSub}>
-                      {[
-                        r.tags.find((tag) => tag.type === "cuisine")?.name,
-                        scenesByRestaurant.get(r.id)?.includes("solo") ? t("soloIconLabel") : undefined,
-                      ]
-                        .filter(Boolean)
-                        .join(" / ")}
-                    </div>
-                  </div>
-                  <div className={styles.walkThumb}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={r.photos[0]} alt="" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 04. MOOD */}
+        {/* 03. MOOD */}
         <section className={styles.section} id="scene">
           <div className={styles.sectionHead}>
             <div>
               <h2>{t("moodSectionTitle")}</h2>
               <p className={styles.lead}>{t("moodSectionSubtitle")}</p>
             </div>
-            <div className={styles.index}>04 / MOOD</div>
+            <div className={styles.index}>03 / MOOD</div>
           </div>
 
           <div className={styles.chips}>
@@ -320,7 +277,7 @@ export function EditorialHomeV2({
                 <h2>{t("soloSectionTitle")}</h2>
                 <p className={styles.lead}>{t("soloRailSubtitle")}</p>
               </div>
-              <div className={styles.index}>05 / SOLO</div>
+              <div className={styles.index}>04 / SOLO</div>
             </div>
 
             <div className={styles.rail}>
@@ -348,7 +305,7 @@ export function EditorialHomeV2({
               <h2>{t("allSectionTitle")}</h2>
               <p className={styles.lead}>{t("allSectionSubtitle")}</p>
             </div>
-            <div className={styles.index}>06 / ALL</div>
+            <div className={styles.index}>05 / ALL</div>
           </div>
 
           {renderListGrid(filtered)}
