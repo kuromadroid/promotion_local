@@ -1,14 +1,15 @@
 import Link from "next/link";
-import {
-  getAreasResolved,
-  getNearestForHotel,
-  getRecommendedForHotel,
-} from "@/lib/repositories";
+import { getAreasResolved, getRestaurantsForHotel } from "@/lib/repositories";
 import { getMessages, getServerLocale } from "@/lib/i18n/locale";
 import { SearchBar } from "@/components/SearchBar";
-import { RestaurantCard } from "@/components/RestaurantCard";
+import { SceneLinks } from "@/components/SceneLinks";
+import { HorizontalScroll } from "@/components/HorizontalScroll";
+import { RestaurantCardLarge } from "@/components/RestaurantCardLarge";
+import { RestaurantCardCompact } from "@/components/RestaurantCardCompact";
+import { RestaurantListRow } from "@/components/RestaurantListRow";
 import { TagPill } from "@/components/TagPill";
 import { TrackOnMount } from "@/components/TrackOnMount";
+import { RestaurantView } from "@/lib/types";
 
 const GENRES = [
   { tagId: "seafood", ja: "海鮮" },
@@ -31,6 +32,9 @@ const GENRE_LABELS: Record<string, Record<string, string>> = {
   izakaya: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" },
 };
 
+const SAPPORO_CLASSIC_TAGS = ["genghis-khan", "seafood", "sushi"];
+const WITHIN_WALK_MINUTES = 10;
+
 export default async function HotelTopPage({
   params,
 }: {
@@ -45,19 +49,107 @@ export default async function HotelTopPage({
     return s;
   };
 
-  const [areas, nearest, recommended] = await Promise.all([
+  const [areas, all] = await Promise.all([
     getAreasResolved(locale),
-    getNearestForHotel(hotelId, locale, 4),
-    getRecommendedForHotel(hotelId, locale, 6),
+    getRestaurantsForHotel(hotelId, locale, { sort: "priority" }),
   ]);
 
+  const hasTag = (r: RestaurantView, tagId: string) => r.tags.some((tag) => tag.id === tagId);
+
+  const tonightPicks = all.slice(0, 6);
+  const solo = all.filter((r) => hasTag(r, "solo-friendly")).slice(0, 8);
+  const sapporoClassics = all
+    .filter((r) => SAPPORO_CLASSIC_TAGS.some((tagId) => hasTag(r, tagId)))
+    .slice(0, 8);
+  const within10 = [...all]
+    .filter((r) => r.walkingMinutes <= WITHIN_WALK_MINUTES)
+    .sort((a, b) => a.distanceMeters - b.distanceMeters)
+    .slice(0, 8);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-9">
       <TrackOnMount event={{ eventName: "page_view", hotelId, language: locale }} />
 
       <section className="rounded-2xl bg-(--color-snow-muted) px-5 py-5 sm:px-6">
         <SearchBar hotelId={hotelId} />
       </section>
+
+      <section>
+        <h2 className="mb-3 text-base font-bold text-(--color-ink)">
+          {t("sceneSectionTitle")}
+        </h2>
+        <SceneLinks hotelId={hotelId} t={t} />
+      </section>
+
+      {tonightPicks.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-end justify-between">
+            <h2 className="text-lg font-bold text-(--color-ink)">{t("tonightPicksTitle")}</h2>
+            <Link
+              href={`/h/${hotelId}/restaurants`}
+              className="text-sm font-medium text-(--color-coral-deep) hover:underline"
+            >
+              {t("seeAll")}
+            </Link>
+          </div>
+          <HorizontalScroll>
+            {tonightPicks.map((r) => (
+              <RestaurantCardLarge key={r.id} hotelId={hotelId} restaurant={r} t={t} />
+            ))}
+          </HorizontalScroll>
+        </section>
+      )}
+
+      {solo.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-end justify-between">
+            <h2 className="text-base font-bold text-(--color-ink)">{t("soloSectionTitle")}</h2>
+            <Link
+              href={`/h/${hotelId}/restaurants?tags=solo-friendly`}
+              className="text-sm font-medium text-(--color-coral-deep) hover:underline"
+            >
+              {t("seeAll")}
+            </Link>
+          </div>
+          <HorizontalScroll>
+            {solo.map((r) => (
+              <RestaurantCardCompact key={r.id} hotelId={hotelId} restaurant={r} t={t} />
+            ))}
+          </HorizontalScroll>
+        </section>
+      )}
+
+      {sapporoClassics.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-base font-bold text-(--color-ink)">
+            {t("sapporoSectionTitle")}
+          </h2>
+          <HorizontalScroll>
+            {sapporoClassics.map((r) => (
+              <RestaurantCardCompact key={r.id} hotelId={hotelId} restaurant={r} t={t} />
+            ))}
+          </HorizontalScroll>
+        </section>
+      )}
+
+      {within10.length > 0 && (
+        <section>
+          <div className="mb-1 flex items-end justify-between">
+            <h2 className="text-base font-bold text-(--color-ink)">{t("within10Title")}</h2>
+            <Link
+              href={`/h/${hotelId}/restaurants?sort=distance`}
+              className="text-sm font-medium text-(--color-coral-deep) hover:underline"
+            >
+              {t("seeAll")}
+            </Link>
+          </div>
+          <div className="rounded-2xl border border-(--color-line) bg-white px-4">
+            {within10.map((r) => (
+              <RestaurantListRow key={r.id} hotelId={hotelId} restaurant={r} t={t} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-(--color-ink-soft)">
@@ -78,57 +170,19 @@ export default async function HotelTopPage({
         </h2>
         <div className="flex flex-wrap gap-2">
           {GENRES.map((g) => (
-            <Link
-              key={g.tagId}
-              href={`/h/${hotelId}/restaurants?tags=${g.tagId}`}
-            >
+            <Link key={g.tagId} href={`/h/${hotelId}/restaurants?tags=${g.tagId}`}>
               <TagPill label={GENRE_LABELS[g.tagId][locale] ?? g.ja} />
             </Link>
           ))}
         </div>
       </section>
 
-      {nearest.length > 0 && (
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-(--color-ink-soft)">
-              {t("nearThisHotel")}
-            </h2>
-            <Link
-              href={`/h/${hotelId}/restaurants?sort=distance`}
-              className="text-sm font-medium text-(--color-coral-deep) hover:underline"
-            >
-              {t("seeAll")}
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {nearest.map((r) => (
-              <RestaurantCard key={r.id} hotelId={hotelId} restaurant={r} t={t} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {recommended.length > 0 && (
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-wide text-(--color-ink-soft)">
-              {t("recommended")}
-            </h2>
-            <Link
-              href={`/h/${hotelId}/restaurants`}
-              className="text-sm font-medium text-(--color-coral-deep) hover:underline"
-            >
-              {t("seeAll")}
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {recommended.map((r) => (
-              <RestaurantCard key={r.id} hotelId={hotelId} restaurant={r} t={t} />
-            ))}
-          </div>
-        </section>
-      )}
+      <Link
+        href={`/h/${hotelId}/restaurants`}
+        className="block rounded-2xl border border-(--color-line) bg-white px-5 py-4 text-center text-sm font-bold text-(--color-navy) transition-colors hover:border-(--color-navy)"
+      >
+        {t("seeAllRestaurants")} →
+      </Link>
     </div>
   );
 }
