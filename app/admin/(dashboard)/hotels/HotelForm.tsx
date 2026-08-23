@@ -1,4 +1,5 @@
 import { Area } from "@/lib/types";
+import { AddressLookup } from "@/components/admin/AddressLookup";
 
 export interface HotelFormInitial {
   name: string;
@@ -50,6 +51,8 @@ export function HotelForm({
             ))}
           </select>
         </label>
+
+        <AddressLookup latName="latitude" lngName="longitude" />
 
         <div className="grid grid-cols-2 gap-4">
           <label className={labelClass}>

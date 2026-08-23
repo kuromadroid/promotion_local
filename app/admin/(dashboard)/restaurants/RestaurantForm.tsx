@@ -1,4 +1,5 @@
 import { Area, Hotel, Tag } from "@/lib/types";
+import { AddressLookup } from "@/components/admin/AddressLookup";
 
 export interface RestaurantFormInitial {
   areaId: string;
@@ -100,6 +101,8 @@ export function RestaurantForm({
           </label>
         </div>
 
+        <AddressLookup latName="latitude" lngName="longitude" />
+
         <div className="grid grid-cols-2 gap-4">
           <label className={labelClass}>
             緯度(latitude)
@@ -127,7 +130,7 @@ export function RestaurantForm({
           </label>
         </div>
         <p className="text-xs text-(--color-ink-soft)">
-          Googleマップで店舗を右クリック→座標をコピーすると取得できます。ホテルからの距離・徒歩時間はここから自動計算されます。
+          住所欄で検索すると自動入力されます(手動での修正も可能)。ホテルからの距離・徒歩時間はここから自動計算されます。
         </p>
 
         <div className="grid grid-cols-2 gap-4">
