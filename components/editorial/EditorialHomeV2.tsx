@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
@@ -56,8 +55,6 @@ export function EditorialHomeV2({
     return s;
   };
 
-  const router = useRouter();
-  const [query, setQuery] = useState("");
   const [activeScene, setActiveScene] = useState<SceneTag>("all");
   const [activeGenre, setActiveGenre] = useState<string>("all");
 
@@ -99,13 +96,6 @@ export function EditorialHomeV2({
     .filter((r) => Boolean(r.photos[0]))
     .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }))
     .slice(0, 10);
-
-  const submitSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams();
-    if (query.trim()) params.set("q", query.trim());
-    router.push(`/h/${hotelId}/restaurants?${params.toString()}`);
-  };
 
   const handleReserve = (r: RestaurantView) => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });
@@ -176,31 +166,6 @@ export function EditorialHomeV2({
               <div className={styles.heroNote}>{t("heroNote")}</div>
             </div>
           </div>
-        </section>
-
-        {/* SEARCH */}
-        <section style={{ paddingTop: 16 }}>
-          <form onSubmit={submitSearch} className={styles.chip} style={{ display: "flex", width: "100%", boxShadow: "none", padding: 0, overflow: "hidden" }}>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("searchPlaceholder")}
-              style={{
-                flex: 1,
-                border: "none",
-                outline: "none",
-                padding: "12px 16px",
-                fontSize: 14,
-                fontWeight: 700,
-                background: "transparent",
-                color: "inherit",
-              }}
-            />
-            <button type="submit" style={{ border: "none", background: "#111", color: "#fff", padding: "0 18px", fontWeight: 950 }}>
-              🔍
-            </button>
-          </form>
         </section>
 
         {/* 01. GENRE (with inline filtered list) */}
