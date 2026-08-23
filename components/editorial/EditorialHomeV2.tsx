@@ -162,14 +162,7 @@ export function EditorialHomeV2({
           <div className={styles.heroShade} />
 
           <div className={styles.heroCopy}>
-            <span className={styles.kicker}>{t("heroKicker")}</span>
-
-            <h1>{t("heroSubtitle")}</h1>
-
-            <div className={styles.heroBottom}>
-              <div className={styles.heroHotel}>{hotelName}</div>
-              <div className={styles.heroNote}>{t("heroNote")}</div>
-            </div>
+            <span className={styles.kicker}>{t("heroCollageLabel")}</span>
           </div>
         </section>
 
