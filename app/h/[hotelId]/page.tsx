@@ -18,7 +18,7 @@ export default async function HotelTopPage({
   ]);
 
   return (
-    <>
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
       <TrackOnMount event={{ eventName: "page_view", hotelId, language: locale }} />
       <EditorialHome
         hotelId={hotelId}
@@ -26,6 +26,6 @@ export default async function HotelTopPage({
         restaurants={restaurants}
         messages={messages}
       />
-    </>
+    </main>
   );
 }

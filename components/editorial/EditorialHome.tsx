@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
+import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
 
 type SceneKey = "all" | "solo" | "sapporo" | "near" | "late" | "pair" | "group";
 
@@ -24,15 +25,6 @@ function sceneKeysFor(r: RestaurantView): SceneKey[] {
   if (hasTag("izakaya")) keys.push("group");
   return keys;
 }
-
-const COLLAGE_LAYOUT = [
-  "absolute -left-[8%] -top-[2%] h-[43%] w-[56%] rotate-[-3deg] overflow-hidden border-4 border-black sm:-left-[4%] sm:-top-[5%] sm:h-[49%] sm:w-[44%]",
-  "absolute left-[41%] -top-[4%] h-[38%] w-[50%] rotate-[2deg] overflow-hidden border-4 border-black sm:left-[35%] sm:-top-[2%] sm:h-[45%] sm:w-[38%]",
-  "absolute -right-[18%] top-[25%] h-[34%] w-[50%] rotate-[-1deg] overflow-hidden border-4 border-black sm:-right-[5%] sm:top-[4%] sm:h-[46%] sm:w-[34%]",
-  "absolute -left-[8%] bottom-[14%] h-[34%] w-[46%] rotate-[2deg] overflow-hidden border-4 border-black sm:left-[3%] sm:-bottom-[4%] sm:h-[49%] sm:w-[35%]",
-  "absolute left-[28%] -bottom-[2%] h-[36%] w-[47%] rotate-[-2deg] overflow-hidden border-4 border-black sm:left-[34%] sm:-bottom-[5%] sm:h-[49%] sm:w-[34%]",
-  "absolute -right-[14%] bottom-[1%] h-[31%] w-[43%] rotate-[3deg] overflow-hidden border-4 border-black sm:-right-[3%] sm:-bottom-[3%] sm:h-[48%] sm:w-[37%]",
-];
 
 function Meta({ restaurant, t }: { restaurant: RestaurantView; t: T }) {
   return (
@@ -141,13 +133,10 @@ export function EditorialHome({
   const featured = restaurants[0];
   const sidePicks = restaurants.slice(1, 3);
 
-  const collagePhotos: string[] = [];
-  const sourcePhotos = restaurants.map((r) => r.photos[0]).filter(Boolean);
-  if (sourcePhotos.length > 0) {
-    for (let i = 0; i < COLLAGE_LAYOUT.length; i++) {
-      collagePhotos.push(sourcePhotos[i % sourcePhotos.length]);
-    }
-  }
+  const heroImages: HeroCollageImage[] = restaurants
+    .filter((r) => Boolean(r.photos[0]))
+    .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }))
+    .slice(0, 10);
 
   const sceneChips: { key: SceneKey; label: string }[] = [
     { key: "all", label: t("all") },
@@ -175,14 +164,7 @@ export function EditorialHome({
         id="tonight"
         className="relative min-h-[440px] overflow-hidden rounded-[26px] border-2 border-black bg-black sm:min-h-[520px]"
       >
-        {collagePhotos.length > 0 && (
-          <div className="absolute inset-0">
-            {COLLAGE_LAYOUT.map((cls, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={i} src={collagePhotos[i]} alt="" className={`${cls} h-full w-full object-cover`} />
-            ))}
-          </div>
-        )}
+        <HeroCollage images={heroImages} />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-black/85" />
 
         <div className="absolute bottom-5 left-4 right-4 z-10 text-white sm:left-6 sm:right-6">
