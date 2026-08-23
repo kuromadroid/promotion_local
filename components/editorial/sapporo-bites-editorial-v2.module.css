@@ -241,7 +241,7 @@
 }
 
 .meta {
-  margin-top:8px;
+  margin-top:10px;
   color:var(--muted);
   font-size:12px;
   font-weight:850;
@@ -415,12 +415,13 @@
 .allGrid {
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:12px;
+  gap:22px;
 }
 
 .listCard {
   display:grid;
   grid-template-columns:1fr;
+  min-width:0;
   border:1.8px solid #111;
   border-radius:20px;
   overflow:hidden;
@@ -429,7 +430,7 @@
 }
 
 .listPhoto { height:220px; }
-.listBody { padding:14px; }
+.listBody { padding:18px; min-width:0; }
 
 .listBody h3 {
   margin:0;
@@ -440,15 +441,15 @@
 
 .desc {
   font-size:12px;
-  line-height:1.45;
-  margin-top:8px;
+  line-height:1.5;
+  margin-top:10px;
   font-weight:730;
 }
 
 .actions {
   display:flex;
-  gap:7px;
-  margin-top:12px;
+  gap:8px;
+  margin-top:16px;
 }
 
 .button {
