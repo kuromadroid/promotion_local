@@ -95,7 +95,7 @@ export function EditorialHomeV2({
   const heroImages: HeroCollageImage[] = restaurants
     .filter((r) => Boolean(r.photos[0]))
     .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }))
-    .slice(0, 10);
+    .slice(0, 7);
 
   const handleReserve = (r: RestaurantView) => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });
