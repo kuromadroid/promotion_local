@@ -508,10 +508,12 @@
     text-overflow:ellipsis;
   }
 
+  .railBody h3 { font-size:15px; }
+
   .walkPanel { grid-template-columns:1fr; }
   .walkIntro h3 { font-size:34px; }
 
-  .rail { grid-auto-columns:79%; }
+  .rail { grid-auto-columns:88%; }
 
   .foodGrid { grid-template-columns:repeat(2,1fr); }
 
