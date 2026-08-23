@@ -173,6 +173,11 @@
 
 .chips::-webkit-scrollbar { display:none; }
 
+.chipsWrap {
+  flex-wrap:wrap;
+  overflow:visible;
+}
+
 .chip {
   flex:0 0 auto;
   border:1.8px solid #111;

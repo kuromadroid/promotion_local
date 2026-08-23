@@ -183,7 +183,7 @@ export function EditorialHomeV2({
             <div className={styles.index}>01 / GENRE</div>
           </div>
 
-          <div className={styles.chips}>
+          <div className={`${styles.chips} ${styles.chipsWrap}`}>
             <button
               type="button"
               className={`${styles.chip} ${activeGenre === "all" ? styles.activeChip : ""}`}
