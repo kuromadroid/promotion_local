@@ -25,6 +25,7 @@ export default async function HotelTopPage({
         hotelName={hotel?.name ?? ""}
         restaurants={restaurants}
         messages={messages}
+        locale={locale}
       />
     </>
   );

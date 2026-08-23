@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RestaurantView } from "@/lib/types";
+import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
 import styles from "./sapporo-bites-editorial-v2.module.css";
@@ -10,12 +10,14 @@ import styles from "./sapporo-bites-editorial-v2.module.css";
 type SceneTag = "all" | "solo" | "local" | "near" | "late" | "pair";
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-const FOOD_TAGS: { tagId: string; label: string; subKey: string }[] = [
-  { tagId: "genghis-khan", label: "ジンギスカン", subKey: "foodSubGenghis" },
-  { tagId: "seafood", label: "海鮮", subKey: "foodSubSeafood" },
-  { tagId: "sushi", label: "寿司", subKey: "foodSubSushi" },
-  { tagId: "ramen", label: "ラーメン", subKey: "foodSubRamen" },
-  { tagId: "izakaya", label: "居酒屋", subKey: "foodSubIzakaya" },
+const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
+  {
+    tagId: "genghis-khan",
+    label: { ja: "ジンギスカン", en: "Genghis Khan", zh: "成吉思汗烤肉", ko: "징기스칸" },
+  },
+  { tagId: "seafood", label: { ja: "海鮮", en: "Seafood", zh: "海鲜", ko: "해산물" } },
+  { tagId: "yakiniku", label: { ja: "焼き肉", en: "Yakiniku", zh: "烤肉", ko: "야키니쿠" } },
+  { tagId: "izakaya", label: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" } },
 ];
 
 function sceneKeysFor(r: RestaurantView): Exclude<SceneTag, "all">[] {
@@ -40,11 +42,13 @@ export function EditorialHomeV2({
   hotelName,
   restaurants,
   messages,
+  locale,
 }: {
   hotelId: string;
   hotelName: string;
   restaurants: RestaurantView[];
   messages: Record<string, string>;
+  locale: Locale;
 }) {
   const t: T = (key, vars) => {
     let s = messages[key] ?? key;
@@ -152,6 +156,30 @@ export function EditorialHomeV2({
           </form>
         </section>
 
+        {/* 01. GENRE */}
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <div>
+              <h2>{t("genreSectionTitle")}</h2>
+              <p className={styles.lead}>{t("genreSectionSubtitle")}</p>
+            </div>
+            <div className={styles.index}>01 / GENRE</div>
+          </div>
+
+          <div className={styles.chips}>
+            {FOOD_TAGS.map((food) => (
+              <button
+                type="button"
+                key={food.tagId}
+                className={styles.chip}
+                onClick={() => router.push(`/h/${hotelId}/restaurants?tags=${food.tagId}`)}
+              >
+                {food.label[locale]}
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* 02. MOOD */}
         <section className={styles.section} id="scene">
           <div className={styles.sectionHead}>
@@ -159,7 +187,7 @@ export function EditorialHomeV2({
               <h2>{t("moodSectionTitle")}</h2>
               <p className={styles.lead}>{t("moodSectionSubtitle")}</p>
             </div>
-            <div className={styles.index}>01 / MOOD</div>
+            <div className={styles.index}>02 / MOOD</div>
           </div>
 
           <div className={styles.chips}>
@@ -184,7 +212,7 @@ export function EditorialHomeV2({
                 <h2>{t("featuredSectionTitle")}</h2>
                 <p className={styles.lead}>{t("featuredSectionSubtitle")}</p>
               </div>
-              <div className={styles.index}>02 / TONIGHT</div>
+              <div className={styles.index}>03 / TONIGHT</div>
             </div>
 
             <div className={styles.triptych}>
@@ -230,7 +258,7 @@ export function EditorialHomeV2({
               <h2>{t("walkSectionTitle")}</h2>
               <p className={styles.lead}>{t("walkSectionSubtitle")}</p>
             </div>
-            <div className={styles.index}>03 / WALK</div>
+            <div className={styles.index}>04 / WALK</div>
           </div>
 
           <div className={styles.walkPanel}>
@@ -272,7 +300,7 @@ export function EditorialHomeV2({
                 <h2>{t("soloSectionTitle")}</h2>
                 <p className={styles.lead}>{t("soloRailSubtitle")}</p>
               </div>
-              <div className={styles.index}>04 / SOLO</div>
+              <div className={styles.index}>05 / SOLO</div>
             </div>
 
             <div className={styles.rail}>
@@ -293,32 +321,7 @@ export function EditorialHomeV2({
           </section>
         )}
 
-        {/* 06. FOOD */}
-        <section className={styles.section}>
-          <div className={styles.sectionHead}>
-            <div>
-              <h2>{t("foodSectionTitle")}</h2>
-              <p className={styles.lead}>{t("foodSectionSubtitle")}</p>
-            </div>
-            <div className={styles.index}>05 / FOOD</div>
-          </div>
-
-          <div className={styles.foodGrid}>
-            {FOOD_TAGS.map((food) => (
-              <button
-                type="button"
-                className={styles.foodButton}
-                key={food.tagId}
-                onClick={() => router.push(`/h/${hotelId}/restaurants?tags=${food.tagId}`)}
-              >
-                {food.label}
-                <small>{t(food.subKey)}</small>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* 07. ALL */}
+        {/* 05. ALL */}
         <section className={styles.section} id="all">
           <div className={styles.sectionHead}>
             <div>
