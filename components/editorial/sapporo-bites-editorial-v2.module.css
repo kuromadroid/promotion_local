@@ -20,7 +20,7 @@
 .shell {
   max-width:1180px;
   margin:auto;
-  padding:0 16px 100px;
+  padding:0 16px 40px;
 }
 
 .topbar {
@@ -468,10 +468,12 @@
   color:#fff;
 }
 
-.bottomNav { display:none; }
+.toTop {
+  display:none;
+}
 
 @media (max-width:1024px) {
-  .shell { padding:0 12px 95px; }
+  .shell { padding:0 12px 36px; }
   .topbar { padding:10px 12px; }
   .hotelMini { display:none; }
 
@@ -529,28 +531,21 @@
 
   .allGrid { grid-template-columns:1fr; }
 
-  .bottomNav {
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
+  .toTop {
+    display:flex;
+    align-items:center;
+    gap:6px;
     position:fixed;
-    left:12px;
-    right:12px;
-    bottom:11px;
+    right:14px;
+    bottom:16px;
     z-index:90;
-    border:1px solid #111;
-    border-radius:18px;
-    overflow:hidden;
+    border:1.6px solid #111;
+    border-radius:999px;
     background:#111;
     color:#fff;
-    box-shadow:0 12px 32px rgba(0,0,0,.3);
-  }
-
-  .bottomNav button {
-    border:0;
-    background:transparent;
-    color:#fff;
-    padding:13px 5px;
-    font-size:11px;
+    padding:11px 16px;
+    font-size:12px;
     font-weight:950;
+    box-shadow:0 12px 32px rgba(0,0,0,.3);
   }
 }

@@ -223,23 +223,13 @@ export function EditorialHomeV2({
         </section>
       </div>
 
-      <nav className={styles.bottomNav}>
-        <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          {t("navTonight")}
-        </button>
-        <button
-          type="button"
-          onClick={() => document.getElementById("genre")?.scrollIntoView({ behavior: "smooth" })}
-        >
-          {t("navExplore")}
-        </button>
-        <button
-          type="button"
-          onClick={() => document.getElementById("all")?.scrollIntoView({ behavior: "smooth" })}
-        >
-          {t("navAll")}
-        </button>
-      </nav>
+      <button
+        type="button"
+        className={styles.toTop}
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      >
+        {t("scrollTopButton")}
+      </button>
     </main>
   );
 }
