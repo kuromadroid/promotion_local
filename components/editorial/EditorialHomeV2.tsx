@@ -14,7 +14,7 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
     label: { ja: "ジンギスカン", en: "Genghis Khan", zh: "成吉思汗烤肉", ko: "징기스칸" },
   },
   { tagId: "seafood", label: { ja: "海鮮", en: "Seafood", zh: "海鲜", ko: "해산물" } },
-  { tagId: "yakiniku", label: { ja: "焼き肉", en: "Yakiniku", zh: "烤肉", ko: "야키니쿠" } },
+  { tagId: "yakiniku", label: { ja: "焼肉", en: "Yakiniku", zh: "烤肉", ko: "야키니쿠" } },
   { tagId: "izakaya", label: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" } },
   { tagId: "bar", label: { ja: "BAR", en: "Bar", zh: "酒吧", ko: "바" } },
 ];
@@ -214,7 +214,6 @@ export function EditorialHomeV2({
           <div className={styles.sectionHead}>
             <div>
               <h2>{t("allSectionTitle")}</h2>
-              <p className={styles.lead}>{t("allSectionSubtitle")}</p>
             </div>
             <div className={styles.index}>03 / ALL</div>
           </div>
