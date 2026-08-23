@@ -88,6 +88,14 @@
   text-shadow:0 3px 20px rgba(0,0,0,.5);
 }
 
+.heroHotelName {
+  margin:0 0 10px;
+  font-size:clamp(28px,6vw,44px);
+  line-height:1.05;
+  letter-spacing:-.04em;
+  font-weight:950;
+}
+
 .kicker {
   display:inline-flex;
   align-items:center;
