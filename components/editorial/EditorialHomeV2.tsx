@@ -59,6 +59,7 @@ export function EditorialHomeV2({
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [activeScene, setActiveScene] = useState<SceneTag>("all");
+  const [activeGenre, setActiveGenre] = useState<string>("all");
 
   const scenesByRestaurant = useMemo(() => {
     const map = new Map<string, Exclude<SceneTag, "all">[]>();
@@ -70,6 +71,11 @@ export function EditorialHomeV2({
     if (activeScene === "all") return restaurants;
     return restaurants.filter((r) => scenesByRestaurant.get(r.id)?.includes(activeScene));
   }, [restaurants, scenesByRestaurant, activeScene]);
+
+  const genreFiltered = useMemo(() => {
+    if (activeGenre === "all") return restaurants;
+    return restaurants.filter((r) => r.tags.some((tag) => tag.id === activeGenre));
+  }, [restaurants, activeGenre]);
 
   const sceneChips: { key: SceneTag; label: string }[] = [
     { key: "all", label: t("all") },
@@ -111,10 +117,51 @@ export function EditorialHomeV2({
     if (r.googleMapsUrl) window.open(r.googleMapsUrl, "_blank", "noopener,noreferrer");
   };
 
+  const renderListGrid = (list: RestaurantView[]) =>
+    list.length === 0 ? (
+      <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--muted)", fontWeight: 700 }}>
+        {t("noResults")}
+      </div>
+    ) : (
+      <div className={styles.allGrid}>
+        {list.map((r) => (
+          <article className={styles.listCard} key={r.id}>
+            <div className={styles.listPhoto}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={r.photos[0]} alt={r.name} />
+            </div>
+
+            <div className={styles.listBody}>
+              <h3>{r.name}</h3>
+              <div className={styles.meta}>{metaText(r, t)}</div>
+              <div className={styles.desc}>{r.description}</div>
+
+              <div className={styles.actions}>
+                {r.reservationUrl && (
+                  <button
+                    type="button"
+                    className={`${styles.button} ${styles.primaryButton}`}
+                    onClick={() => handleReserve(r)}
+                  >
+                    {t("makeReservation")}
+                  </button>
+                )}
+                {r.googleMapsUrl && (
+                  <button type="button" className={styles.button} onClick={() => handleMap(r)}>
+                    {t("viewOnMap")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    );
+
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
-        {/* 01. HERO */}
+        {/* HERO */}
         <section className={styles.hero} id="tonight">
           <HeroCollage images={heroImages} />
           <div className={styles.heroShade} />
@@ -156,7 +203,7 @@ export function EditorialHomeV2({
           </form>
         </section>
 
-        {/* 01. GENRE */}
+        {/* 01. GENRE (with inline filtered list) */}
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <div>
@@ -167,44 +214,29 @@ export function EditorialHomeV2({
           </div>
 
           <div className={styles.chips}>
+            <button
+              type="button"
+              className={`${styles.chip} ${activeGenre === "all" ? styles.activeChip : ""}`}
+              onClick={() => setActiveGenre("all")}
+            >
+              {t("all")}
+            </button>
             {FOOD_TAGS.map((food) => (
               <button
                 type="button"
                 key={food.tagId}
-                className={styles.chip}
-                onClick={() => router.push(`/h/${hotelId}/restaurants?tags=${food.tagId}`)}
+                className={`${styles.chip} ${activeGenre === food.tagId ? styles.activeChip : ""}`}
+                onClick={() => setActiveGenre(food.tagId)}
               >
                 {food.label[locale]}
               </button>
             ))}
           </div>
+
+          <div style={{ marginTop: 14 }}>{renderListGrid(genreFiltered)}</div>
         </section>
 
-        {/* 02. MOOD */}
-        <section className={styles.section} id="scene">
-          <div className={styles.sectionHead}>
-            <div>
-              <h2>{t("moodSectionTitle")}</h2>
-              <p className={styles.lead}>{t("moodSectionSubtitle")}</p>
-            </div>
-            <div className={styles.index}>02 / MOOD</div>
-          </div>
-
-          <div className={styles.chips}>
-            {sceneChips.map((chip) => (
-              <button
-                type="button"
-                key={chip.key}
-                className={`${styles.chip} ${activeScene === chip.key ? styles.activeChip : ""}`}
-                onClick={() => setActiveScene(chip.key)}
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* 03. TONIGHT (featured triptych) */}
+        {/* 02. TONIGHT (featured triptych) */}
         {featured && (
           <section className={styles.section}>
             <div className={styles.sectionHead}>
@@ -212,7 +244,7 @@ export function EditorialHomeV2({
                 <h2>{t("featuredSectionTitle")}</h2>
                 <p className={styles.lead}>{t("featuredSectionSubtitle")}</p>
               </div>
-              <div className={styles.index}>03 / TONIGHT</div>
+              <div className={styles.index}>02 / TONIGHT</div>
             </div>
 
             <div className={styles.triptych}>
@@ -251,14 +283,14 @@ export function EditorialHomeV2({
           </section>
         )}
 
-        {/* 04. WALK */}
+        {/* 03. WALK */}
         <section className={styles.section}>
           <div className={styles.sectionHead}>
             <div>
               <h2>{t("walkSectionTitle")}</h2>
               <p className={styles.lead}>{t("walkSectionSubtitle")}</p>
             </div>
-            <div className={styles.index}>04 / WALK</div>
+            <div className={styles.index}>03 / WALK</div>
           </div>
 
           <div className={styles.walkPanel}>
@@ -292,6 +324,30 @@ export function EditorialHomeV2({
           </div>
         </section>
 
+        {/* 04. MOOD */}
+        <section className={styles.section} id="scene">
+          <div className={styles.sectionHead}>
+            <div>
+              <h2>{t("moodSectionTitle")}</h2>
+              <p className={styles.lead}>{t("moodSectionSubtitle")}</p>
+            </div>
+            <div className={styles.index}>04 / MOOD</div>
+          </div>
+
+          <div className={styles.chips}>
+            {sceneChips.map((chip) => (
+              <button
+                type="button"
+                key={chip.key}
+                className={`${styles.chip} ${activeScene === chip.key ? styles.activeChip : ""}`}
+                onClick={() => setActiveScene(chip.key)}
+              >
+                {chip.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
         {/* 05. SOLO */}
         {soloRestaurants.length > 0 && (
           <section className={styles.section}>
@@ -321,7 +377,7 @@ export function EditorialHomeV2({
           </section>
         )}
 
-        {/* 05. ALL */}
+        {/* 06. ALL (scene-filtered) */}
         <section className={styles.section} id="all">
           <div className={styles.sectionHead}>
             <div>
@@ -331,45 +387,7 @@ export function EditorialHomeV2({
             <div className={styles.index}>06 / ALL</div>
           </div>
 
-          {filtered.length === 0 ? (
-            <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--muted)", fontWeight: 700 }}>
-              {t("noResults")}
-            </div>
-          ) : (
-            <div className={styles.allGrid}>
-              {filtered.map((r) => (
-                <article className={styles.listCard} key={r.id}>
-                  <div className={styles.listPhoto}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={r.photos[0]} alt={r.name} />
-                  </div>
-
-                  <div className={styles.listBody}>
-                    <h3>{r.name}</h3>
-                    <div className={styles.meta}>{metaText(r, t)}</div>
-                    <div className={styles.desc}>{r.description}</div>
-
-                    <div className={styles.actions}>
-                      {r.reservationUrl && (
-                        <button
-                          type="button"
-                          className={`${styles.button} ${styles.primaryButton}`}
-                          onClick={() => handleReserve(r)}
-                        >
-                          {t("makeReservation")}
-                        </button>
-                      )}
-                      {r.googleMapsUrl && (
-                        <button type="button" className={styles.button} onClick={() => handleMap(r)}>
-                          {t("viewOnMap")}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
+          {renderListGrid(filtered)}
         </section>
       </div>
 
