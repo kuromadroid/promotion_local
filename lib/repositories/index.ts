@@ -67,7 +67,7 @@ export async function getTagsResolved(locale: Locale) {
 export async function getHotel(hotelId: string): Promise<Hotel | null> {
   const { data, error } = await supabase
     .from("hotels")
-    .select("id, name, area_id, latitude, longitude")
+    .select("id, name, area_id, latitude, longitude, hero_photos")
     .eq("id", hotelId)
     .maybeSingle();
   if (error) throw error;
@@ -78,13 +78,14 @@ export async function getHotel(hotelId: string): Promise<Hotel | null> {
     areaId: data.area_id,
     latitude: data.latitude,
     longitude: data.longitude,
+    heroPhotos: data.hero_photos ?? [],
   };
 }
 
 export async function getAllHotels(): Promise<Hotel[]> {
   const { data, error } = await supabase
     .from("hotels")
-    .select("id, name, area_id, latitude, longitude");
+    .select("id, name, area_id, latitude, longitude, hero_photos");
   if (error) throw error;
   return (data ?? []).map((h) => ({
     id: h.id,
@@ -92,6 +93,7 @@ export async function getAllHotels(): Promise<Hotel[]> {
     areaId: h.area_id,
     latitude: h.latitude,
     longitude: h.longitude,
+    heroPhotos: h.hero_photos ?? [],
   }));
 }
 

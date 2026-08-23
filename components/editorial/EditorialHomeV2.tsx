@@ -39,12 +39,14 @@ function metaText(r: RestaurantView, t: T) {
 export function EditorialHomeV2({
   hotelId,
   hotelName,
+  heroPhotos,
   restaurants,
   messages,
   locale,
 }: {
   hotelId: string;
   hotelName: string;
+  heroPhotos: string[];
   restaurants: RestaurantView[];
   messages: Record<string, string>;
   locale: Locale;
@@ -92,10 +94,13 @@ export function EditorialHomeV2({
     .sort((a, b) => a.walkingMinutes - b.walkingMinutes)
     .slice(0, 4);
 
-  const heroImages: HeroCollageImage[] = restaurants
-    .filter((r) => Boolean(r.photos[0]))
-    .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }))
-    .slice(0, 7);
+  const heroImages: HeroCollageImage[] =
+    heroPhotos.length > 0
+      ? heroPhotos.map((src, i) => ({ id: `hero-${i}`, src, alt: hotelName }))
+      : restaurants
+          .filter((r) => Boolean(r.photos[0]))
+          .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }))
+          .slice(0, 7);
 
   const handleReserve = (r: RestaurantView) => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });

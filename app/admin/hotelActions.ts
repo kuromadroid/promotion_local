@@ -5,6 +5,38 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
 
+const HERO_PHOTO_BUCKET = "restaurant-photos";
+
+/** Uploads any selected hero-collage images to Supabase Storage and returns their public URLs. */
+async function uploadHeroPhotoFiles(hotelId: string, formData: FormData): Promise<string[]> {
+  const files = formData
+    .getAll("hero_photo_files")
+    .filter((f): f is File => f instanceof File && f.size > 0);
+
+  const urls: string[] = [];
+  for (const file of files) {
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+    const path = `hero/${hotelId}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from(HERO_PHOTO_BUCKET)
+      .upload(path, file, { contentType: file.type || undefined });
+    if (error) throw error;
+    const { data } = supabaseAdmin.storage.from(HERO_PHOTO_BUCKET).getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
+
+async function resolveHeroPhotos(hotelId: string, formData: FormData): Promise<string[]> {
+  const existing = String(formData.get("existing_hero_photos") ?? "")
+    .split("|")
+    .filter(Boolean);
+  const deleted = formData.getAll("delete_hero_photos").map(String);
+  const kept = existing.filter((url) => !deleted.includes(url));
+  const uploaded = await uploadHeroPhotoFiles(hotelId, formData);
+  return [...kept, ...uploaded];
+}
+
 function slugify(name: string): string {
   return name
     .toLowerCase()
@@ -37,6 +69,7 @@ function parseHotelForm(formData: FormData) {
 export async function createHotelAction(formData: FormData) {
   const parsed = parseHotelForm(formData);
   const id = await uniqueHotelId(parsed.name);
+  const heroPhotos = await resolveHeroPhotos(id, formData);
 
   const { error } = await supabaseAdmin.from("hotels").insert({
     id,
@@ -44,6 +77,7 @@ export async function createHotelAction(formData: FormData) {
     area_id: parsed.areaId,
     latitude: parsed.latitude,
     longitude: parsed.longitude,
+    hero_photos: heroPhotos,
   });
   if (error) throw error;
 
@@ -53,6 +87,7 @@ export async function createHotelAction(formData: FormData) {
 
 export async function updateHotelAction(id: string, formData: FormData) {
   const parsed = parseHotelForm(formData);
+  const heroPhotos = await resolveHeroPhotos(id, formData);
 
   const { error } = await supabaseAdmin
     .from("hotels")
@@ -61,6 +96,7 @@ export async function updateHotelAction(id: string, formData: FormData) {
       area_id: parsed.areaId,
       latitude: parsed.latitude,
       longitude: parsed.longitude,
+      hero_photos: heroPhotos,
     })
     .eq("id", id);
   if (error) throw error;

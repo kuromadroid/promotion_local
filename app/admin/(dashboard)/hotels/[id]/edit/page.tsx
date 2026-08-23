@@ -23,6 +23,7 @@ export default async function EditHotelPage({
     areaId: hotel.area_id,
     latitude: hotel.latitude,
     longitude: hotel.longitude,
+    heroPhotos: hotel.hero_photos ?? [],
   };
 
   return (

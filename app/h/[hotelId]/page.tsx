@@ -23,6 +23,7 @@ export default async function HotelTopPage({
       <EditorialHomeV2
         hotelId={hotelId}
         hotelName={hotel?.name ?? ""}
+        heroPhotos={hotel?.heroPhotos ?? []}
         restaurants={restaurants}
         messages={messages}
         locale={locale}

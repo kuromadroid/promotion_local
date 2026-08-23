@@ -28,6 +28,7 @@ export interface Hotel {
   areaId: string;
   latitude: number;
   longitude: number;
+  heroPhotos: string[];
 }
 
 export interface Restaurant {

@@ -23,8 +23,11 @@ create table if not exists hotels (
   name text not null,
   area_id text not null references areas (id),
   latitude double precision not null,
-  longitude double precision not null
+  longitude double precision not null,
+  hero_photos text[] not null default '{}'
 );
+
+alter table hotels add column if not exists hero_photos text[] not null default '{}';
 
 create table if not exists restaurants (
   id text primary key,
