@@ -6,7 +6,6 @@ import { trackEvent } from "@/lib/analytics";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
 import styles from "./sapporo-bites-editorial-v2.module.css";
 
-type SceneTag = "all" | "solo" | "local" | "near" | "late" | "pair";
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
 const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
@@ -19,17 +18,6 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   { tagId: "izakaya", label: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" } },
   { tagId: "bar", label: { ja: "BAR", en: "Bar", zh: "酒吧", ko: "바" } },
 ];
-
-function sceneKeysFor(r: RestaurantView): Exclude<SceneTag, "all">[] {
-  const keys: Exclude<SceneTag, "all">[] = [];
-  const hasTag = (id: string) => r.tags.some((tag) => tag.id === id);
-  if (hasTag("solo-friendly")) keys.push("solo");
-  if (["genghis-khan", "seafood", "sushi"].some(hasTag)) keys.push("local");
-  if (r.walkingMinutes <= 10) keys.push("near");
-  if (hasTag("late-night")) keys.push("late");
-  if (hasTag("private-room")) keys.push("pair");
-  return keys;
-}
 
 function metaText(r: RestaurantView, t: T) {
   return [t("walkFromHotel", { minutes: r.walkingMinutes }), `¥${r.priceMin.toLocaleString()}〜`]
@@ -58,39 +46,15 @@ export function EditorialHomeV2({
     return s;
   };
 
-  const [activeScene, setActiveScene] = useState<SceneTag>("all");
   const [activeGenre, setActiveGenre] = useState<string>("all");
-
-  const scenesByRestaurant = useMemo(() => {
-    const map = new Map<string, Exclude<SceneTag, "all">[]>();
-    for (const r of restaurants) map.set(r.id, sceneKeysFor(r));
-    return map;
-  }, [restaurants]);
-
-  const filtered = useMemo(() => {
-    if (activeScene === "all") return restaurants;
-    return restaurants.filter((r) => scenesByRestaurant.get(r.id)?.includes(activeScene));
-  }, [restaurants, scenesByRestaurant, activeScene]);
 
   const genreFiltered = useMemo(() => {
     if (activeGenre === "all") return restaurants;
     return restaurants.filter((r) => r.tags.some((tag) => tag.id === activeGenre));
   }, [restaurants, activeGenre]);
 
-  const sceneChips: { key: SceneTag; label: string }[] = [
-    { key: "all", label: t("all") },
-    { key: "solo", label: `💼 ${t("sceneSolo")}` },
-    { key: "local", label: `🦀 ${t("sceneSapporo")}` },
-    { key: "near", label: `📍 ${t("sceneNear")}` },
-    { key: "late", label: `🌙 ${t("sceneLateNight")}` },
-    { key: "pair", label: `🥂 ${t("sceneCouple")}` },
-  ];
-
   const featured = restaurants[0];
   const sidePicks = restaurants.slice(1, 3);
-  const soloRestaurants = restaurants
-    .filter((r) => scenesByRestaurant.get(r.id)?.includes("solo"))
-    .slice(0, 5);
 
   const heroImages: HeroCollageImage[] =
     heroPhotos.length > 0
@@ -166,7 +130,7 @@ export function EditorialHomeV2({
         </section>
 
         {/* 01. GENRE (with inline filtered list) */}
-        <section className={styles.section}>
+        <section className={styles.section} id="genre">
           <div className={styles.sectionHead}>
             <div>
               <h2>{t("genreSectionTitle")}</h2>
@@ -245,70 +209,17 @@ export function EditorialHomeV2({
           </section>
         )}
 
-        {/* 03. MOOD */}
-        <section className={styles.section} id="scene">
-          <div className={styles.sectionHead}>
-            <div>
-              <h2>{t("moodSectionTitle")}</h2>
-              <p className={styles.lead}>{t("moodSectionSubtitle")}</p>
-            </div>
-            <div className={styles.index}>03 / MOOD</div>
-          </div>
-
-          <div className={styles.chips}>
-            {sceneChips.map((chip) => (
-              <button
-                type="button"
-                key={chip.key}
-                className={`${styles.chip} ${activeScene === chip.key ? styles.activeChip : ""}`}
-                onClick={() => setActiveScene(chip.key)}
-              >
-                {chip.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* 05. SOLO */}
-        {soloRestaurants.length > 0 && (
-          <section className={styles.section}>
-            <div className={styles.sectionHead}>
-              <div>
-                <h2>{t("soloSectionTitle")}</h2>
-                <p className={styles.lead}>{t("soloRailSubtitle")}</p>
-              </div>
-              <div className={styles.index}>04 / SOLO</div>
-            </div>
-
-            <div className={styles.rail}>
-              {soloRestaurants.map((r) => (
-                <article className={styles.railCard} key={r.id}>
-                  <div className={styles.railPhoto}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={r.photos[0]} alt={r.name} />
-                  </div>
-                  <div className={styles.railBody}>
-                    <h3>{r.name}</h3>
-                    <div className={styles.meta}>{metaText(r, t)}</div>
-                    <div className={styles.smallCopy}>{r.description}</div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 06. ALL (scene-filtered) */}
+        {/* 03. ALL */}
         <section className={styles.section} id="all">
           <div className={styles.sectionHead}>
             <div>
               <h2>{t("allSectionTitle")}</h2>
               <p className={styles.lead}>{t("allSectionSubtitle")}</p>
             </div>
-            <div className={styles.index}>05 / ALL</div>
+            <div className={styles.index}>03 / ALL</div>
           </div>
 
-          {renderListGrid(filtered)}
+          {renderListGrid(restaurants)}
         </section>
       </div>
 
@@ -318,7 +229,7 @@ export function EditorialHomeV2({
         </button>
         <button
           type="button"
-          onClick={() => document.getElementById("scene")?.scrollIntoView({ behavior: "smooth" })}
+          onClick={() => document.getElementById("genre")?.scrollIntoView({ behavior: "smooth" })}
         >
           {t("navExplore")}
         </button>
