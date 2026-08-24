@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
+import { resolveReservationUrl } from "@/lib/reservationUrl";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
 import styles from "./sapporo-bites-editorial-v2.module.css";
 
@@ -67,7 +68,8 @@ export function EditorialHomeV2({
 
   const handleReserve = (r: RestaurantView) => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });
-    if (r.reservationUrl) window.open(r.reservationUrl, "_blank", "noopener,noreferrer");
+    const url = resolveReservationUrl(r, locale);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleMap = (r: RestaurantView) => {
@@ -109,7 +111,7 @@ export function EditorialHomeV2({
               </Link>
 
               <div className={styles.actions}>
-                {r.reservationUrl && (
+                {resolveReservationUrl(r, locale) && (
                   <button
                     type="button"
                     className={`${styles.button} ${styles.primaryButton}`}

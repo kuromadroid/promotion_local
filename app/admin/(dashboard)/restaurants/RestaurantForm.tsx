@@ -10,6 +10,7 @@ export interface RestaurantFormInitial {
   phone: string;
   googleMapsUrl: string;
   reservationUrl: string;
+  reservationUrlIntl: string;
   instagramUrl: string;
   openingHours: string;
   closedDays: string;
@@ -168,11 +169,21 @@ export function RestaurantForm({
             />
           </label>
           <label className={labelClass}>
-            予約URL
+            予約URL(日本語)
             <input
               type="url"
               name="reservation_url"
               defaultValue={initial?.reservationUrl}
+              className={inputClass}
+            />
+          </label>
+          <label className={labelClass}>
+            予約URL(日本語以外・任意)
+            <input
+              type="url"
+              name="reservation_url_intl"
+              defaultValue={initial?.reservationUrlIntl}
+              placeholder="未入力なら上の予約URLを使用"
               className={inputClass}
             />
           </label>

@@ -43,6 +43,7 @@ export default async function EditRestaurantPage({
     phone: restaurant.phone ?? "",
     googleMapsUrl: restaurant.google_maps_url ?? "",
     reservationUrl: restaurant.reservation_url ?? "",
+    reservationUrlIntl: restaurant.reservation_url_intl ?? "",
     instagramUrl: restaurant.instagram_url ?? "",
     openingHours: restaurant.opening_hours ?? "",
     closedDays: restaurant.closed_days ?? "",

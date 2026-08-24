@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
+import { resolveReservationUrl } from "@/lib/reservationUrl";
 import styles from "./restaurant-detail-v3.module.css";
 
 export function RestaurantDetailV3({
@@ -14,12 +15,13 @@ export function RestaurantDetailV3({
   hotelId: string;
   restaurant: RestaurantView;
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [activePhoto, setActivePhoto] = useState(0);
 
   const photos = restaurant.photos;
   const cuisineTags = restaurant.tags.filter((tag) => tag.type === "cuisine");
   const paymentTags = restaurant.tags.filter((tag) => tag.type === "payment");
+  const reservationUrl = resolveReservationUrl(restaurant, locale);
 
   const handleMap = () => {
     trackEvent({ eventName: "map_click", hotelId, restaurantId: restaurant.id });
@@ -28,7 +30,7 @@ export function RestaurantDetailV3({
 
   const handleReserve = () => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: restaurant.id });
-    if (restaurant.reservationUrl) window.open(restaurant.reservationUrl, "_blank", "noopener,noreferrer");
+    if (reservationUrl) window.open(reservationUrl, "_blank", "noopener,noreferrer");
   };
 
   const handleInstagram = () => {
@@ -57,8 +59,8 @@ export function RestaurantDetailV3({
     }
   };
 
-  const showBottomCta = Boolean(restaurant.googleMapsUrl || restaurant.reservationUrl);
-  const bottomCtaSingle = Boolean(restaurant.googleMapsUrl) !== Boolean(restaurant.reservationUrl);
+  const showBottomCta = Boolean(restaurant.googleMapsUrl || reservationUrl);
+  const bottomCtaSingle = Boolean(restaurant.googleMapsUrl) !== Boolean(reservationUrl);
   const showSecondary = Boolean(restaurant.instagramUrl || restaurant.phone);
   const secondarySingle = Boolean(restaurant.instagramUrl) !== Boolean(restaurant.phone);
   const showInfo = Boolean(restaurant.openingHours || restaurant.closedDays || paymentTags.length > 0);
@@ -237,7 +239,7 @@ export function RestaurantDetailV3({
                 {t("viewOnMap")}
               </button>
             )}
-            {restaurant.reservationUrl && (
+            {reservationUrl && (
               <button type="button" className={`${styles.cta} ${styles.primary}`} onClick={handleReserve}>
                 {t("makeReservation")}
               </button>

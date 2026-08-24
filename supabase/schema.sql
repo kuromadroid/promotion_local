@@ -39,12 +39,15 @@ create table if not exists restaurants (
   phone text,
   google_maps_url text,
   reservation_url text,
+  reservation_url_intl text,
   instagram_url text,
   opening_hours text,
   closed_days text,
   is_sponsored boolean not null default false,
   photos text[] not null default '{}'
 );
+
+alter table restaurants add column if not exists reservation_url_intl text;
 
 create table if not exists restaurant_translations (
   restaurant_id text not null references restaurants (id) on delete cascade,

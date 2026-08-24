@@ -41,6 +41,7 @@ export interface Restaurant {
   phone?: string;
   googleMapsUrl?: string;
   reservationUrl?: string;
+  reservationUrlIntl?: string;
   instagramUrl?: string;
   openingHours?: string;
   closedDays?: string;
@@ -91,6 +92,7 @@ export interface RestaurantView {
   phone?: string;
   googleMapsUrl?: string;
   reservationUrl?: string;
+  reservationUrlIntl?: string;
   instagramUrl?: string;
   openingHours?: string;
   closedDays?: string;

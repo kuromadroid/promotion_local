@@ -31,6 +31,7 @@ interface ParsedRestaurantForm {
   phone: string | null;
   googleMapsUrl: string | null;
   reservationUrl: string | null;
+  reservationUrlIntl: string | null;
   instagramUrl: string | null;
   openingHours: string | null;
   closedDays: string | null;
@@ -78,6 +79,7 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     phone: emptyToNull(formData.get("phone")),
     googleMapsUrl: emptyToNull(formData.get("google_maps_url")),
     reservationUrl: emptyToNull(formData.get("reservation_url")),
+    reservationUrlIntl: emptyToNull(formData.get("reservation_url_intl")),
     instagramUrl: emptyToNull(formData.get("instagram_url")),
     openingHours: emptyToNull(formData.get("opening_hours")),
     closedDays: emptyToNull(formData.get("closed_days")),
@@ -165,6 +167,7 @@ export async function createRestaurantAction(formData: FormData) {
     phone: parsed.phone,
     google_maps_url: parsed.googleMapsUrl,
     reservation_url: parsed.reservationUrl,
+    reservation_url_intl: parsed.reservationUrlIntl,
     instagram_url: parsed.instagramUrl,
     opening_hours: parsed.openingHours,
     closed_days: parsed.closedDays,
@@ -221,6 +224,7 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
       phone: parsed.phone,
       google_maps_url: parsed.googleMapsUrl,
       reservation_url: parsed.reservationUrl,
+      reservation_url_intl: parsed.reservationUrlIntl,
       instagram_url: parsed.instagramUrl,
       opening_hours: parsed.openingHours,
       closed_days: parsed.closedDays,
