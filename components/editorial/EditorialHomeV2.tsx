@@ -160,13 +160,6 @@ export function EditorialHomeV2({
           </div>
 
           <div className={styles.genreGrid}>
-            <button
-              type="button"
-              className={`${styles.genreCell} ${activeGenre === "all" ? styles.genreCellActive : ""}`}
-              onClick={() => setActiveGenre("all")}
-            >
-              {t("all")}
-            </button>
             {FOOD_TAGS.map((food) => (
               <button
                 type="button"
