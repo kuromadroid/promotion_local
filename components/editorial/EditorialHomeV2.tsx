@@ -157,13 +157,6 @@ export function EditorialHomeV2({
           </div>
 
           <div className={`${styles.chips} ${styles.chipsWrap}`}>
-            <button
-              type="button"
-              className={`${styles.chip} ${activeGenre === "all" ? styles.activeChip : ""}`}
-              onClick={() => setActiveGenre("all")}
-            >
-              {t("all")}
-            </button>
             {FOOD_TAGS.map((food) => (
               <button
                 type="button"
