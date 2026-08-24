@@ -112,6 +112,26 @@ async function uploadPhotoFiles(restaurantId: string, formData: FormData): Promi
   return urls;
 }
 
+/** Interleaves kept existing photos and newly uploaded ones per the client-chosen order
+ * (tokens like "E0,N0,E1" referencing indices into each list), so a reordered/promoted
+ * thumbnail is respected. Falls back to kept-then-new when no order was submitted. */
+function composePhotoOrder(keptExisting: string[], newUrls: string[], orderRaw: string): string[] {
+  const tokens = orderRaw
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+  if (tokens.length === 0) return [...keptExisting, ...newUrls];
+
+  return tokens
+    .map((token) => {
+      const index = Number(token.slice(1));
+      if (token.startsWith("E")) return keptExisting[index];
+      if (token.startsWith("N")) return newUrls[index];
+      return undefined;
+    })
+    .filter((url): url is string => Boolean(url));
+}
+
 /** Links a restaurant to the given hotels, computing distance from each hotel's coordinates. */
 async function syncHotelLinks(
   restaurantId: string,
@@ -155,7 +175,8 @@ async function syncHotelLinks(
 export async function createRestaurantAction(formData: FormData) {
   const parsed = parseRestaurantForm(formData);
   const id = crypto.randomUUID();
-  const photos = await uploadPhotoFiles(id, formData);
+  const newPhotos = await uploadPhotoFiles(id, formData);
+  const photos = composePhotoOrder([], newPhotos, String(formData.get("photo_order") ?? ""));
 
   const { error: insertError } = await supabaseAdmin.from("restaurants").insert({
     id,
@@ -211,7 +232,7 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
   const deletedPhotos = formData.getAll("delete_photos").map(String);
   const keptPhotos = existingPhotos.filter((url) => !deletedPhotos.includes(url));
   const newPhotos = await uploadPhotoFiles(id, formData);
-  const photos = [...keptPhotos, ...newPhotos];
+  const photos = composePhotoOrder(keptPhotos, newPhotos, String(formData.get("photo_order") ?? ""));
 
   const { error: updateError } = await supabaseAdmin
     .from("restaurants")

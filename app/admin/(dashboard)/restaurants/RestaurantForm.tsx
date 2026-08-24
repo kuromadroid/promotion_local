@@ -1,5 +1,6 @@
 import { Area, Hotel, Tag } from "@/lib/types";
 import { AddressLookup } from "@/components/admin/AddressLookup";
+import { RestaurantPhotoManager } from "@/components/admin/RestaurantPhotoManager";
 
 export interface RestaurantFormInitial {
   areaId: string;
@@ -198,36 +199,7 @@ export function RestaurantForm({
           </label>
         </div>
 
-        <div>
-          <span className={labelClass}>写真</span>
-
-          {initial && initial.photos.length > 0 && (
-            <div className="mt-2 grid grid-cols-3 gap-3 sm:grid-cols-4">
-              {initial.photos.map((url) => (
-                <label key={url} className="group relative block overflow-hidden rounded-lg border border-(--color-line)">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={url} alt="" className="aspect-square w-full object-cover" />
-                  <span className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 via-transparent to-transparent p-1.5 opacity-0 transition-opacity group-has-[:checked]:opacity-100 group-hover:opacity-100">
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-white">
-                      <input type="checkbox" name="delete_photos" value={url} className="accent-(--color-coral)" />
-                      削除
-                    </span>
-                  </span>
-                </label>
-              ))}
-            </div>
-          )}
-          <input type="hidden" name="existing_photos" value={initial?.photos.join("|") ?? ""} />
-
-          <input
-            type="file"
-            name="photo_files"
-            accept="image/*"
-            multiple
-            className="mt-3 block w-full text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-(--color-navy) file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-(--color-navy-deep)"
-          />
-          <p className="mt-1 text-xs text-(--color-ink-soft)">複数選択できます。追加した写真は保存時にアップロードされます。</p>
-        </div>
+        <RestaurantPhotoManager initialPhotos={initial?.photos ?? []} />
       </section>
 
       <section className="bg-white border border-(--color-line) rounded-2xl p-6 space-y-4">
