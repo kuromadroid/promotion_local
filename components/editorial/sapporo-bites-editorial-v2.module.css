@@ -215,11 +215,14 @@
 
 .storyCard {
   position:relative;
+  display:block;
   overflow:hidden;
   border:1.8px solid #111;
   border-radius:22px;
   background:var(--paper);
   box-shadow:var(--shadow);
+  color:inherit;
+  text-decoration:none;
 }
 
 .storyPhoto { height:250px; }
@@ -430,8 +433,9 @@
   box-shadow:0 7px 20px rgba(0,0,0,.07);
 }
 
-.listPhoto { aspect-ratio:4/3; }
+.listPhoto { display:block; aspect-ratio:4/3; }
 .listBody { padding:18px; min-width:0; }
+.listTextLink { display:block; color:inherit; text-decoration:none; }
 
 .listBody h3 {
   margin:0;

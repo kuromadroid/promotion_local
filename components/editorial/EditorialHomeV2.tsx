@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
@@ -74,6 +75,10 @@ export function EditorialHomeV2({
     if (r.googleMapsUrl) window.open(r.googleMapsUrl, "_blank", "noopener,noreferrer");
   };
 
+  const handleView = (r: RestaurantView) => {
+    trackEvent({ eventName: "restaurant_view", hotelId, restaurantId: r.id });
+  };
+
   const renderListGrid = (list: RestaurantView[]) =>
     list.length === 0 ? (
       <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--muted)", fontWeight: 700 }}>
@@ -83,15 +88,25 @@ export function EditorialHomeV2({
       <div className={styles.allGrid}>
         {list.map((r) => (
           <article className={styles.listCard} key={r.id}>
-            <div className={styles.listPhoto}>
+            <Link
+              href={`/h/${hotelId}/restaurants/${r.id}`}
+              className={styles.listPhoto}
+              onClick={() => handleView(r)}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={r.photos[0]} alt={r.name} />
-            </div>
+            </Link>
 
             <div className={styles.listBody}>
-              <h3>{r.name}</h3>
-              <div className={styles.meta}>{metaText(r, t)}</div>
-              <div className={styles.desc}>{r.description}</div>
+              <Link
+                href={`/h/${hotelId}/restaurants/${r.id}`}
+                className={styles.listTextLink}
+                onClick={() => handleView(r)}
+              >
+                <h3>{r.name}</h3>
+                <div className={styles.meta}>{metaText(r, t)}</div>
+                <div className={styles.desc}>{r.description}</div>
+              </Link>
 
               <div className={styles.actions}>
                 {r.reservationUrl && (
@@ -174,7 +189,11 @@ export function EditorialHomeV2({
             </div>
 
             <div className={styles.triptych}>
-              <article className={`${styles.storyCard} ${styles.bigStory}`}>
+              <Link
+                href={`/h/${hotelId}/restaurants/${featured.id}`}
+                onClick={() => handleView(featured)}
+                className={`${styles.storyCard} ${styles.bigStory}`}
+              >
                 <div className={styles.flag}>{t("featuredBadge")}</div>
                 <div className={styles.storyPhoto}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -190,10 +209,15 @@ export function EditorialHomeV2({
                       .join(" / ")}
                   </span>
                 </div>
-              </article>
+              </Link>
 
               {sidePicks.map((r) => (
-                <article key={r.id} className={styles.storyCard}>
+                <Link
+                  key={r.id}
+                  href={`/h/${hotelId}/restaurants/${r.id}`}
+                  onClick={() => handleView(r)}
+                  className={styles.storyCard}
+                >
                   <div className={styles.storyPhoto}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={r.photos[0]} alt={r.name} />
@@ -203,7 +227,7 @@ export function EditorialHomeV2({
                     <div className={styles.meta}>{metaText(r, t)}</div>
                     <div className={styles.copy}>{r.description}</div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </section>
