@@ -513,19 +513,14 @@
   .storyPhoto { height:170px; }
 
   .bigStoryTitle { font-size:27px; }
-  .storyTitle { font-size:18px; }
+  .storyTitle { font-size:17px; line-height:1.2; }
 
   .bigStoryTitle,
-  .storyTitle,
-  .walkName,
-  .railBody h3,
   .listBody h3 {
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
   }
-
-  .railBody h3 { font-size:15px; }
 
   .walkPanel { grid-template-columns:1fr; }
   .walkIntro h3 { font-size:34px; }

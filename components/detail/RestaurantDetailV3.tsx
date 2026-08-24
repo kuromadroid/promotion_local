@@ -66,7 +66,7 @@ export function RestaurantDetailV3({
   return (
     <main className={styles.page}>
       <header className={styles.topbar}>
-        <Link href={`/h/${hotelId}/restaurants`} className={styles.iconBtn} aria-label={t("back")}>
+        <Link href={`/h/${hotelId}`} className={styles.iconBtn} aria-label={t("back")}>
           ←
         </Link>
         <div className={styles.topTitle}>SAPPORO BITES</div>
