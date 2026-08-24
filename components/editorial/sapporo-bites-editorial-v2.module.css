@@ -105,8 +105,9 @@
   color:#111;
   border:2px solid #111;
   padding:7px 10px;
+  font-family:"Zen Kaku Gothic New","Noto Sans JP",sans-serif;
   font-size:11px;
-  font-weight:950;
+  font-weight:900;
   transform:rotate(-1deg);
 }
 
