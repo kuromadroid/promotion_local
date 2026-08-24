@@ -62,5 +62,15 @@
   "backToTop": "호텔 홈으로 돌아가기",
   "sponsoredLabel": "PR",
   "language": "언어",
-  "poweredByFooter": "이 페이지는 숙박 중인 호텔이 제공하는 맛집 안내 서비스입니다."
+  "poweredByFooter": "이 페이지는 숙박 중인 호텔이 제공하는 맛집 안내 서비스입니다.",
+  "back": "뒤로",
+  "share": "공유",
+  "aboutSectionTitle": "이 가게에 대해",
+  "recommendSectionTitle": "추천 메뉴",
+  "infoSectionTitle": "가게 정보",
+  "hotelSectionTitle": "호텔에서",
+  "walkMinutesShort": "도보 {minutes}분",
+  "walkSubtitleShort": "숙박 호텔 기준 예상 시간",
+  "mapCardCopy": "주소는 표시하지 않으며, Google Maps에서 정확한 위치와 경로를 확인할 수 있습니다.",
+  "paymentMethod": "결제 방법"
 }

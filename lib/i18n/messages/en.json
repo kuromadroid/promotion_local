@@ -62,5 +62,15 @@
   "backToTop": "Back to hotel home",
   "sponsoredLabel": "PR",
   "language": "Language",
-  "poweredByFooter": "This guide is provided by your hotel to help you find local restaurants."
+  "poweredByFooter": "This guide is provided by your hotel to help you find local restaurants.",
+  "back": "Back",
+  "share": "Share",
+  "aboutSectionTitle": "About this restaurant",
+  "recommendSectionTitle": "Our pick",
+  "infoSectionTitle": "Restaurant info",
+  "hotelSectionTitle": "From your hotel",
+  "walkMinutesShort": "{minutes} min walk",
+  "walkSubtitleShort": "Estimated from your hotel",
+  "mapCardCopy": "We don't show a street address — open Google Maps for the exact location and route.",
+  "paymentMethod": "Payment"
 }

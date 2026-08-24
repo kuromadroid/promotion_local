@@ -1,9 +1,12 @@
+import { notFound } from "next/navigation";
 import {
+  getHotel,
   getAreasResolved,
   getTagsResolved,
   getRestaurantsForHotel,
 } from "@/lib/repositories";
 import { getMessages, getServerLocale } from "@/lib/i18n/locale";
+import { Header } from "@/components/Header";
 import { RestaurantFilters } from "@/components/RestaurantFilters";
 import { RestaurantCard } from "@/components/RestaurantCard";
 import { TrackOnMount } from "@/components/TrackOnMount";
@@ -32,6 +35,9 @@ export default async function RestaurantListPage({
     return s;
   };
 
+  const hotel = await getHotel(hotelId);
+  if (!hotel) notFound();
+
   const tagIds = (sp.tags ?? "").split(",").filter(Boolean);
   const sort = (sp.sort as SortValue) ?? "priority";
 
@@ -50,32 +56,37 @@ export default async function RestaurantListPage({
   const featureTags = allTags.filter((tag) => tag.type !== "cuisine");
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
-      <TrackOnMount event={{ eventName: "page_view", hotelId, language: locale }} />
+    <>
+      <Header hotelId={hotel.id} hotelName={hotel.name} subtitle={messages.heroSubtitle} />
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr]">
+          <TrackOnMount event={{ eventName: "page_view", hotelId, language: locale }} />
 
-      <aside className="lg:sticky lg:top-4 lg:self-start">
-        <h1 className="mb-4 text-lg font-bold">{t("restaurants")}</h1>
-        <RestaurantFilters
-          hotelId={hotelId}
-          areas={areas}
-          cuisineTags={cuisineTags}
-          featureTags={featureTags}
-        />
-      </aside>
+          <aside className="lg:sticky lg:top-4 lg:self-start">
+            <h1 className="mb-4 text-lg font-bold">{t("restaurants")}</h1>
+            <RestaurantFilters
+              hotelId={hotelId}
+              areas={areas}
+              cuisineTags={cuisineTags}
+              featureTags={featureTags}
+            />
+          </aside>
 
-      <div>
-        {restaurants.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-(--color-line) px-6 py-16 text-center text-(--color-ink-soft)">
-            {t("noResults")}
+          <div>
+            {restaurants.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-(--color-line) px-6 py-16 text-center text-(--color-ink-soft)">
+                {t("noResults")}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {restaurants.map((r) => (
+                  <RestaurantCard key={r.id} hotelId={hotelId} restaurant={r} t={t} />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {restaurants.map((r) => (
-              <RestaurantCard key={r.id} hotelId={hotelId} restaurant={r} t={t} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+        </div>
+      </main>
+    </>
   );
 }

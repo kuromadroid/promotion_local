@@ -62,5 +62,15 @@
   "backToTop": "返回酒店首页",
   "sponsoredLabel": "PR",
   "language": "语言",
-  "poweredByFooter": "本页面由您入住的酒店提供，帮助您找到当地餐厅。"
+  "poweredByFooter": "本页面由您入住的酒店提供，帮助您找到当地餐厅。",
+  "back": "返回",
+  "share": "分享",
+  "aboutSectionTitle": "关于这家店",
+  "recommendSectionTitle": "推荐一品",
+  "infoSectionTitle": "店铺信息",
+  "hotelSectionTitle": "距离酒店",
+  "walkMinutesShort": "步行 {minutes}分钟",
+  "walkSubtitleShort": "距酒店的大致时间",
+  "mapCardCopy": "不显示具体地址文字，请通过Google Maps确认准确位置和路线。",
+  "paymentMethod": "支付方式"
 }

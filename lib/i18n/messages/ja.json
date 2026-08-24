@@ -62,5 +62,15 @@
   "backToTop": "ホテルトップに戻る",
   "sponsoredLabel": "PR",
   "language": "言語",
-  "poweredByFooter": "このサイトはご宿泊ホテルが提供する飲食店紹介サービスです"
+  "poweredByFooter": "このサイトはご宿泊ホテルが提供する飲食店紹介サービスです",
+  "back": "戻る",
+  "share": "共有",
+  "aboutSectionTitle": "この店について",
+  "recommendSectionTitle": "おすすめの一品",
+  "infoSectionTitle": "店舗情報",
+  "hotelSectionTitle": "ホテルから",
+  "walkMinutesShort": "徒歩 {minutes}分",
+  "walkSubtitleShort": "宿泊ホテルからの目安",
+  "mapCardCopy": "住所は表示せず、Google Mapsで正確な場所とルートをご確認いただけます。",
+  "paymentMethod": "支払い"
 }
