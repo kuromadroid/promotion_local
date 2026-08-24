@@ -159,12 +159,19 @@ export function EditorialHomeV2({
             <div className={styles.index}>01 / GENRE</div>
           </div>
 
-          <div className={`${styles.chips} ${styles.chipsWrap}`}>
+          <div className={styles.genreGrid}>
+            <button
+              type="button"
+              className={`${styles.genreCell} ${activeGenre === "all" ? styles.genreCellActive : ""}`}
+              onClick={() => setActiveGenre("all")}
+            >
+              {t("all")}
+            </button>
             {FOOD_TAGS.map((food) => (
               <button
                 type="button"
                 key={food.tagId}
-                className={`${styles.chip} ${activeGenre === food.tagId ? styles.activeChip : ""}`}
+                className={`${styles.genreCell} ${activeGenre === food.tagId ? styles.genreCellActive : ""}`}
                 onClick={() => setActiveGenre(food.tagId)}
               >
                 {food.label[locale]}

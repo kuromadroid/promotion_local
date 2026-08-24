@@ -173,38 +173,39 @@
   letter-spacing:.12em;
 }
 
-.chips {
+.genreGrid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  margin:2px 1px 12px;
+  border-radius:16px;
+  border-style:solid;
+  border-color:rgba(17,17,17,.16);
+  border-width:1px 0 0 1px;
+  overflow:hidden;
+}
+
+.genreCell {
   display:flex;
-  gap:9px;
-  overflow:auto;
-  padding:2px 1px 12px;
-  scrollbar-width:none;
+  align-items:center;
+  justify-content:center;
+  min-height:64px;
+  padding:8px 6px;
+  text-align:center;
+  border-style:solid;
+  border-color:rgba(17,17,17,.16);
+  border-width:0 1px 1px 0;
+  background:transparent;
+  color:#111;
+  font-size:12.5px;
+  line-height:1.25;
+  font-weight:850;
+  transition:background .14s, color .14s;
 }
 
-.chips::-webkit-scrollbar { display:none; }
-
-.chipsWrap {
-  flex-wrap:wrap;
-  overflow:visible;
-}
-
-.chip {
-  flex:0 0 auto;
-  border:1.8px solid #111;
-  background:#fff;
-  border-radius:999px;
-  padding:10px 14px;
-  font-size:13px;
-  font-weight:950;
-  box-shadow:2px 2px 0 #111;
-  transition:.14s;
-}
-
-.activeChip {
+.genreCellActive {
   background:#111;
   color:#fff;
-  transform:translateY(2px);
-  box-shadow:none;
+  font-weight:950;
 }
 
 .triptych {
