@@ -20,6 +20,8 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   { tagId: "izakaya", label: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" } },
   { tagId: "bar", label: { ja: "BAR", en: "Bar", zh: "酒吧", ko: "바" } },
   { tagId: "washoku", label: { ja: "和食", en: "Japanese Cuisine", zh: "日本料理", ko: "일식" } },
+  { tagId: "ramen", label: { ja: "ラーメン", en: "Ramen", zh: "拉面", ko: "라멘" } },
+  { tagId: "soup-curry", label: { ja: "スープカレー", en: "Soup Curry", zh: "汤咖喱", ko: "수프카레" } },
 ];
 
 function metaText(r: RestaurantView, t: T) {
