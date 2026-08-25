@@ -16,6 +16,10 @@ export default async function HotelTopPage({
     getHotel(hotelId),
     getRestaurantsForHotel(hotelId, locale, { sort: "priority" }),
   ]);
+  const topRestaurants = restaurants.map((restaurant) => ({
+    ...restaurant,
+    photos: restaurant.photos.slice(0, 1),
+  }));
 
   return (
     <>
@@ -24,7 +28,7 @@ export default async function HotelTopPage({
         hotelId={hotelId}
         hotelName={hotel?.name ?? ""}
         heroPhotos={hotel?.heroPhotos ?? []}
-        restaurants={restaurants}
+        restaurants={topRestaurants}
         messages={messages}
         locale={locale}
       />

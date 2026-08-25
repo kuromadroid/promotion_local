@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { RestaurantView } from "@/lib/types";
 import { DistanceBadge } from "@/components/DistanceBadge";
 import { TagPill } from "@/components/TagPill";
@@ -20,10 +21,12 @@ export function RestaurantCard({
       className="group block overflow-hidden rounded-2xl border border-(--color-line) bg-white transition-shadow hover:shadow-lg hover:shadow-black/5"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-(--color-snow-muted)">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={restaurant.photos[0]}
           alt={restaurant.name}
+          fill
+          sizes="(max-width: 639px) calc(100vw - 32px), (max-width: 1023px) calc(50vw - 24px), 345px"
+          loading="lazy"
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         {restaurant.isSponsored && (

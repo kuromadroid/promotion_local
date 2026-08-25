@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { trackEvent } from "@/lib/analytics";
@@ -80,8 +81,14 @@ export function RestaurantDetailV3({
       {photos.length > 0 && (
         <section className={styles.gallery}>
           <div className={styles.mainPhoto}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photos[activePhoto]} alt={restaurant.name} />
+            <Image
+              src={photos[activePhoto]}
+              alt={restaurant.name}
+              fill
+              sizes="(max-width: 760px) 100vw, 760px"
+              quality={85}
+              preload={activePhoto === 0}
+            />
           </div>
           {photos.length > 1 && (
             <div className={styles.photoCount}>
@@ -100,8 +107,7 @@ export function RestaurantDetailV3({
               className={`${styles.thumb} ${i === activePhoto ? styles.active : ""}`}
               onClick={() => setActivePhoto(i)}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={photo} alt="" />
+              <Image src={photo} alt="" fill sizes="70px" loading="lazy" />
             </button>
           ))}
         </div>

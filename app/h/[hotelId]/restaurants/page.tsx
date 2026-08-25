@@ -80,7 +80,12 @@ export default async function RestaurantListPage({
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {restaurants.map((r) => (
-                  <RestaurantCard key={r.id} hotelId={hotelId} restaurant={r} t={t} />
+                  <RestaurantCard
+                    key={r.id}
+                    hotelId={hotelId}
+                    restaurant={{ ...r, photos: r.photos.slice(0, 1) }}
+                    t={t}
+                  />
                 ))}
               </div>
             )}

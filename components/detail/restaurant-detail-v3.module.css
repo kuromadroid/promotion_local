@@ -55,7 +55,7 @@
 }
 
 .gallery { position: relative; background: #ddd; }
-.mainPhoto { height: 310px; }
+.mainPhoto { position: relative; height: 310px; overflow: hidden; }
 .photoCount {
   position: absolute;
   right: 12px;
@@ -79,6 +79,7 @@
 }
 .thumbs::-webkit-scrollbar { display: none; }
 .thumb {
+  position: relative;
   width: 70px;
   height: 54px;
   flex: 0 0 auto;

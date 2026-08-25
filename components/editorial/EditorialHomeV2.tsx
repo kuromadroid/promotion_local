@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
@@ -154,8 +155,13 @@ export function EditorialHomeV2({
               className={styles.listPhoto}
               onClick={() => handleView(r)}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={r.photos[0]} alt={r.name} />
+              <Image
+                src={r.photos[0]}
+                alt={r.name}
+                fill
+                sizes="(max-width: 1024px) calc(100vw - 24px), 560px"
+                loading="lazy"
+              />
             </Link>
 
             <div className={styles.listBody}>
@@ -256,8 +262,13 @@ export function EditorialHomeV2({
               >
                 <div className={styles.flag}>{t("featuredBadge")}</div>
                 <div className={styles.storyPhoto}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={featured.photos[0]} alt={featured.name} />
+                  <Image
+                    src={featured.photos[0]}
+                    alt={featured.name}
+                    fill
+                    sizes="(max-width: 1024px) calc(100vw - 24px), 560px"
+                    loading="lazy"
+                  />
                 </div>
                 <div className={styles.storyCopy}>
                   <div className={styles.bigStoryTitle}>{featured.name}</div>
@@ -279,8 +290,13 @@ export function EditorialHomeV2({
                   className={styles.storyCard}
                 >
                   <div className={styles.storyPhoto}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={r.photos[0]} alt={r.name} />
+                    <Image
+                      src={r.photos[0]}
+                      alt={r.name}
+                      fill
+                      sizes="(max-width: 1024px) calc(50vw - 18px), 300px"
+                      loading="lazy"
+                    />
                   </div>
                   <div className={styles.storyCopy}>
                     <div className={styles.storyTitle}>{r.name}</div>
