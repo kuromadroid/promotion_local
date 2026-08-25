@@ -72,16 +72,16 @@ body {
 
 /* =========================================================
    Sapporo Bites — Hero Collage
-   A real overlapping photo collage (1 hero-large + up to 4
-   supporting shots), driven by an array of 1–5 images. See
-   components/editorial/HeroCollage.tsx.
+   One art-directed visual, not five independent photo cards.
+   Every photo touches either an outer edge of the hero or a
+   neighboring photo's edge (5–10% overlap) — nothing floats
+   in open space. See components/editorial/HeroCollage.tsx.
 
-   Deliberately NOT a grid: every photo is absolutely
-   positioned with its own size/position/rotation/z-index, so
-   photos overlap by design. Layout is chosen by [data-count]
-   and re-tuned per breakpoint (mobile is its own composition,
-   not a shrunk desktop one). `.hero` provides overflow:hidden,
-   so anything positioned outside 0–100% is cropped clean.
+   Absolute positioning only (no CSS Grid / tiling). Layout is
+   chosen by [data-count] and designed separately per
+   breakpoint — mobile is its own composition, not a shrunk
+   desktop one. `.hero` provides overflow:hidden, so anything
+   positioned outside 0–100% crops cleanly at the frame edge.
    ========================================================= */
 
 .sbHeroCollage {
@@ -92,8 +92,8 @@ body {
 .sbHeroFrame {
   position: absolute;
   overflow: hidden;
-  border-radius: 3px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
 .sbHeroFrame img {
@@ -103,137 +103,110 @@ body {
   object-fit: cover;
 }
 
-/* ---- desktop compositions, by image count ---- */
+/* ---- mobile compositions (375px-first), by image count ---- */
 .sbHeroCollage[data-count="1"] .sbHero-large {
-  left: 6%; top: 4%; width: 88%; height: 92%; z-index: 1;
-  transform: rotate(-1deg);
+  left: 0%; top: 0%; width: 100%; height: 100%; z-index: 1;
 }
 
 .sbHeroCollage[data-count="2"] .sbHero-large {
-  left: 0%; top: 0%; width: 56%; height: 88%; z-index: 1;
-  transform: rotate(-1.5deg);
+  left: 0%; top: 0%; width: 100%; height: 60%; z-index: 1;
 }
 .sbHeroCollage[data-count="2"] .sbHero-medium1 {
-  left: 44%; top: 14%; width: 52%; height: 70%; z-index: 2;
-  transform: rotate(2deg);
+  left: 0%; top: 54%; width: 100%; height: 46%; z-index: 2;
 }
 
 .sbHeroCollage[data-count="3"] .sbHero-large {
-  left: 0%; top: 0%; width: 50%; height: 80%; z-index: 1;
-  transform: rotate(-1.5deg);
+  left: 0%; top: 0%; width: 62%; height: 56%; z-index: 1;
 }
 .sbHeroCollage[data-count="3"] .sbHero-medium1 {
-  left: 40%; top: -4%; width: 36%; height: 50%; z-index: 3;
-  transform: rotate(2deg);
+  left: 56%; top: 0%; width: 44%; height: 54%; z-index: 2;
 }
 .sbHeroCollage[data-count="3"] .sbHero-medium2 {
-  left: 44%; top: 42%; width: 44%; height: 52%; z-index: 2;
-  transform: rotate(-2deg);
+  left: 0%; top: 50%; width: 100%; height: 50%; z-index: 3;
 }
 
 .sbHeroCollage[data-count="4"] .sbHero-large {
-  left: 0%; top: 2%; width: 48%; height: 64%; z-index: 2;
-  transform: rotate(-1.5deg);
+  left: 0%; top: 0%; width: 62%; height: 56%; z-index: 1;
 }
 .sbHeroCollage[data-count="4"] .sbHero-medium1 {
-  left: 40%; top: -4%; width: 36%; height: 46%; z-index: 4;
-  transform: rotate(2deg);
+  left: 56%; top: 0%; width: 44%; height: 54%; z-index: 2;
 }
 .sbHeroCollage[data-count="4"] .sbHero-medium2 {
-  left: 50%; top: 38%; width: 42%; height: 50%; z-index: 1;
-  transform: rotate(-2deg);
+  left: 0%; top: 50%; width: 100%; height: 50%; z-index: 3;
 }
 .sbHeroCollage[data-count="4"] .sbHero-small1 {
-  left: 4%; top: 58%; width: 30%; height: 30%; z-index: 5;
-  transform: rotate(2.5deg);
+  left: 0%; top: 72%; width: 38%; height: 28%; z-index: 4;
+  transform: rotate(-1deg);
 }
 
 .sbHeroCollage[data-count="5"] .sbHero-large {
-  left: 0%; top: 2%; width: 48%; height: 64%; z-index: 2;
-  transform: rotate(-1.5deg);
+  left: 42%; top: 0%; width: 58%; height: 58%; z-index: 1;
 }
 .sbHeroCollage[data-count="5"] .sbHero-medium1 {
-  left: 40%; top: -4%; width: 36%; height: 44%; z-index: 4;
-  transform: rotate(2deg);
+  left: 0%; top: 0%; width: 46%; height: 40%; z-index: 2;
 }
 .sbHeroCollage[data-count="5"] .sbHero-medium2 {
-  left: 52%; top: 36%; width: 40%; height: 52%; z-index: 1;
-  transform: rotate(-2deg);
+  left: 0%; top: 36%; width: 44%; height: 42%; z-index: 3;
 }
 .sbHeroCollage[data-count="5"] .sbHero-small1 {
-  left: 2%; top: 58%; width: 30%; height: 30%; z-index: 5;
-  transform: rotate(2.5deg);
+  left: 40%; top: 56%; width: 60%; height: 32%; z-index: 4;
 }
 .sbHeroCollage[data-count="5"] .sbHero-small2 {
-  left: 66%; top: 70%; width: 28%; height: 26%; z-index: 6;
-  transform: rotate(-2deg);
+  left: 0%; top: 76%; width: 70%; height: 24%; z-index: 5;
+  transform: rotate(-1deg);
 }
 
-/* ---- mobile compositions: its own layout, not a shrunk desktop one ---- */
-@media (max-width: 767px) {
+/* ---- desktop compositions: re-composed for the wider frame ---- */
+@media (min-width: 768px) {
   .sbHeroCollage[data-count="1"] .sbHero-large {
-    left: 4%; top: 4%; width: 92%; height: 92%; z-index: 1;
-    transform: rotate(-1deg);
+    left: 0%; top: 0%; width: 100%; height: 100%; z-index: 1;
   }
 
   .sbHeroCollage[data-count="2"] .sbHero-large {
-    left: 0%; top: 0%; width: 62%; height: 58%; z-index: 1;
-    transform: rotate(-2deg);
+    left: 0%; top: 0%; width: 58%; height: 100%; z-index: 1;
   }
   .sbHeroCollage[data-count="2"] .sbHero-medium1 {
-    left: 40%; top: 36%; width: 60%; height: 58%; z-index: 2;
-    transform: rotate(2deg);
+    left: 52%; top: 0%; width: 48%; height: 100%; z-index: 2;
   }
 
   .sbHeroCollage[data-count="3"] .sbHero-large {
-    left: 0%; top: 0%; width: 58%; height: 46%; z-index: 1;
-    transform: rotate(-2deg);
+    left: 0%; top: 0%; width: 46%; height: 100%; z-index: 1;
   }
   .sbHeroCollage[data-count="3"] .sbHero-medium1 {
-    left: 44%; top: -2%; width: 52%; height: 40%; z-index: 2;
-    transform: rotate(2deg);
+    left: 40%; top: 0%; width: 60%; height: 54%; z-index: 2;
   }
   .sbHeroCollage[data-count="3"] .sbHero-medium2 {
-    left: 16%; top: 38%; width: 66%; height: 54%; z-index: 3;
-    transform: rotate(-1deg);
+    left: 40%; top: 48%; width: 60%; height: 52%; z-index: 3;
   }
 
   .sbHeroCollage[data-count="4"] .sbHero-large {
-    left: 0%; top: 0%; width: 56%; height: 44%; z-index: 1;
-    transform: rotate(-2deg);
+    left: 0%; top: 0%; width: 46%; height: 100%; z-index: 1;
   }
   .sbHeroCollage[data-count="4"] .sbHero-medium1 {
-    left: 44%; top: -3%; width: 50%; height: 38%; z-index: 2;
-    transform: rotate(2deg);
+    left: 40%; top: 0%; width: 60%; height: 50%; z-index: 2;
   }
   .sbHeroCollage[data-count="4"] .sbHero-medium2 {
-    left: 18%; top: 32%; width: 60%; height: 50%; z-index: 4;
-    transform: rotate(-1deg);
+    left: 40%; top: 54%; width: 60%; height: 46%; z-index: 3;
   }
   .sbHeroCollage[data-count="4"] .sbHero-small1 {
-    left: 60%; top: 62%; width: 38%; height: 32%; z-index: 3;
-    transform: rotate(2.5deg);
-  }
-
-  /* the 5-shot mobile composition — 5 photos loosely placed, not a grid */
-  .sbHeroCollage[data-count="5"] .sbHero-large {
-    left: 0%; top: 0%; width: 58%; height: 48%; z-index: 2;
-    transform: rotate(-2deg);
-  }
-  .sbHeroCollage[data-count="5"] .sbHero-medium1 {
-    left: 46%; top: -3%; width: 50%; height: 40%; z-index: 3;
-    transform: rotate(2deg);
-  }
-  .sbHeroCollage[data-count="5"] .sbHero-medium2 {
-    left: 26%; top: 30%; width: 56%; height: 46%; z-index: 5;
+    left: 4%; top: 70%; width: 32%; height: 26%; z-index: 4;
     transform: rotate(-1deg);
   }
+
+  .sbHeroCollage[data-count="5"] .sbHero-large {
+    left: 0%; top: 0%; width: 46%; height: 100%; z-index: 1;
+  }
+  .sbHeroCollage[data-count="5"] .sbHero-medium1 {
+    left: 40%; top: 0%; width: 34%; height: 54%; z-index: 2;
+  }
+  .sbHeroCollage[data-count="5"] .sbHero-medium2 {
+    left: 70%; top: 0%; width: 30%; height: 66%; z-index: 3;
+  }
   .sbHeroCollage[data-count="5"] .sbHero-small1 {
-    left: -4%; top: 64%; width: 38%; height: 32%; z-index: 1;
-    transform: rotate(2.5deg);
+    left: 40%; top: 48%; width: 34%; height: 52%; z-index: 4;
   }
   .sbHeroCollage[data-count="5"] .sbHero-small2 {
-    left: 58%; top: 70%; width: 40%; height: 30%; z-index: 4;
-    transform: rotate(-2deg);
+    left: 68%; top: 62%; width: 32%; height: 38%; z-index: 5;
+    transform: rotate(-1deg);
   }
 }

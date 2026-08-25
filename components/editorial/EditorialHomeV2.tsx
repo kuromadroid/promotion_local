@@ -188,8 +188,8 @@ export function EditorialHomeV2({
           <div className={styles.heroShade} />
 
           <div className={styles.heroCopy}>
+            <div className={styles.heroCategory}>{t("heroCollageLabel")}</div>
             <div className={styles.heroHotelName}>{hotelName}</div>
-            <span className={styles.kicker}>{t("heroCollageLabel")}</span>
           </div>
         </section>
 
