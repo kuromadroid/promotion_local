@@ -6,7 +6,8 @@ import { Locale } from "@/lib/types";
 const OPTIONS: { code: Locale; label: string }[] = [
   { code: "ja", label: "日本語" },
   { code: "en", label: "English" },
-  { code: "zh", label: "中文" },
+  { code: "zh-CN", label: "简体中文" },
+  { code: "zh-TW", label: "繁體中文" },
   { code: "ko", label: "한국어" },
 ];
 

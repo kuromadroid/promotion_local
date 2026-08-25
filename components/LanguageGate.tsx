@@ -4,7 +4,8 @@ import { Locale } from "@/lib/types";
 const OPTIONS: { code: Locale; label: string; hint: string }[] = [
   { code: "ja", label: "日本語", hint: "Japanese" },
   { code: "en", label: "English", hint: "英語" },
-  { code: "zh", label: "中文", hint: "中国語" },
+  { code: "zh-CN", label: "简体中文", hint: "中国語(簡体字)" },
+  { code: "zh-TW", label: "繁體中文", hint: "中国語(繁体字)" },
   { code: "ko", label: "한국어", hint: "韓国語" },
 ];
 
@@ -35,8 +36,12 @@ export function LanguageGate({
           </h1>
 
           <div className="mt-10 grid grid-cols-2 gap-3">
-            {OPTIONS.map((opt) => (
-              <form key={opt.code} action={selectLocaleAction.bind(null, opt.code, hotelId)}>
+            {OPTIONS.map((opt, i) => (
+              <form
+                key={opt.code}
+                action={selectLocaleAction.bind(null, opt.code, hotelId)}
+                className={i === OPTIONS.length - 1 && OPTIONS.length % 2 === 1 ? "col-span-2" : ""}
+              >
                 <button
                   type="submit"
                   className="flex w-full flex-col items-center gap-1 rounded-2xl border border-white/20 bg-white/5 px-4 py-6 transition-colors hover:border-(--color-coral) hover:bg-white/10"

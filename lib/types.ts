@@ -1,6 +1,6 @@
-export type Locale = "ja" | "en" | "zh" | "ko";
+export type Locale = "ja" | "en" | "zh-CN" | "zh-TW" | "ko";
 
-export const LOCALES: Locale[] = ["ja", "en", "zh", "ko"];
+export const LOCALES: Locale[] = ["ja", "en", "zh-CN", "zh-TW", "ko"];
 export const DEFAULT_LOCALE: Locale = "ja";
 
 export type TagType =

@@ -51,12 +51,32 @@ alter table restaurants add column if not exists reservation_url_intl text;
 
 create table if not exists restaurant_translations (
   restaurant_id text not null references restaurants (id) on delete cascade,
-  locale text not null check (locale in ('ja', 'en', 'zh', 'ko')),
+  locale text not null check (locale in ('ja', 'en', 'zh-CN', 'zh-TW', 'ko')),
   name text not null,
   description text not null,
   recommended_dish text,
   primary key (restaurant_id, locale)
 );
+
+-- Widens the locale check from ('ja','en','zh','ko') to ('ja','en','zh-CN','zh-TW','ko').
+-- Safe to re-run: finds any existing check constraint mentioning "locale" and replaces it.
+do $$
+declare
+  con record;
+begin
+  for con in
+    select conname from pg_constraint
+    where conrelid = 'restaurant_translations'::regclass
+      and contype = 'c'
+      and pg_get_constraintdef(oid) ilike '%locale%'
+  loop
+    execute format('alter table restaurant_translations drop constraint %I', con.conname);
+  end loop;
+end $$;
+
+alter table restaurant_translations
+  add constraint restaurant_translations_locale_check
+  check (locale in ('ja', 'en', 'zh-CN', 'zh-TW', 'ko'));
 
 create table if not exists restaurant_tags (
   restaurant_id text not null references restaurants (id) on delete cascade,
@@ -135,23 +155,23 @@ drop policy if exists "Public insert access" on events;
 -- ============================================================
 
 insert into areas (id, display_order, name) values
-  ('sapporo-station', 1, '{"ja":"札幌駅","en":"Sapporo Station","zh":"札幌站","ko":"삿포로역"}'),
-  ('odori-tanukikoji', 2, '{"ja":"大通・狸小路","en":"Odori / Tanukikoji","zh":"大通・狸小路","ko":"오도리・타누키코지"}'),
-  ('susukino', 3, '{"ja":"すすきの","en":"Susukino","zh":"薄野","ko":"스스키노"}'),
-  ('nakajima-park', 4, '{"ja":"中島公園","en":"Nakajima Park","zh":"中岛公园","ko":"나카지마공원"}')
+  ('sapporo-station', 1, '{"ja":"札幌駅","en":"Sapporo Station","zh-CN":"札幌站","zh-TW":"札幌站","ko":"삿포로역"}'),
+  ('odori-tanukikoji', 2, '{"ja":"大通・狸小路","en":"Odori / Tanukikoji","zh-CN":"大通・狸小路","zh-TW":"大通・狸小路","ko":"오도리・타누키코지"}'),
+  ('susukino', 3, '{"ja":"すすきの","en":"Susukino","zh-CN":"薄野","zh-TW":"薄野","ko":"스스키노"}'),
+  ('nakajima-park', 4, '{"ja":"中島公園","en":"Nakajima Park","zh-CN":"中岛公园","zh-TW":"中島公園","ko":"나카지마공원"}')
 on conflict (id) do nothing;
 
 insert into tags (id, type, name) values
-  ('seafood', 'cuisine', '{"ja":"海鮮","en":"Seafood","zh":"海鲜","ko":"해산물"}'),
-  ('sushi', 'cuisine', '{"ja":"寿司","en":"Sushi","zh":"寿司","ko":"초밥"}'),
-  ('genghis-khan', 'cuisine', '{"ja":"ジンギスカン","en":"Genghis Khan (Lamb BBQ)","zh":"成吉思汗烤肉","ko":"징기스칸"}'),
-  ('ramen', 'cuisine', '{"ja":"ラーメン","en":"Ramen","zh":"拉面","ko":"라멘"}'),
-  ('izakaya', 'cuisine', '{"ja":"居酒屋","en":"Izakaya","zh":"居酒屋","ko":"이자카야"}'),
-  ('private-room', 'feature', '{"ja":"個室","en":"Private Room","zh":"包间","ko":"개별룸"}'),
-  ('late-night', 'scene', '{"ja":"深夜営業","en":"Open Late","zh":"深夜营业","ko":"심야영업"}'),
-  ('card-ok', 'payment', '{"ja":"カード可","en":"Cards Accepted","zh":"可刷卡","ko":"카드 가능"}'),
-  ('english-menu', 'language', '{"ja":"英語メニュー","en":"English Menu","zh":"英文菜单","ko":"영어 메뉴"}'),
-  ('solo-friendly', 'scene', '{"ja":"一人でも入りやすい","en":"Solo-Friendly","zh":"适合独自用餐","ko":"혼밥 가능"}')
+  ('seafood', 'cuisine', '{"ja":"海鮮","en":"Seafood","zh-CN":"海鲜","zh-TW":"海鮮","ko":"해산물"}'),
+  ('sushi', 'cuisine', '{"ja":"寿司","en":"Sushi","zh-CN":"寿司","zh-TW":"壽司","ko":"초밥"}'),
+  ('genghis-khan', 'cuisine', '{"ja":"ジンギスカン","en":"Genghis Khan (Lamb BBQ)","zh-CN":"成吉思汗烤肉","zh-TW":"成吉思汗烤肉","ko":"징기스칸"}'),
+  ('ramen', 'cuisine', '{"ja":"ラーメン","en":"Ramen","zh-CN":"拉面","zh-TW":"拉麵","ko":"라멘"}'),
+  ('izakaya', 'cuisine', '{"ja":"居酒屋","en":"Izakaya","zh-CN":"居酒屋","zh-TW":"居酒屋","ko":"이자카야"}'),
+  ('private-room', 'feature', '{"ja":"個室","en":"Private Room","zh-CN":"包间","zh-TW":"包廂","ko":"개별룸"}'),
+  ('late-night', 'scene', '{"ja":"深夜営業","en":"Open Late","zh-CN":"深夜营业","zh-TW":"深夜營業","ko":"심야영업"}'),
+  ('card-ok', 'payment', '{"ja":"カード可","en":"Cards Accepted","zh-CN":"可刷卡","zh-TW":"可刷卡","ko":"카드 가능"}'),
+  ('english-menu', 'language', '{"ja":"英語メニュー","en":"English Menu","zh-CN":"英文菜单","zh-TW":"英文菜單","ko":"영어 메뉴"}'),
+  ('solo-friendly', 'scene', '{"ja":"一人でも入りやすい","en":"Solo-Friendly","zh-CN":"适合独自用餐","zh-TW":"適合獨自用餐","ko":"혼밥 가능"}')
 on conflict (id) do nothing;
 
 insert into hotels (id, name, area_id, latitude, longitude) values
@@ -175,7 +195,8 @@ on conflict (id) do nothing;
 insert into restaurant_translations (restaurant_id, locale, name, description, recommended_dish) values
   ('r001', 'ja', '海鮮炉端 なると', '北海道産の魚介と地酒を楽しめる炉端居酒屋。目の前で焼く海鮮が名物。', '帆立の浜焼き'),
   ('r001', 'en', 'Robata Seafood Naruto', 'A charcoal-grill izakaya serving Hokkaido seafood and local sake, grilled right in front of you.', 'Grilled scallops'),
-  ('r001', 'zh', '海鲜炉端 Naruto', '可品尝北海道海鲜与当地清酒的炉端烧居酒屋，现场炭火烧烤。', '烤扇贝'),
+  ('r001', 'zh-CN', '海鲜炉端 Naruto', '可品尝北海道海鲜与当地清酒的炉端烧居酒屋，现场炭火烧烤。', '烤扇贝'),
+  ('r001', 'zh-TW', '海鮮爐端 Naruto', '可品嚐北海道海鮮與當地清酒的爐端燒居酒屋，現場炭火燒烤。', '烤扇貝'),
   ('r001', 'ko', '카이센 로바타 나루토', '홋카이도 해산물과 지역 사케를 즐길 수 있는 화로구이 이자카야.', '가리비 구이'),
 
   ('r002', 'ja', '鮨処 雪月', '厳選した旬のネタを、落ち着いた個室で味わえる本格寿司店。', 'おまかせ握り'),
@@ -183,7 +204,8 @@ insert into restaurant_translations (restaurant_id, locale, name, description, r
 
   ('r003', 'ja', 'ジンギスカン 羊角', '北海道名物ジンギスカンを煙にまみれず楽しめる無煙ロースター完備の店。', '特上ラム肩ロース'),
   ('r003', 'en', 'Genghis Khan Yokaku', 'Enjoy Hokkaido''s famous grilled lamb without the smoke, thanks to smokeless grills.', 'Premium lamb shoulder'),
-  ('r003', 'zh', '成吉思汗 羊角', '配备无烟烤炉，可轻松享用北海道名物烤羊肉。', '特选羊肩肉'),
+  ('r003', 'zh-CN', '成吉思汗 羊角', '配备无烟烤炉，可轻松享用北海道名物烤羊肉。', '特选羊肩肉'),
+  ('r003', 'zh-TW', '成吉思汗 羊角', '配備無煙烤爐，可輕鬆享用北海道名物烤羊肉。', '特選羊肩肉'),
 
   ('r004', 'ja', '駅前味噌ラーメン 熊吉', '濃厚な味噌スープが人気の、駅から徒歩3分の老舗ラーメン店。', '熊吉味噌ラーメン'),
   ('r004', 'en', 'Ekimae Miso Ramen Kumakichi', 'A long-loved ramen shop 3 minutes from the station, known for its rich miso broth.', 'Kumakichi miso ramen'),

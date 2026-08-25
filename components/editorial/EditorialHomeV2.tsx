@@ -13,15 +13,54 @@ type T = (key: string, vars?: Record<string, string | number>) => string;
 const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   {
     tagId: "genghis-khan",
-    label: { ja: "ジンギスカン", en: "Genghis Khan", zh: "成吉思汗烤肉", ko: "징기스칸" },
+    label: {
+      ja: "ジンギスカン",
+      en: "Genghis Khan",
+      "zh-CN": "成吉思汗烤肉",
+      "zh-TW": "成吉思汗烤肉",
+      ko: "징기스칸",
+    },
   },
-  { tagId: "seafood", label: { ja: "海鮮", en: "Seafood", zh: "海鲜", ko: "해산물" } },
-  { tagId: "yakiniku", label: { ja: "焼肉", en: "Yakiniku", zh: "烤肉", ko: "야키니쿠" } },
-  { tagId: "izakaya", label: { ja: "居酒屋", en: "Izakaya", zh: "居酒屋", ko: "이자카야" } },
-  { tagId: "bar", label: { ja: "BAR", en: "Bar", zh: "酒吧", ko: "바" } },
-  { tagId: "washoku", label: { ja: "和食", en: "Japanese Cuisine", zh: "日本料理", ko: "일식" } },
-  { tagId: "ramen", label: { ja: "ラーメン", en: "Ramen", zh: "拉面", ko: "라멘" } },
-  { tagId: "soup-curry", label: { ja: "スープカレー", en: "Soup Curry", zh: "汤咖喱", ko: "수프카레" } },
+  {
+    tagId: "seafood",
+    label: { ja: "海鮮", en: "Seafood", "zh-CN": "海鲜", "zh-TW": "海鮮", ko: "해산물" },
+  },
+  {
+    tagId: "yakiniku",
+    label: { ja: "焼肉", en: "Yakiniku", "zh-CN": "烤肉", "zh-TW": "烤肉", ko: "야키니쿠" },
+  },
+  {
+    tagId: "izakaya",
+    label: { ja: "居酒屋", en: "Izakaya", "zh-CN": "居酒屋", "zh-TW": "居酒屋", ko: "이자카야" },
+  },
+  {
+    tagId: "bar",
+    label: { ja: "BAR", en: "Bar", "zh-CN": "酒吧", "zh-TW": "酒吧", ko: "바" },
+  },
+  {
+    tagId: "washoku",
+    label: {
+      ja: "和食",
+      en: "Japanese Cuisine",
+      "zh-CN": "日本料理",
+      "zh-TW": "日本料理",
+      ko: "일식",
+    },
+  },
+  {
+    tagId: "ramen",
+    label: { ja: "ラーメン", en: "Ramen", "zh-CN": "拉面", "zh-TW": "拉麵", ko: "라멘" },
+  },
+  {
+    tagId: "soup-curry",
+    label: {
+      ja: "スープカレー",
+      en: "Soup Curry",
+      "zh-CN": "汤咖喱",
+      "zh-TW": "湯咖哩",
+      ko: "수프카레",
+    },
+  },
 ];
 
 function metaText(r: RestaurantView, t: T) {
