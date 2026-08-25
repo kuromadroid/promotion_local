@@ -37,6 +37,68 @@ async function resolveHeroPhotos(hotelId: string, formData: FormData): Promise<s
   return [...kept, ...uploaded];
 }
 
+/** Interleaves kept existing photos and newly uploaded ones per the client-chosen order
+ * (tokens like "E0,N0,E1"), same convention as RestaurantPhotoManager. */
+function composePhotoOrder(keptExisting: string[], newUrls: string[], orderRaw: string): string[] {
+  const tokens = orderRaw
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+  if (tokens.length === 0) return [...keptExisting, ...newUrls];
+
+  return tokens
+    .map((token) => {
+      const index = Number(token.slice(1));
+      if (token.startsWith("E")) return keptExisting[index];
+      if (token.startsWith("N")) return newUrls[index];
+      return undefined;
+    })
+    .filter((url): url is string => Boolean(url));
+}
+
+/** Uploads hero-collage images that will be shared across multiple hotels (not scoped
+ * to a single hotel's storage folder). */
+async function uploadSharedHeroPhotoFiles(formData: FormData): Promise<string[]> {
+  const files = formData
+    .getAll("photo_files")
+    .filter((f): f is File => f instanceof File && f.size > 0);
+
+  const urls: string[] = [];
+  for (const file of files) {
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+    const path = `hero/_shared/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from(HERO_PHOTO_BUCKET)
+      .upload(path, file, { contentType: file.type || undefined });
+    if (error) throw error;
+    const { data } = supabaseAdmin.storage.from(HERO_PHOTO_BUCKET).getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
+
+/** Applies the same ordered set of hero-collage photos to every selected hotel at once. */
+export async function bulkSetHeroPhotosAction(formData: FormData) {
+  const hotelIds = formData.getAll("hotel_ids").map(String);
+  if (hotelIds.length === 0) throw new Error("反映先のホテルを1つ以上選択してください。");
+
+  const existing = String(formData.get("existing_photos") ?? "")
+    .split("|")
+    .filter(Boolean);
+  const uploaded = await uploadSharedHeroPhotoFiles(formData);
+  const heroPhotos = composePhotoOrder(existing, uploaded, String(formData.get("photo_order") ?? ""));
+
+  const { error } = await supabaseAdmin
+    .from("hotels")
+    .update({ hero_photos: heroPhotos })
+    .in("id", hotelIds);
+  if (error) throw error;
+
+  revalidatePath("/admin/hero-photos");
+  revalidatePath("/admin/hotels");
+  redirect("/admin/hero-photos?done=1");
+}
+
 function slugify(name: string): string {
   return name
     .toLowerCase()

@@ -20,6 +20,9 @@ export default async function AdminDashboardLayout({
             <Link href="/admin/hotels" className="text-sm text-white/80 hover:text-white">
               ホテル管理
             </Link>
+            <Link href="/admin/hero-photos" className="text-sm text-white/80 hover:text-white">
+              コラージュ写真
+            </Link>
             <Link href="/admin/analytics" className="text-sm text-white/80 hover:text-white">
               アクセス状況
             </Link>
