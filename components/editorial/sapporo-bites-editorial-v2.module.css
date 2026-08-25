@@ -92,9 +92,10 @@
 .heroHotelName {
   margin:0 0 10px;
   font-size:clamp(28px,6vw,44px);
-  line-height:1.05;
+  font-family:"Inter Tight","Zen Kaku Gothic New",sans-serif;
+  line-height:0.92;
   letter-spacing:-.04em;
-  font-weight:950;
+  font-weight:900;
 }
 
 .kicker {
