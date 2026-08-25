@@ -71,17 +71,19 @@
 .heroShade {
   position:absolute;
   inset:0;
+  z-index:10;
   background:linear-gradient(
     180deg,
-    rgba(0,0,0,.02) 18%,
-    rgba(0,0,0,.15) 45%,
-    rgba(0,0,0,.82) 92%
+    rgba(0,0,0,.02) 10%,
+    rgba(0,0,0,.22) 40%,
+    rgba(0,0,0,.62) 65%,
+    rgba(0,0,0,.92) 88%
   );
 }
 
 .heroCopy {
   position:absolute;
-  z-index:4;
+  z-index:11;
   left:22px;
   right:22px;
   bottom:20px;
