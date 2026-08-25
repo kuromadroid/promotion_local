@@ -140,19 +140,19 @@ body {
 }
 
 .sbHeroCollage[data-count="5"] .sbHero-large {
-  left: 42%; top: 0%; width: 58%; height: 58%; z-index: 1;
+  left: 26%; top: 0%; width: 74%; height: 68%; z-index: 1;
 }
 .sbHeroCollage[data-count="5"] .sbHero-medium1 {
-  left: 0%; top: 0%; width: 46%; height: 40%; z-index: 2;
+  left: 0%; top: 0%; width: 30%; height: 42%; z-index: 2;
 }
 .sbHeroCollage[data-count="5"] .sbHero-medium2 {
-  left: 0%; top: 36%; width: 44%; height: 42%; z-index: 3;
+  left: 0%; top: 40%; width: 30%; height: 32%; z-index: 3;
 }
 .sbHeroCollage[data-count="5"] .sbHero-small1 {
-  left: 40%; top: 56%; width: 60%; height: 32%; z-index: 4;
+  left: 26%; top: 62%; width: 74%; height: 38%; z-index: 4;
 }
 .sbHeroCollage[data-count="5"] .sbHero-small2 {
-  left: 0%; top: 76%; width: 70%; height: 24%; z-index: 5;
+  left: 0%; top: 72%; width: 30%; height: 28%; z-index: 5;
   transform: rotate(-1deg);
 }
 
