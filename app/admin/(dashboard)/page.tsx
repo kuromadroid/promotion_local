@@ -8,6 +8,7 @@ interface RestaurantRow {
   price_min: number;
   price_max: number;
   is_sponsored: boolean;
+  priority: number;
   areas: { name: Record<string, string> } | null;
   restaurant_translations: { locale: string; name: string }[];
   hotel_restaurants: { hotel_id: string }[];
@@ -18,12 +19,12 @@ export default async function AdminRestaurantListPage() {
     supabaseAdmin
       .from("restaurants")
       .select(
-        `id, price_min, price_max, is_sponsored,
+        `id, price_min, price_max, is_sponsored, priority,
          areas ( name ),
          restaurant_translations ( locale, name ),
          hotel_restaurants ( hotel_id )`
       )
-      .order("id"),
+      .order("priority", { ascending: false }),
     supabaseAdmin.from("hotels").select("id, name"),
   ]);
 
@@ -45,6 +46,7 @@ export default async function AdminRestaurantListPage() {
       priceMin: r.price_min,
       priceMax: r.price_max,
       isSponsored: r.is_sponsored,
+      priority: r.priority,
       hotelNames,
     };
   });
@@ -70,6 +72,9 @@ export default async function AdminRestaurantListPage() {
             <li key={r.id} className="p-4 flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
+                  <span className="shrink-0 rounded-full bg-(--color-navy)/10 px-2 py-0.5 text-xs font-bold text-(--color-navy)">
+                    {r.priority}
+                  </span>
                   <span className="font-medium text-(--color-ink) truncate">{r.name}</span>
                   {r.isSponsored && (
                     <span className="text-xs bg-(--color-gold)/20 text-(--color-gold) px-2 py-0.5 rounded-full shrink-0">

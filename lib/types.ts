@@ -48,6 +48,7 @@ export interface Restaurant {
   isSponsored?: boolean;
   photos: string[];
   tagIds: string[];
+  priority: number;
 }
 
 export interface RestaurantTranslation {
@@ -99,6 +100,7 @@ export interface RestaurantView {
   isSponsored?: boolean;
   distanceMeters: number;
   walkingMinutes: number;
+  /** 0-100, higher shows first. Set on the restaurant itself, so the same order applies everywhere it's listed. */
   displayPriority: number;
 }
 

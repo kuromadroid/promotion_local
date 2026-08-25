@@ -44,10 +44,32 @@ create table if not exists restaurants (
   opening_hours text,
   closed_days text,
   is_sponsored boolean not null default false,
-  photos text[] not null default '{}'
+  photos text[] not null default '{}',
+  priority int not null default 50
 );
 
 alter table restaurants add column if not exists reservation_url_intl text;
+
+-- Display-order priority (0-100, higher shows first), applied everywhere the
+-- restaurant is listed (pre-genre view, per-genre filter, and the full list).
+alter table restaurants add column if not exists priority int not null default 50;
+
+do $$
+declare
+  con record;
+begin
+  for con in
+    select conname from pg_constraint
+    where conrelid = 'restaurants'::regclass
+      and contype = 'c'
+      and pg_get_constraintdef(oid) ilike '%priority%'
+  loop
+    execute format('alter table restaurants drop constraint %I', con.conname);
+  end loop;
+end $$;
+
+alter table restaurants
+  add constraint restaurants_priority_range check (priority >= 0 and priority <= 100);
 
 create table if not exists restaurant_translations (
   restaurant_id text not null references restaurants (id) on delete cascade,

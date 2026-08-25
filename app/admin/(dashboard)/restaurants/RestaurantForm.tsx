@@ -16,6 +16,7 @@ export interface RestaurantFormInitial {
   openingHours: string;
   closedDays: string;
   isSponsored: boolean;
+  priority: number;
   photos: string[];
   nameJa: string;
   descriptionJa: string;
@@ -76,6 +77,24 @@ export function RestaurantForm({
               Sponsored(優先掲載)
             </span>
           </label>
+        </div>
+
+        <div>
+          <label className={labelClass}>
+            表示優先度(0〜100、数字が大きいほど先に表示)
+            <input
+              type="number"
+              name="priority"
+              required
+              min={0}
+              max={100}
+              defaultValue={initial?.priority ?? 50}
+              className={inputClass}
+            />
+          </label>
+          <p className="mt-1 text-xs text-(--color-ink-soft)">
+            ジャンル絞り込み前・ジャンルごと・一覧ページなど、この店舗が表示される全ての並び順に使われます。
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

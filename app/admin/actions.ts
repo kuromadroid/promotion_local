@@ -36,6 +36,7 @@ interface ParsedRestaurantForm {
   openingHours: string | null;
   closedDays: string | null;
   isSponsored: boolean;
+  priority: number;
   translations: { locale: Locale; name: string; description: string; recommendedDish: string | null }[];
   tagIds: string[];
   hotelIds: string[];
@@ -84,6 +85,7 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     openingHours: emptyToNull(formData.get("opening_hours")),
     closedDays: emptyToNull(formData.get("closed_days")),
     isSponsored: formData.get("is_sponsored") === "on",
+    priority: Math.min(100, Math.max(0, Number(formData.get("priority") ?? 50))),
     translations,
     tagIds: formData.getAll("tag_ids").map(String),
     hotelIds: formData.getAll("hotel_ids").map(String),
@@ -193,6 +195,7 @@ export async function createRestaurantAction(formData: FormData) {
     opening_hours: parsed.openingHours,
     closed_days: parsed.closedDays,
     is_sponsored: parsed.isSponsored,
+    priority: parsed.priority,
     photos,
   });
   if (insertError) throw insertError;
@@ -250,6 +253,7 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
       opening_hours: parsed.openingHours,
       closed_days: parsed.closedDays,
       is_sponsored: parsed.isSponsored,
+      priority: parsed.priority,
       photos,
     })
     .eq("id", id);

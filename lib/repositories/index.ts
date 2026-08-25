@@ -123,6 +123,7 @@ interface RestaurantJoinRow {
     closed_days: string | null;
     is_sponsored: boolean;
     photos: string[];
+    priority: number;
     areas: { id: string; name: Record<Locale, string> } | null;
     restaurant_translations: {
       locale: Locale;
@@ -152,7 +153,7 @@ export async function getRestaurantsForHotel(
     .select(
       `distance_m, walking_minutes, display_priority, is_visible,
        restaurants (
-         id, area_id, price_min, price_max, phone, google_maps_url, reservation_url, reservation_url_intl, instagram_url, opening_hours, closed_days, is_sponsored, photos,
+         id, area_id, price_min, price_max, phone, google_maps_url, reservation_url, reservation_url_intl, instagram_url, opening_hours, closed_days, is_sponsored, photos, priority,
          areas ( id, name ),
          restaurant_translations ( locale, name, description, recommended_dish ),
          restaurant_tags ( tags ( id, type, name ) )
@@ -205,7 +206,7 @@ export async function getRestaurantsForHotel(
         isSponsored: r.is_sponsored,
         distanceMeters: link.distance_m,
         walkingMinutes: link.walking_minutes,
-        displayPriority: link.display_priority,
+        displayPriority: r.priority,
       };
       return view;
     })
@@ -241,7 +242,7 @@ export async function getRestaurantsForHotel(
         return b.priceMax - a.priceMax;
       case "priority":
       default:
-        return a.displayPriority - b.displayPriority;
+        return b.displayPriority - a.displayPriority;
     }
   });
 

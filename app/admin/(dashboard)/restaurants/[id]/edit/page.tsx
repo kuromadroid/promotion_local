@@ -48,6 +48,7 @@ export default async function EditRestaurantPage({
     openingHours: restaurant.opening_hours ?? "",
     closedDays: restaurant.closed_days ?? "",
     isSponsored: restaurant.is_sponsored,
+    priority: restaurant.priority ?? 50,
     photos: restaurant.photos ?? [],
     nameJa: ja?.name ?? "",
     descriptionJa: ja?.description ?? "",
