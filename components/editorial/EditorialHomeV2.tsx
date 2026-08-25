@@ -100,13 +100,18 @@ export function EditorialHomeV2({
   const featured = restaurants[0];
   const sidePicks = restaurants.slice(1, 3);
 
-  const heroImages: HeroCollageImage[] =
-    heroPhotos.length > 0
-      ? heroPhotos.map((src, i) => ({ id: `hero-${i}`, src, alt: hotelName }))
-      : restaurants
-          .filter((r) => Boolean(r.photos[0]))
-          .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }))
-          .slice(0, 7);
+  const HERO_IMAGE_LIMIT = 5;
+  const heroImages: HeroCollageImage[] = (() => {
+    const curated = heroPhotos.map((src, i) => ({ id: `hero-${i}`, src, alt: hotelName }));
+    if (curated.length >= HERO_IMAGE_LIMIT) return curated.slice(0, HERO_IMAGE_LIMIT);
+
+    const curatedSrcs = new Set(curated.map((img) => img.src));
+    const autoFilled = restaurants
+      .filter((r) => Boolean(r.photos[0]) && !curatedSrcs.has(r.photos[0]))
+      .map((r) => ({ id: r.id, src: r.photos[0], alt: r.name }));
+
+    return [...curated, ...autoFilled].slice(0, HERO_IMAGE_LIMIT);
+  })();
 
   const handleReserve = (r: RestaurantView) => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });

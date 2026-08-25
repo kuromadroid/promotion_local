@@ -10,36 +10,26 @@ type HeroCollageProps = {
   images: HeroCollageImage[];
 };
 
+const ROLE_ORDER = ["large", "medium1", "medium2", "small1", "small2"] as const;
+
 /**
- * Sapporo Bites Hero collage
+ * Sapporo Bites Hero collage — asymmetric editorial grid (1 large + 2 medium + 2 small).
  *
- * - 画像3〜10枚を想定
- * - 配列の追加・削除・並び替えだけで表示変更
+ * - Accepts 0–5 images; role is assigned by array order, so callers control
+ *   priority simply by ordering the array (first image = "large").
+ * - Pure CSS Grid, no rotation, no per-photo borders — see .sbHeroCollage
+ *   and .sbHero-* in globals.css. Layout adapts to the image count via
+ *   [data-count] so it degrades gracefully below 5 images.
  * - DB / Storage / adminには依存しない
- * - 既存restaurant photos等のURL配列をpropsで渡すだけ
  */
 export default function HeroCollage({ images }: HeroCollageProps) {
-  const safeImages = images.filter((image) => Boolean(image?.src)).slice(0, 10);
-
-  const slotsByCount: Record<number, number[]> = {
-    1: [1],
-    2: [1, 3],
-    3: [1, 3, 5],
-    4: [1, 2, 4, 6],
-    5: [1, 2, 3, 4, 6],
-    6: [1, 2, 3, 4, 5, 6],
-    7: [1, 2, 3, 4, 5, 6, 8],
-    8: [1, 2, 3, 4, 5, 6, 7, 9],
-    9: [1, 2, 3, 4, 5, 6, 7, 8, 10],
-    10: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-  };
-
-  const slots = slotsByCount[safeImages.length] ?? slotsByCount[10];
+  const safeImages = images.filter((image) => Boolean(image?.src)).slice(0, 5);
+  if (safeImages.length === 0) return null;
 
   return (
-    <div className="sbHeroCollage" aria-hidden="true">
+    <div className="sbHeroCollage" data-count={safeImages.length} aria-hidden="true">
       {safeImages.map((image, index) => (
-        <div key={image.id} className={`sbHeroFrame sbHeroSlot${slots[index]}`}>
+        <div key={image.id} className={`sbHeroFrame sbHero-${ROLE_ORDER[index]}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={image.src} alt={image.alt ?? ""} />
         </div>
