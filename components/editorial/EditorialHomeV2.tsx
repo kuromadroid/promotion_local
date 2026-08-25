@@ -69,6 +69,17 @@ function metaText(r: RestaurantView, t: T) {
     .join(" · ");
 }
 
+function heroHotelNameLines(hotelName: string) {
+  const words = hotelName.trim().split(/\s+/);
+  const isMystaysSapporo =
+    words.length >= 4 &&
+    words[0].toUpperCase() === "HOTEL" &&
+    words[1].toUpperCase() === "MYSTAYS";
+
+  if (!isMystaysSapporo) return [hotelName];
+  return [`${words[0]} ${words[1]}`, words[2], words.slice(3).join(" ")];
+}
+
 export function EditorialHomeV2({
   hotelId,
   hotelName,
@@ -99,6 +110,7 @@ export function EditorialHomeV2({
 
   const featured = restaurants[0];
   const sidePicks = restaurants.slice(1, 3);
+  const hotelNameLines = heroHotelNameLines(hotelName);
 
   const HERO_IMAGE_LIMIT = 5;
   const heroImages: HeroCollageImage[] = (() => {
@@ -189,7 +201,13 @@ export function EditorialHomeV2({
 
           <div className={styles.heroCopy}>
             <div className={styles.heroCategory}>{t("heroCollageLabel")}</div>
-            <div className={styles.heroHotelName}>{hotelName}</div>
+            <h1 className={styles.heroHotelName} aria-label={hotelName}>
+              {hotelNameLines.map((line, index) => (
+                <span className={styles.heroHotelNameLine} key={`${index}-${line}`}>
+                  {line}
+                </span>
+              ))}
+            </h1>
           </div>
         </section>
 
