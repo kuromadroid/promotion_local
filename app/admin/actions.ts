@@ -259,10 +259,14 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
     .eq("id", id);
   if (updateError) throw updateError;
 
+  // Only ja/en are editable here — scope the delete to those locales so
+  // zh-CN/zh-TW/ko translations (managed outside this form) survive a save.
+  const managedLocales = parsed.translations.map((t) => t.locale);
   const { error: deleteTranslationsError } = await supabaseAdmin
     .from("restaurant_translations")
     .delete()
-    .eq("restaurant_id", id);
+    .eq("restaurant_id", id)
+    .in("locale", managedLocales);
   if (deleteTranslationsError) throw deleteTranslationsError;
 
   const { error: translationError } = await supabaseAdmin

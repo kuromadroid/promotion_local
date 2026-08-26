@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
@@ -73,6 +74,7 @@ export function RestaurantDetailV3({
           ←
         </Link>
         <div className={styles.topTitle}>SAPPORO BITES</div>
+        <LanguageSwitcher wrapperClassName="" selectClassName={styles.topLang} />
         <button type="button" className={styles.iconBtn} aria-label={t("share")} onClick={handleShare}>
           ↗
         </button>

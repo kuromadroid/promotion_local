@@ -11,15 +11,21 @@ const OPTIONS: { code: Locale; label: string }[] = [
   { code: "ko", label: "한국어" },
 ];
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({
+  wrapperClassName = "inline-flex items-center gap-2 text-sm text-white/90",
+  selectClassName = "rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-sm font-medium text-white outline-none [color-scheme:dark]",
+}: {
+  wrapperClassName?: string;
+  selectClassName?: string;
+}) {
   const { locale, setLocale, t } = useLocale();
   return (
-    <label className="inline-flex items-center gap-2 text-sm text-white/90">
+    <label className={wrapperClassName}>
       <span className="sr-only">{t("language")}</span>
       <select
         value={locale}
         onChange={(e) => setLocale(e.target.value as Locale)}
-        className="rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-sm font-medium text-white outline-none [color-scheme:dark]"
+        className={selectClassName}
       >
         {OPTIONS.map((opt) => (
           <option key={opt.code} value={opt.code} className="text-(--color-ink)">

@@ -7,6 +7,7 @@ import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import styles from "./sapporo-bites-editorial-v2.module.css";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
@@ -199,6 +200,11 @@ export function EditorialHomeV2({
 
   return (
     <main className={styles.page}>
+      <header className={styles.topbar}>
+        <span className={styles.brand}>SAPPORO BITES</span>
+        <LanguageSwitcher wrapperClassName="" selectClassName={styles.lang} />
+      </header>
+
       <div className={styles.shell}>
         {/* HERO */}
         <section className={styles.hero} id="tonight">
