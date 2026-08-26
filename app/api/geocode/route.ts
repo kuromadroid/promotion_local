@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isAdminAuthenticated } from "@/lib/adminAuth";
 
 interface NominatimResult {
   lat: string;
@@ -12,6 +13,10 @@ interface NominatimResult {
  * a proper User-Agent, as required by Nominatim's usage policy.
  */
 export async function GET(req: NextRequest) {
+  if (!(await isAdminAuthenticated())) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
   const q = req.nextUrl.searchParams.get("q")?.trim();
   if (!q) {
     return NextResponse.json({ error: "q is required" }, { status: 400 });

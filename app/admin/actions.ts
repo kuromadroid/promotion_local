@@ -3,7 +3,7 @@
 import crypto from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { setAdminSession, clearAdminSession } from "@/lib/adminAuth";
+import { setAdminSession, clearAdminSession, requireAdmin } from "@/lib/adminAuth";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
 import { haversineMeters } from "@/lib/geo";
 import { Locale } from "@/lib/types";
@@ -175,6 +175,7 @@ async function syncHotelLinks(
 }
 
 export async function createRestaurantAction(formData: FormData) {
+  await requireAdmin();
   const parsed = parseRestaurantForm(formData);
   const id = crypto.randomUUID();
   const newPhotos = await uploadPhotoFiles(id, formData);
@@ -227,6 +228,7 @@ export async function createRestaurantAction(formData: FormData) {
 }
 
 export async function updateRestaurantAction(id: string, formData: FormData) {
+  await requireAdmin();
   const parsed = parseRestaurantForm(formData);
 
   const existingPhotos = String(formData.get("existing_photos") ?? "")
@@ -302,6 +304,7 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
 }
 
 export async function deleteRestaurantAction(id: string) {
+  await requireAdmin();
   const { error } = await supabaseAdmin.from("restaurants").delete().eq("id", id);
   if (error) throw error;
   revalidatePath("/admin");

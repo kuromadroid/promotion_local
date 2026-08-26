@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
+import { requireAdmin } from "@/lib/adminAuth";
 
 const HERO_PHOTO_BUCKET = "restaurant-photos";
 
@@ -79,6 +80,7 @@ async function uploadSharedHeroPhotoFiles(formData: FormData): Promise<string[]>
 
 /** Applies the same ordered set of hero-collage photos to every selected hotel at once. */
 export async function bulkSetHeroPhotosAction(formData: FormData) {
+  await requireAdmin();
   const hotelIds = formData.getAll("hotel_ids").map(String);
   if (hotelIds.length === 0) throw new Error("反映先のホテルを1つ以上選択してください。");
 
@@ -129,6 +131,7 @@ function parseHotelForm(formData: FormData) {
 }
 
 export async function createHotelAction(formData: FormData) {
+  await requireAdmin();
   const parsed = parseHotelForm(formData);
   const id = await uniqueHotelId(parsed.name);
   const heroPhotos = await resolveHeroPhotos(id, formData);
@@ -148,6 +151,7 @@ export async function createHotelAction(formData: FormData) {
 }
 
 export async function updateHotelAction(id: string, formData: FormData) {
+  await requireAdmin();
   const parsed = parseHotelForm(formData);
   const heroPhotos = await resolveHeroPhotos(id, formData);
 
@@ -168,6 +172,7 @@ export async function updateHotelAction(id: string, formData: FormData) {
 }
 
 export async function deleteHotelAction(id: string) {
+  await requireAdmin();
   const { error } = await supabaseAdmin.from("hotels").delete().eq("id", id);
   if (error) throw error;
   revalidatePath("/admin/hotels");
