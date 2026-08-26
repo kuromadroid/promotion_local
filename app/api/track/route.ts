@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getIpFromHeaders, recordServerEvent, TrackInput } from "@/lib/serverAnalytics";
+import {
+  getIpFromHeaders,
+  isAnalyticsEventName,
+  normalizeSessionId,
+  recordServerEvent,
+  TrackInput,
+} from "@/lib/serverAnalytics";
 
 export async function POST(req: NextRequest) {
   let body: TrackInput;
@@ -8,15 +14,17 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
   }
-  if (!body.eventName) {
-    return NextResponse.json({ error: "eventName required" }, { status: 400 });
+  if (!isAnalyticsEventName(body.eventName)) {
+    return NextResponse.json({ error: "invalid eventName" }, { status: 400 });
+  }
+  if (!normalizeSessionId(body.sessionId)) {
+    return NextResponse.json({ error: "valid sessionId required" }, { status: 400 });
   }
 
   try {
     const result = await recordServerEvent(body, getIpFromHeaders(req.headers));
     return NextResponse.json(result);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "tracking failed" }, { status: 500 });
   }
 }

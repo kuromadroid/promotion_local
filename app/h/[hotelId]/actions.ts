@@ -6,7 +6,7 @@ import { LOCALE_COOKIE } from "@/lib/i18n/localeCookie";
 import { Locale } from "@/lib/types";
 import { getIpFromHeaders, recordServerEvent } from "@/lib/serverAnalytics";
 
-export async function selectLocaleAction(locale: Locale, hotelId: string) {
+export async function selectLocaleAction(locale: Locale, hotelId: string, formData: FormData) {
   const store = await cookies();
   store.set(LOCALE_COOKIE, locale, {
     path: "/",
@@ -14,17 +14,21 @@ export async function selectLocaleAction(locale: Locale, hotelId: string) {
     sameSite: "lax",
   });
 
-  const ip = getIpFromHeaders(await headers());
-  await recordServerEvent(
-    {
-      eventName: "language_select",
-      hotelId,
-      language: locale,
-      path: `/h/${hotelId}`,
-      meta: { source: "gate" },
-    },
-    ip
-  );
+  try {
+    await recordServerEvent(
+      {
+        eventName: "language_select",
+        sessionId: String(formData.get("session_id") ?? ""),
+        hotelId,
+        language: locale,
+        path: `/h/${hotelId}`,
+        meta: { source: "gate" },
+      },
+      getIpFromHeaders(await headers())
+    );
+  } catch {
+    // Analytics must never block language selection.
+  }
 
   redirect(`/h/${hotelId}`);
 }

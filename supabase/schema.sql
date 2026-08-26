@@ -125,16 +125,22 @@ create table if not exists events (
   tag_id text,
   language text,
   path text,
+  session_id text,
   ip_hash text,
   occurred_at timestamptz not null default now(),
   meta jsonb
 );
 
 alter table events add column if not exists path text;
+alter table events add column if not exists session_id text;
 alter table events add column if not exists ip_hash text;
 
-create index if not exists idx_events_dedup
-  on events (ip_hash, event_name, hotel_id, restaurant_id, occurred_at desc);
+drop index if exists idx_events_dedup;
+create index if not exists idx_events_occurred_at on events (occurred_at desc);
+create index if not exists idx_events_session_time on events (session_id, occurred_at desc);
+create index if not exists idx_events_restaurant_event_time on events (restaurant_id, event_name, occurred_at desc);
+create index if not exists idx_events_hotel_event_time on events (hotel_id, event_name, occurred_at desc);
+create index if not exists idx_events_ip_time on events (ip_hash, occurred_at desc);
 
 -- ============================================================
 -- Row Level Security
@@ -168,8 +174,8 @@ create policy "Public read access" on restaurant_translations for select using (
 create policy "Public read access" on restaurant_tags for select using (true);
 create policy "Public read access" on hotel_restaurants for select using (true);
 
--- Events are now written only via the server-side /api/track route (service_role),
--- which applies IP-based de-duplication before inserting. No public insert policy.
+-- Events are written only via the server-side /api/track route (service_role).
+-- Total occurrences are preserved; distinct sessions are calculated at query time.
 drop policy if exists "Public insert access" on events;
 
 -- ============================================================

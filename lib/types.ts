@@ -104,18 +104,21 @@ export interface RestaurantView {
   displayPriority: number;
 }
 
-export type AnalyticsEventName =
-  | "qr_scan"
-  | "page_view"
-  | "restaurant_view"
-  | "restaurant_detail_view"
-  | "area_filter"
-  | "tag_filter"
-  | "language_select"
-  | "map_click"
-  | "reservation_click"
-  | "instagram_click"
-  | "phone_click";
+export const ANALYTICS_EVENT_NAMES = [
+  "qr_scan",
+  "page_view",
+  "restaurant_view",
+  "restaurant_detail_view",
+  "area_filter",
+  "tag_filter",
+  "language_select",
+  "map_click",
+  "reservation_click",
+  "instagram_click",
+  "phone_click",
+] as const;
+
+export type AnalyticsEventName = (typeof ANALYTICS_EVENT_NAMES)[number];
 
 export interface AnalyticsEvent {
   eventName: AnalyticsEventName;

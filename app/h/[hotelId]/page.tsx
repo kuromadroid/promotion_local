@@ -5,10 +5,13 @@ import { EditorialHomeV2 } from "@/components/editorial/EditorialHomeV2";
 
 export default async function HotelTopPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ hotelId: string }>;
+  searchParams: Promise<{ qr?: string }>;
 }) {
   const { hotelId } = await params;
+  const { qr } = await searchParams;
   const locale = await getServerLocale();
   const messages = getMessages(locale);
 
@@ -24,6 +27,7 @@ export default async function HotelTopPage({
   return (
     <>
       <TrackOnMount event={{ eventName: "page_view", hotelId, language: locale }} />
+      {qr && <TrackOnMount event={{ eventName: "qr_scan", hotelId, meta: { qrId: qr } }} />}
       <EditorialHomeV2
         hotelId={hotelId}
         hotelName={hotel?.name ?? ""}

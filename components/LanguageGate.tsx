@@ -1,5 +1,11 @@
+"use client";
+
 import { selectLocaleAction } from "@/app/h/[hotelId]/actions";
 import { Locale } from "@/lib/types";
+import { getAnalyticsSessionId } from "@/lib/analyticsSession";
+import { trackEvent } from "@/lib/analytics";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 const OPTIONS: { code: Locale; label: string; hint: string }[] = [
   { code: "ja", label: "日本語", hint: "Japanese" },
@@ -16,6 +22,17 @@ export function LanguageGate({
   hotelId: string;
   hotelName: string;
 }) {
+  const searchParams = useSearchParams();
+  const tracked = useRef(false);
+
+  useEffect(() => {
+    if (tracked.current) return;
+    tracked.current = true;
+    trackEvent({ eventName: "page_view", hotelId, meta: { screen: "language_gate" } });
+    const qrId = searchParams.get("qr");
+    if (qrId) trackEvent({ eventName: "qr_scan", hotelId, meta: { qrId } });
+  }, [hotelId, searchParams]);
+
   return (
     <div className="flex min-h-screen flex-col bg-(--color-navy) px-6 py-10 text-white">
       <div className="text-center text-xs font-bold tracking-[0.25em] text-white/40">
@@ -40,8 +57,13 @@ export function LanguageGate({
               <form
                 key={opt.code}
                 action={selectLocaleAction.bind(null, opt.code, hotelId)}
+                onSubmit={(event) => {
+                  const input = event.currentTarget.elements.namedItem("session_id");
+                  if (input instanceof HTMLInputElement) input.value = getAnalyticsSessionId();
+                }}
                 className={i === OPTIONS.length - 1 && OPTIONS.length % 2 === 1 ? "col-span-2" : ""}
               >
+                <input type="hidden" name="session_id" />
                 <button
                   type="submit"
                   className="flex w-full flex-col items-center gap-1 rounded-2xl border border-white/20 bg-white/5 px-4 py-6 transition-colors hover:border-(--color-coral) hover:bg-white/10"

@@ -1,13 +1,11 @@
 import "server-only";
 import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
-import { AnalyticsEventName, Locale } from "@/lib/types";
-
-/** Same IP performing the same action on the same target won't be recounted within this window. */
-const DEDUP_WINDOW_MINUTES = 30;
+import { ANALYTICS_EVENT_NAMES, AnalyticsEventName, Locale } from "@/lib/types";
 
 export interface TrackInput {
   eventName: AnalyticsEventName;
+  sessionId?: string;
   hotelId?: string;
   restaurantId?: string;
   areaId?: string;
@@ -17,30 +15,35 @@ export interface TrackInput {
   meta?: Record<string, unknown>;
 }
 
-export function getIpFromHeaders(headers: Headers): string {
-  const forwarded = headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return headers.get("x-real-ip") ?? "unknown";
+const SESSION_ID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function isAnalyticsEventName(value: unknown): value is AnalyticsEventName {
+  return typeof value === "string" && (ANALYTICS_EVENT_NAMES as readonly string[]).includes(value);
 }
 
-export async function recordServerEvent(input: TrackInput, ip: string) {
-  const ipHash = crypto.createHash("sha256").update(ip).digest("hex");
-  const windowStart = new Date(Date.now() - DEDUP_WINDOW_MINUTES * 60 * 1000).toISOString();
+export function normalizeSessionId(value: unknown) {
+  return typeof value === "string" && SESSION_ID_PATTERN.test(value) ? value : null;
+}
 
-  let dupQuery = supabaseAdmin
-    .from("events")
-    .select("id", { count: "exact", head: true })
-    .eq("ip_hash", ipHash)
-    .eq("event_name", input.eventName)
-    .gte("occurred_at", windowStart);
-  dupQuery = input.hotelId ? dupQuery.eq("hotel_id", input.hotelId) : dupQuery.is("hotel_id", null);
-  dupQuery = input.restaurantId
-    ? dupQuery.eq("restaurant_id", input.restaurantId)
-    : dupQuery.is("restaurant_id", null);
+export function getIpFromHeaders(headers: Headers): string | null {
+  const forwarded = headers.get("x-forwarded-for");
+  if (forwarded) return forwarded.split(",")[0].trim();
+  return headers.get("x-real-ip");
+}
 
-  const { count, error: dupError } = await dupQuery;
-  if (dupError) throw dupError;
-  if ((count ?? 0) > 0) return { skipped: true as const };
+function hashIp(ip: string | null) {
+  if (!ip) return null;
+  const salt = process.env.IP_HASH_SALT;
+  if (!salt) {
+    if (process.env.NODE_ENV === "production") throw new Error("IP_HASH_SALT is not set");
+    return crypto.createHmac("sha256", "development-only-salt").update(ip).digest("hex");
+  }
+  return crypto.createHmac("sha256", salt).update(ip).digest("hex");
+}
+
+export async function recordServerEvent(input: TrackInput, ip: string | null) {
+  const sessionId = normalizeSessionId(input.sessionId);
+  if (!sessionId) throw new Error("valid sessionId required");
 
   const { error } = await supabaseAdmin.from("events").insert({
     event_name: input.eventName,
@@ -50,7 +53,8 @@ export async function recordServerEvent(input: TrackInput, ip: string) {
     tag_id: input.tagId ?? null,
     language: input.language ?? null,
     path: input.path ?? null,
-    ip_hash: ipHash,
+    session_id: sessionId,
+    ip_hash: hashIp(ip),
     meta: input.meta ?? null,
   });
   if (error) throw error;

@@ -21,7 +21,7 @@ export default async function AdminHotelsPage() {
 
   const rows = await Promise.all(
     (hotels ?? []).map(async (h) => {
-      const url = `${baseUrl}/h/${h.id}`;
+      const url = `${baseUrl}/h/${h.id}?qr=${encodeURIComponent(h.id)}`;
       const qr = await QRCode.toDataURL(url, { margin: 1, width: 240 });
       return { ...h, url, qr };
     })

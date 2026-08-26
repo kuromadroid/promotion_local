@@ -6,11 +6,11 @@
 
 ```bash
 npm install
-cp .env.example .env.local  # SupabaseのURLとanon keyを設定
+cp .env.example .env.local  # Supabase・Admin・IP匿名化用の値を設定
 npm run dev
 ```
 
-Supabaseプロジェクトを作成し、`supabase/schema.sql` をSQL Editorで実行してからでないとデータは表示されません(下記「Supabase接続」参照)。
+Supabaseプロジェクトを作成し、`supabase/schema.sql` と `supabase/migrations/202608260001_session_analytics.sql` を順にSQL Editorで実行してからでないとデータは表示されません(下記「Supabase接続」参照)。
 
 `http://localhost:3000` を開くと、開発用のホテル選択画面(QRシミュレーター)が表示されます。実際の運用ではこの画面は使わず、QRコードから直接 `/h/hotel_a` のようなURLへ着地させます。
 
@@ -21,6 +21,8 @@ Supabaseプロジェクトを作成し、`supabase/schema.sql` をSQL Editorで�
 | `/h/[hotelId]` | ホテル別トップページ(QR着地点) |
 | `/h/[hotelId]/restaurants` | 店舗一覧(`?area=` `?tags=` `?sort=` `?q=` で絞り込み) |
 | `/h/[hotelId]/restaurants/[restaurantId]` | 店舗詳細 |
+| `/admin/analytics` | Admin限定の営業成果Analytics |
+| `/admin/analytics/restaurants/[restaurantId]` | 店舗別の営業成果・日別・ホテル別・アクセス品質 |
 
 現在のダミーホテルID: `hotel_a`, `hotel_b`
 
@@ -64,14 +66,20 @@ events (計測イベント)
 ## Supabase接続
 
 1. [supabase.com](https://supabase.com) でプロジェクトを作成(Region: Northeast Asia (Tokyo) 推奨)
-2. Supabaseダッシュボードの SQL Editor で `supabase/schema.sql` の内容を実行(テーブル作成+RLSポリシー+シードデータ投入が一括で行われます)
-3. Settings → API から **Project URL** と **anon / public key** を取得
-4. `.env.local`(ローカル)および Vercel の Environment Variables(本番)に設定:
+2. Supabaseダッシュボードの SQL Editor で `supabase/schema.sql` を実行
+3. 続けて `supabase/migrations/202608260001_session_analytics.sql` を実行(session_id・集計用index・Admin専用RPCを追加)
+4. Settings → API から **Project URL**、**anon / public key**、**service_role key** を取得
+5. `.env.local`(ローカル)および Vercel の Environment Variables(本番)に設定:
    ```
    NEXT_PUBLIC_SUPABASE_URL=...
    NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+   SUPABASE_SERVICE_ROLE_KEY=...
+   ADMIN_PASSWORD=...
+   IP_HASH_SALT=...
    ```
-5. RLS(Row Level Security)はテーブルごとに有効化済みで、閲覧系テーブルは誰でもSELECT可能、`events` は誰でもINSERT可能(閲覧不可)というポリシーになっています。管理用の書き込み(店舗追加など)を行う場合は `service_role` キーを使うサーバー専用の処理を別途用意してください(`service_role` キーは絶対にクライアント側コードや `NEXT_PUBLIC_` 環境変数に含めないこと)。
+6. RLS(Row Level Security)はテーブルごとに有効化済みです。`events` の記録とAnalytics集計はサーバー側の `service_role` だけで行います。`service_role` と `IP_HASH_SALT` は絶対にクライアント側コードや `NEXT_PUBLIC_` 環境変数に含めないでください。
+
+`IP_HASH_SALT` は十分に長いランダム値を本番環境ごとに設定してください。生IPは保存せず、サーバー側でsalt付きHMAC-SHA-256に変換した値だけを `events.ip_hash` に保存します。利用セッション集計はこのmigration適用後に記録されたイベントから有効になります。
 
 ## 多言語追加方法
 
@@ -89,9 +97,9 @@ Supabaseの `tags` / `areas` テーブルに1行追加するだけで、フィ�
 - 店舗追加: `restaurants` に1件追加 → `restaurant_translations` に翻訳追加 → `restaurant_tags` にタグを紐付け → 対象ホテルごとに `hotel_restaurants` へ距離・徒歩時間・表示優先度を追加(V1のダミーデータのような自動計算は行っていないため、`distance_m` は手動算出するか、緯度経度から計算するSQL/スクリプトを別途用意してください)
 - ホテル追加: `hotels` に1件追加するだけで `/h/新ホテルID` が有効になります(あわせて `hotel_restaurants` に紐付けたい店舗を登録)
 
-## V1で未実装のもの(要件通り)
+## 現時点で対象外のもの
 
-予約システム、決済、会員登録・ログイン、口コミ投稿、ポイント、クーポン、店舗/ホテル管理画面、高度なAI推薦、GPS現在地取得。
+予約システム、決済、会員登録・ログイン、口コミ投稿、ポイント、クーポン、高度なAI推薦、GPS現在地取得、店舗向け外部公開Dashboard。
 
 ## デザイン方針
 
