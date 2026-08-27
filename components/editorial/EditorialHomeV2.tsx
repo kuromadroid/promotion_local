@@ -279,11 +279,11 @@ export function EditorialHomeV2({
                   <div className={styles.bigStoryTitle}>{featured.name}</div>
                   <div className={styles.meta}>{metaText(featured, t)}</div>
                   <div className={styles.copy}>{featured.description}</div>
-                  <span className={styles.microTag}>
-                    {[featured.tags.find((tag) => tag.type === "cuisine")?.name, t("featuredMicroTagSapporo")]
-                      .filter(Boolean)
-                      .join(" / ")}
-                  </span>
+                  {featured.tags.find((tag) => tag.type === "cuisine")?.name && (
+                    <span className={styles.microTag}>
+                      {featured.tags.find((tag) => tag.type === "cuisine")?.name}
+                    </span>
+                  )}
                 </div>
               </Link>
 
