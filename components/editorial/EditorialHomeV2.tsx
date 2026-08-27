@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
+import { walkLabel } from "@/lib/distanceDisplay";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import styles from "./sapporo-bites-editorial-v2.module.css";
@@ -66,9 +67,7 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
 ];
 
 function metaText(r: RestaurantView, t: T) {
-  return [t("walkFromHotel", { minutes: r.walkingMinutes }), `¥${r.priceMin.toLocaleString()}〜`]
-    .filter(Boolean)
-    .join(" · ");
+  return [walkLabel(r, t), `¥${r.priceMin.toLocaleString()}〜`].filter(Boolean).join(" · ");
 }
 
 function heroHotelNameLines(hotelName: string) {

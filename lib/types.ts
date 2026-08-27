@@ -100,6 +100,11 @@ export interface RestaurantView {
   isSponsored?: boolean;
   distanceMeters: number;
   walkingMinutes: number;
+  /** Nearest of the 3 fixed reference stations (Sapporo/Susukino/Odori), resolved for the current locale.
+   *  Used as the displayed distance instead of the hotel once walkingMinutes gets too large to be useful. */
+  nearestStationName: string;
+  nearestStationDistanceMeters: number;
+  nearestStationWalkingMinutes: number;
   /** 0-100, higher shows first. Set on the restaurant itself, so the same order applies everywhere it's listed. */
   displayPriority: number;
 }

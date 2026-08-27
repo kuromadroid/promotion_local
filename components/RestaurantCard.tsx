@@ -3,6 +3,7 @@ import Image from "next/image";
 import { RestaurantView } from "@/lib/types";
 import { DistanceBadge } from "@/components/DistanceBadge";
 import { TagPill } from "@/components/TagPill";
+import { walkLabel, distanceLabel } from "@/lib/distanceDisplay";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
@@ -36,8 +37,8 @@ export function RestaurantCard({
         )}
         <div className="absolute bottom-3 left-3">
           <DistanceBadge
-            walkLabel={t("walkFromHotel", { minutes: restaurant.walkingMinutes })}
-            distanceLabel={t("distanceFromHotel", { meters: restaurant.distanceMeters })}
+            walkLabel={walkLabel(restaurant, t)}
+            distanceLabel={distanceLabel(restaurant, t)}
             compact
           />
         </div>

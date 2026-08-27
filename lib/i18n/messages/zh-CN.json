@@ -47,6 +47,8 @@
   "sortPriceDesc": "价格从高到低",
   "walkFromHotel": "距酒店步行{minutes}分钟",
   "distanceFromHotel": "距酒店{meters}米",
+  "walkFromStation": "距{station}站步行{minutes}分钟",
+  "distanceFromStation": "距{station}站{meters}米",
   "priceRange": "价格区间",
   "noResults": "没有符合条件的店铺",
   "clearFilters": "重置筛选",
@@ -69,8 +71,10 @@
   "recommendSectionTitle": "推荐一品",
   "infoSectionTitle": "店铺信息",
   "hotelSectionTitle": "距离酒店",
+  "stationSectionTitle": "距离最近车站",
   "walkMinutesShort": "步行 {minutes}分钟",
   "walkSubtitleShort": "距酒店的大致时间",
+  "walkSubtitleStation": "距最近车站的大致时间",
   "mapCardCopy": "不显示具体地址文字，请通过Google Maps确认准确位置和路线。",
   "paymentMethod": "支付方式"
 }

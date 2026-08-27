@@ -8,6 +8,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
+import { walkMinutes, walkSubtitle, isStationDistance } from "@/lib/distanceDisplay";
 import styles from "./restaurant-detail-v3.module.css";
 
 export function RestaurantDetailV3({
@@ -143,9 +144,9 @@ export function RestaurantDetailV3({
             <div className={styles.distanceTop}>
               <div>
                 <div className={styles.distanceMain}>
-                  {t("walkMinutesShort", { minutes: restaurant.walkingMinutes })}
+                  {t("walkMinutesShort", { minutes: walkMinutes(restaurant) })}
                 </div>
-                <div className={styles.distanceSub}>{t("walkSubtitleShort")}</div>
+                <div className={styles.distanceSub}>{walkSubtitle(restaurant, t)}</div>
               </div>
               {restaurant.googleMapsUrl && (
                 <button type="button" className={styles.route} onClick={handleMap}>
@@ -208,10 +209,10 @@ export function RestaurantDetailV3({
 
         {restaurant.googleMapsUrl && (
           <section className={styles.section}>
-            <h2>{t("hotelSectionTitle")}</h2>
+            <h2>{isStationDistance(restaurant) ? t("stationSectionTitle") : t("hotelSectionTitle")}</h2>
             <div className={styles.mapCard}>
               <div className={styles.mapTitle}>
-                {t("walkMinutesShort", { minutes: restaurant.walkingMinutes })}
+                {t("walkMinutesShort", { minutes: walkMinutes(restaurant) })}
               </div>
               <div className={styles.mapCopy}>{t("mapCardCopy")}</div>
               <button type="button" className={styles.mapButton} onClick={handleMap}>

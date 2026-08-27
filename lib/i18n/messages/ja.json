@@ -47,6 +47,8 @@
   "sortPriceDesc": "価格が高い順",
   "walkFromHotel": "ホテルから徒歩{minutes}分",
   "distanceFromHotel": "ホテルから{meters}m",
+  "walkFromStation": "{station}駅から徒歩{minutes}分",
+  "distanceFromStation": "{station}駅から{meters}m",
   "priceRange": "価格帯",
   "noResults": "条件に合うお店が見つかりませんでした",
   "clearFilters": "絞り込みをリセット",
@@ -69,8 +71,10 @@
   "recommendSectionTitle": "おすすめの一品",
   "infoSectionTitle": "店舗情報",
   "hotelSectionTitle": "ホテルから",
+  "stationSectionTitle": "最寄り駅から",
   "walkMinutesShort": "徒歩 {minutes}分",
   "walkSubtitleShort": "宿泊ホテルからの目安",
+  "walkSubtitleStation": "最寄り駅からの目安",
   "mapCardCopy": "住所は表示せず、Google Mapsで正確な場所とルートをご確認いただけます。",
   "paymentMethod": "支払い"
 }

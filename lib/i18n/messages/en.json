@@ -47,6 +47,8 @@
   "sortPriceDesc": "Price: high to low",
   "walkFromHotel": "{minutes} min walk from hotel",
   "distanceFromHotel": "{meters}m from hotel",
+  "walkFromStation": "{minutes} min walk from {station} Station",
+  "distanceFromStation": "{meters}m from {station} Station",
   "priceRange": "Price range",
   "noResults": "No restaurants match your filters",
   "clearFilters": "Clear filters",
@@ -69,8 +71,10 @@
   "recommendSectionTitle": "Our pick",
   "infoSectionTitle": "Restaurant info",
   "hotelSectionTitle": "From your hotel",
+  "stationSectionTitle": "From the nearest station",
   "walkMinutesShort": "{minutes} min walk",
   "walkSubtitleShort": "Estimated from your hotel",
+  "walkSubtitleStation": "Estimated from the nearest station",
   "mapCardCopy": "We don't show a street address — open Google Maps for the exact location and route.",
   "paymentMethod": "Payment"
 }

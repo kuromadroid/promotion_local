@@ -7,6 +7,7 @@ import {
   Tag,
   Hotel,
 } from "@/lib/types";
+import { nearestStation } from "@/lib/stations";
 
 function resolveName(record: Record<Locale, string>, locale: Locale) {
   return record[locale] ?? record.en ?? record[DEFAULT_LOCALE];
@@ -114,6 +115,8 @@ interface RestaurantJoinRow {
     area_id: string;
     price_min: number;
     price_max: number;
+    latitude: number;
+    longitude: number;
     phone: string | null;
     google_maps_url: string | null;
     reservation_url: string | null;
@@ -153,7 +156,7 @@ export async function getRestaurantsForHotel(
     .select(
       `distance_m, walking_minutes, display_priority, is_visible,
        restaurants (
-         id, area_id, price_min, price_max, phone, google_maps_url, reservation_url, reservation_url_intl, instagram_url, opening_hours, closed_days, is_sponsored, photos, priority,
+         id, area_id, price_min, price_max, latitude, longitude, phone, google_maps_url, reservation_url, reservation_url_intl, instagram_url, opening_hours, closed_days, is_sponsored, photos, priority,
          areas ( id, name ),
          restaurant_translations ( locale, name, description, recommended_dish ),
          restaurant_tags ( tags ( id, type, name ) )
@@ -186,6 +189,8 @@ export async function getRestaurantsForHotel(
           name: resolveName(tag.name, locale),
         }));
 
+      const station = nearestStation(r.latitude, r.longitude);
+
       const view: RestaurantView = {
         id: r.id,
         name: t.name,
@@ -206,6 +211,9 @@ export async function getRestaurantsForHotel(
         isSponsored: r.is_sponsored,
         distanceMeters: link.distance_m,
         walkingMinutes: link.walking_minutes,
+        nearestStationName: resolveName(station.name, locale),
+        nearestStationDistanceMeters: station.distanceMeters,
+        nearestStationWalkingMinutes: station.walkingMinutes,
         displayPriority: r.priority,
       };
       return view;

@@ -47,6 +47,8 @@
   "sortPriceDesc": "價格從高到低",
   "walkFromHotel": "距飯店步行{minutes}分鐘",
   "distanceFromHotel": "距飯店{meters}公尺",
+  "walkFromStation": "距{station}站步行{minutes}分鐘",
+  "distanceFromStation": "距{station}站{meters}公尺",
   "priceRange": "價格區間",
   "noResults": "沒有符合條件的店家",
   "clearFilters": "重設篩選",
@@ -69,8 +71,10 @@
   "recommendSectionTitle": "推薦一品",
   "infoSectionTitle": "店家資訊",
   "hotelSectionTitle": "距離飯店",
+  "stationSectionTitle": "距離最近車站",
   "walkMinutesShort": "步行 {minutes}分鐘",
   "walkSubtitleShort": "距飯店的大概時間",
+  "walkSubtitleStation": "距最近車站的大概時間",
   "mapCardCopy": "不顯示詳細地址文字，請透過Google Maps確認正確位置與路線。",
   "paymentMethod": "付款方式"
 }
