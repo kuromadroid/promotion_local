@@ -265,7 +265,6 @@ export function EditorialHomeV2({
                 onClick={() => handleView(featured)}
                 className={`${styles.storyCard} ${styles.bigStory}`}
               >
-                <div className={styles.flag}>{t("featuredBadge")}</div>
                 <div className={styles.storyPhoto}>
                   <Image
                     src={featured.photos[0]}
