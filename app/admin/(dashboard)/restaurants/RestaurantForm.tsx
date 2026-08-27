@@ -24,6 +24,15 @@ export interface RestaurantFormInitial {
   nameEn: string;
   descriptionEn: string;
   recommendedDishEn: string;
+  nameZhCN: string;
+  descriptionZhCN: string;
+  recommendedDishZhCN: string;
+  nameZhTW: string;
+  descriptionZhTW: string;
+  recommendedDishZhTW: string;
+  nameKo: string;
+  descriptionKo: string;
+  recommendedDishKo: string;
   tagIds: string[];
   hotelIds: string[];
 }
@@ -272,6 +281,93 @@ export function RestaurantForm({
             type="text"
             name="recommended_dish_en"
             defaultValue={initial?.recommendedDishEn}
+            className={inputClass}
+          />
+        </label>
+      </section>
+
+      <section className="bg-white border border-(--color-line) rounded-2xl p-6 space-y-4">
+        <h2 className="font-bold text-(--color-navy)">店舗情報(简体中文・任意)</h2>
+        <p className="text-xs text-(--color-ink-soft)">
+          未入力の場合、簡体字中国語での表示は日本語にフォールバックします(英語には自動フォールバックしません)。
+        </p>
+        <label className={labelClass}>
+          店名
+          <input type="text" name="name_zh_cn" defaultValue={initial?.nameZhCN} className={inputClass} />
+        </label>
+        <label className={labelClass}>
+          紹介文
+          <textarea
+            name="description_zh_cn"
+            rows={2}
+            defaultValue={initial?.descriptionZhCN}
+            className={inputClass}
+          />
+        </label>
+        <label className={labelClass}>
+          おすすめメニュー
+          <input
+            type="text"
+            name="recommended_dish_zh_cn"
+            defaultValue={initial?.recommendedDishZhCN}
+            className={inputClass}
+          />
+        </label>
+      </section>
+
+      <section className="bg-white border border-(--color-line) rounded-2xl p-6 space-y-4">
+        <h2 className="font-bold text-(--color-navy)">店舗情報(繁體中文・任意)</h2>
+        <p className="text-xs text-(--color-ink-soft)">
+          未入力の場合、繁体字中国語での表示は日本語にフォールバックします(英語には自動フォールバックしません)。
+        </p>
+        <label className={labelClass}>
+          店名
+          <input type="text" name="name_zh_tw" defaultValue={initial?.nameZhTW} className={inputClass} />
+        </label>
+        <label className={labelClass}>
+          紹介文
+          <textarea
+            name="description_zh_tw"
+            rows={2}
+            defaultValue={initial?.descriptionZhTW}
+            className={inputClass}
+          />
+        </label>
+        <label className={labelClass}>
+          おすすめメニュー
+          <input
+            type="text"
+            name="recommended_dish_zh_tw"
+            defaultValue={initial?.recommendedDishZhTW}
+            className={inputClass}
+          />
+        </label>
+      </section>
+
+      <section className="bg-white border border-(--color-line) rounded-2xl p-6 space-y-4">
+        <h2 className="font-bold text-(--color-navy)">店舗情報(한국어・任意)</h2>
+        <p className="text-xs text-(--color-ink-soft)">
+          未入力の場合、韓国語での表示は日本語にフォールバックします(英語には自動フォールバックしません)。
+        </p>
+        <label className={labelClass}>
+          店名
+          <input type="text" name="name_ko" defaultValue={initial?.nameKo} className={inputClass} />
+        </label>
+        <label className={labelClass}>
+          紹介文
+          <textarea
+            name="description_ko"
+            rows={2}
+            defaultValue={initial?.descriptionKo}
+            className={inputClass}
+          />
+        </label>
+        <label className={labelClass}>
+          おすすめメニュー
+          <input
+            type="text"
+            name="recommended_dish_ko"
+            defaultValue={initial?.recommendedDishKo}
             className={inputClass}
           />
         </label>

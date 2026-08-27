@@ -33,6 +33,9 @@ export default async function EditRestaurantPage({
 
   const ja = (translations ?? []).find((t) => t.locale === "ja");
   const en = (translations ?? []).find((t) => t.locale === "en");
+  const zhCN = (translations ?? []).find((t) => t.locale === "zh-CN");
+  const zhTW = (translations ?? []).find((t) => t.locale === "zh-TW");
+  const ko = (translations ?? []).find((t) => t.locale === "ko");
 
   const initial: RestaurantFormInitial = {
     areaId: restaurant.area_id,
@@ -56,6 +59,15 @@ export default async function EditRestaurantPage({
     nameEn: en?.name ?? "",
     descriptionEn: en?.description ?? "",
     recommendedDishEn: en?.recommended_dish ?? "",
+    nameZhCN: zhCN?.name ?? "",
+    descriptionZhCN: zhCN?.description ?? "",
+    recommendedDishZhCN: zhCN?.recommended_dish ?? "",
+    nameZhTW: zhTW?.name ?? "",
+    descriptionZhTW: zhTW?.description ?? "",
+    recommendedDishZhTW: zhTW?.recommended_dish ?? "",
+    nameKo: ko?.name ?? "",
+    descriptionKo: ko?.description ?? "",
+    recommendedDishKo: ko?.recommended_dish ?? "",
     tagIds: (restaurantTags ?? []).map((t) => t.tag_id),
     hotelIds: (hotelLinks ?? []).map((h) => h.hotel_id),
   };

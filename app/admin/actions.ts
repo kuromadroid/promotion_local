@@ -60,15 +60,23 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     recommendedDish: emptyToNull(formData.get("recommended_dish_ja")),
   });
 
-  const nameEn = String(formData.get("name_en") ?? "").trim();
-  const descriptionEn = String(formData.get("description_en") ?? "").trim();
-  if (nameEn && descriptionEn) {
-    translations.push({
-      locale: "en",
-      name: nameEn,
-      description: descriptionEn,
-      recommendedDish: emptyToNull(formData.get("recommended_dish_en")),
-    });
+  const optionalLocales: { locale: Locale; field: string }[] = [
+    { locale: "en", field: "en" },
+    { locale: "zh-CN", field: "zh_cn" },
+    { locale: "zh-TW", field: "zh_tw" },
+    { locale: "ko", field: "ko" },
+  ];
+  for (const { locale, field } of optionalLocales) {
+    const name = String(formData.get(`name_${field}`) ?? "").trim();
+    const description = String(formData.get(`description_${field}`) ?? "").trim();
+    if (name && description) {
+      translations.push({
+        locale,
+        name,
+        description,
+        recommendedDish: emptyToNull(formData.get(`recommended_dish_${field}`)),
+      });
+    }
   }
 
   return {
