@@ -84,7 +84,13 @@ events (計測イベント)
 
 `events` テーブルは `202609070001_events_retention.sql` が登録する `pg_cron` ジョブ `purge-old-events` により、`occurred_at` が180日を超えた行が毎日 03:17 UTC に削除されます。削除対象は `events` のみです。動作確認は同ファイル末尾のコメント(dry-run SELECT / `cron.job` / `cron.job_run_details`)を参照。
 
-`meta` フィールドはサーバー側(`lib/serverAnalytics.ts` の `sanitizeMeta`)で許可キー(`qrId` / `screen` / `source`)のみに制限し、各値を文字列200字までに切り詰めます。それ以外のキーや型は破棄されます。
+計測イベントの入力は `lib/serverAnalytics.ts` でサーバー側正規化してから `events` にINSERTします(両経路 = `/api/track` と言語選択Server Action で共通):
+
+- `meta`: 許可キー(`qrId` / `screen` / `source`)のみ。各値は文字列200字まで。`qrId` はさらに `[A-Za-z0-9_-]` 64字までに制限(IP・メール等の混入を防ぐ)。
+- `path`: **ルート(pathname)のみ保存**。クエリ文字列・フラグメントは破棄(検索語・QR等がpathに残らない)。
+- `hotel_id` / `restaurant_id` / `area_id` / `tag_id`: slug/UUID形式(`[A-Za-z0-9_-]{1,64}`)以外は `null`。
+- `language`: 出荷ロケール(`LOCALES`)以外は `null`。
+- `/api/track`: 本文が非オブジェクト(`null` / 配列)や 4KB 超の場合は 400 / 413 で拒否。
 
 ## 多言語追加方法
 

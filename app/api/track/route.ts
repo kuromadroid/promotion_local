@@ -7,13 +7,37 @@ import {
   TrackInput,
 } from "@/lib/serverAnalytics";
 
+// A well-formed tracking event is a few hundred bytes. Anything materially
+// larger is either broken or hostile, so reject it before parsing JSON.
+const MAX_BODY_BYTES = 4096;
+
 export async function POST(req: NextRequest) {
-  let body: TrackInput;
+  const declaredLength = Number(req.headers.get("content-length") ?? 0);
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "payload too large" }, { status: 413 });
+  }
+
+  let raw: string;
   try {
-    body = await req.json();
+    raw = await req.text();
+  } catch {
+    return NextResponse.json({ error: "invalid body" }, { status: 400 });
+  }
+  if (raw.length > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "payload too large" }, { status: 413 });
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: "invalid JSON" }, { status: 400 });
   }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return NextResponse.json({ error: "invalid body" }, { status: 400 });
+  }
+
+  const body = parsed as TrackInput;
   if (!isAnalyticsEventName(body.eventName)) {
     return NextResponse.json({ error: "invalid eventName" }, { status: 400 });
   }

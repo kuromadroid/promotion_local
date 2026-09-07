@@ -21,7 +21,9 @@ export function trackEvent(
     body: JSON.stringify({
       ...fullEvent,
       sessionId: getAnalyticsSessionId(),
-      path: window.location.pathname + window.location.search,
+      // Route only — the server drops any query string anyway, and filter /
+      // QR context is already carried in dedicated fields.
+      path: window.location.pathname,
     }),
     keepalive: true,
   }).catch(() => {
