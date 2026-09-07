@@ -86,11 +86,11 @@ events (計測イベント)
 
 計測イベントの入力は `lib/serverAnalytics.ts` でサーバー側正規化してから `events` にINSERTします(両経路 = `/api/track` と言語選択Server Action で共通):
 
-- `meta`: 許可キー(`qrId` / `screen` / `source`)のみ。各値は文字列200字まで。`qrId` はさらに `[A-Za-z0-9_-]` 64字までに制限(IP・メール等の混入を防ぐ)。
-- `path`: **ルート(pathname)のみ保存**。クエリ文字列・フラグメントは破棄(検索語・QR等がpathに残らない)。
+- `meta`: 許可キー(`qrId` / `screen` / `source`)のみ。各値は文字列200字まで。`qrId` は `[A-Za-z0-9_-]{1,64}` に一致しない値は**加工せず破棄**(発行したQR IDの形式)。
+- `path`: **ルート(pathname)のみ保存**。クエリ文字列・フラグメントは破棄。検索語(`?q=`)やフィルタの組み合わせは `path` に残らない(現行のダッシュボード集計は `path` を参照しないため影響なし)。
 - `hotel_id` / `restaurant_id` / `area_id` / `tag_id`: slug/UUID形式(`[A-Za-z0-9_-]{1,64}`)以外は `null`。
 - `language`: 出荷ロケール(`LOCALES`)以外は `null`。
-- `/api/track`: 本文が非オブジェクト(`null` / 配列)や 4KB 超の場合は 400 / 413 で拒否。
+- `/api/track`: 本文が非オブジェクト(`null` / 配列)なら 400。受信は 4KB を超えた時点でストリームを打ち切り 413(`Content-Length` があれば事前に拒否)。
 
 ## 多言語追加方法
 

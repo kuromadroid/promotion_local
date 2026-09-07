@@ -33,7 +33,10 @@ export function normalizeSessionId(value: unknown) {
  */
 const META_ALLOWED_KEYS = ["qrId", "screen", "source"] as const;
 const META_MAX_VALUE_LENGTH = 200;
-const QR_ID_MAX_LENGTH = 64;
+// A QR id is an issue code we print on a physical placement. If a value does
+// not match that shape it is not one of ours — drop it entirely rather than
+// mangle it into something that looks valid (or collides with a real id).
+const QR_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
 
 export function sanitizeMeta(value: unknown): Record<string, string> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -44,11 +47,10 @@ export function sanitizeMeta(value: unknown): Record<string, string> | null {
     const raw = source[key];
     if (raw == null) continue;
     if (typeof raw !== "string" && typeof raw !== "number" && typeof raw !== "boolean") continue;
-    let str = String(raw).slice(0, META_MAX_VALUE_LENGTH);
-    // qrId is a campaign / placement identifier — keep it to an issue-code shape
-    // so an injected IP / email / free text cannot survive in it.
-    if (key === "qrId") str = str.replace(/[^A-Za-z0-9_-]/g, "").slice(0, QR_ID_MAX_LENGTH);
-    if (str.length > 0) out[key] = str;
+    const str = String(raw).slice(0, META_MAX_VALUE_LENGTH);
+    if (str.length === 0) continue;
+    if (key === "qrId" && !QR_ID_PATTERN.test(str)) continue;
+    out[key] = str;
   }
   return Object.keys(out).length > 0 ? out : null;
 }
