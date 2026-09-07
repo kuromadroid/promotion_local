@@ -68,8 +68,9 @@ events (計測イベント)
 1. [supabase.com](https://supabase.com) でプロジェクトを作成(Region: Northeast Asia (Tokyo) 推奨)
 2. Supabaseダッシュボードの SQL Editor で `supabase/schema.sql` を実行
 3. 続けて `supabase/migrations/202608260001_session_analytics.sql` を実行(session_id・集計用index・Admin専用RPCを追加)
-4. Settings → API から **Project URL**、**anon / public key**、**service_role key** を取得
-5. `.env.local`(ローカル)および Vercel の Environment Variables(本番)に設定:
+4. Database → Extensions で **pg_cron** を有効化してから、`supabase/migrations/202609070001_events_retention.sql` を実行(`events` を180日で自動削除する日次ジョブを登録。業務データには影響しません)
+5. Settings → API から **Project URL**、**anon / public key**、**service_role key** を取得
+6. `.env.local`(ローカル)および Vercel の Environment Variables(本番)に設定:
    ```
    NEXT_PUBLIC_SUPABASE_URL=...
    NEXT_PUBLIC_SUPABASE_ANON_KEY=...
@@ -77,9 +78,13 @@ events (計測イベント)
    ADMIN_PASSWORD=...
    IP_HASH_SALT=...
    ```
-6. RLS(Row Level Security)はテーブルごとに有効化済みです。`events` の記録とAnalytics集計はサーバー側の `service_role` だけで行います。`service_role` と `IP_HASH_SALT` は絶対にクライアント側コードや `NEXT_PUBLIC_` 環境変数に含めないでください。
+7. RLS(Row Level Security)はテーブルごとに有効化済みです。`events` の記録とAnalytics集計はサーバー側の `service_role` だけで行います。`service_role` と `IP_HASH_SALT` は絶対にクライアント側コードや `NEXT_PUBLIC_` 環境変数に含めないでください。
 
 `IP_HASH_SALT` は十分に長いランダム値を本番環境ごとに設定してください。生IPは保存せず、サーバー側でsalt付きHMAC-SHA-256に変換した値だけを `events.ip_hash` に保存します。利用セッション集計はこのmigration適用後に記録されたイベントから有効になります。
+
+`events` テーブルは `202609070001_events_retention.sql` が登録する `pg_cron` ジョブ `purge-old-events` により、`occurred_at` が180日を超えた行が毎日 03:17 UTC に削除されます。削除対象は `events` のみです。動作確認は同ファイル末尾のコメント(dry-run SELECT / `cron.job` / `cron.job_run_details`)を参照。
+
+`meta` フィールドはサーバー側(`lib/serverAnalytics.ts` の `sanitizeMeta`)で許可キー(`qrId` / `screen` / `source`)のみに制限し、各値を文字列200字までに切り詰めます。それ以外のキーや型は破棄されます。
 
 ## 多言語追加方法
 

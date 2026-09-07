@@ -25,6 +25,29 @@ export function normalizeSessionId(value: unknown) {
   return typeof value === "string" && SESSION_ID_PATTERN.test(value) ? value : null;
 }
 
+/**
+ * `meta` is the only free-form field a client can put in an event. To keep it
+ * from being used as arbitrary jsonb storage, we accept only the keys the app
+ * actually sends, coerce each value to a short string, and drop everything else.
+ * Returns null when nothing usable remains (so the column stays NULL, as before).
+ */
+const META_ALLOWED_KEYS = ["qrId", "screen", "source"] as const;
+const META_MAX_VALUE_LENGTH = 200;
+
+export function sanitizeMeta(value: unknown): Record<string, string> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const source = value as Record<string, unknown>;
+  const out: Record<string, string> = {};
+  for (const key of META_ALLOWED_KEYS) {
+    const raw = source[key];
+    if (raw == null) continue;
+    if (typeof raw !== "string" && typeof raw !== "number" && typeof raw !== "boolean") continue;
+    const str = String(raw).slice(0, META_MAX_VALUE_LENGTH);
+    if (str.length > 0) out[key] = str;
+  }
+  return Object.keys(out).length > 0 ? out : null;
+}
+
 export function getIpFromHeaders(headers: Headers): string | null {
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0].trim();
@@ -55,7 +78,7 @@ export async function recordServerEvent(input: TrackInput, ip: string | null) {
     path: input.path ?? null,
     session_id: sessionId,
     ip_hash: hashIp(ip),
-    meta: input.meta ?? null,
+    meta: sanitizeMeta(input.meta),
   });
   if (error) throw error;
 
