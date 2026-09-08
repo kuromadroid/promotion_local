@@ -45,6 +45,11 @@ export function RestaurantDetailV3({
     trackEvent({ eventName: "phone_click", hotelId, restaurantId: restaurant.id });
   };
 
+  const handleOfficialSite = () => {
+    trackEvent({ eventName: "official_site_click", hotelId, restaurantId: restaurant.id });
+    if (restaurant.officialUrl) window.open(restaurant.officialUrl, "_blank", "noopener,noreferrer");
+  };
+
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
@@ -204,6 +209,14 @@ export function RestaurantDetailV3({
                 </div>
               )}
             </div>
+          </section>
+        )}
+
+        {restaurant.officialUrl && (
+          <section className={styles.section}>
+            <button type="button" className={styles.officialButton} onClick={handleOfficialSite}>
+              {t("viewOfficialSite")}
+            </button>
           </section>
         )}
 

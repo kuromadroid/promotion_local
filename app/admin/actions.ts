@@ -33,6 +33,7 @@ interface ParsedRestaurantForm {
   reservationUrl: string | null;
   reservationUrlIntl: string | null;
   instagramUrl: string | null;
+  officialUrl: string | null;
   openingHours: string | null;
   closedDays: string | null;
   isSponsored: boolean;
@@ -90,6 +91,7 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     reservationUrl: emptyToNull(formData.get("reservation_url")),
     reservationUrlIntl: emptyToNull(formData.get("reservation_url_intl")),
     instagramUrl: emptyToNull(formData.get("instagram_url")),
+    officialUrl: emptyToNull(formData.get("official_url")),
     openingHours: emptyToNull(formData.get("opening_hours")),
     closedDays: emptyToNull(formData.get("closed_days")),
     isSponsored: formData.get("is_sponsored") === "on",
@@ -201,6 +203,7 @@ export async function createRestaurantAction(formData: FormData) {
     reservation_url: parsed.reservationUrl,
     reservation_url_intl: parsed.reservationUrlIntl,
     instagram_url: parsed.instagramUrl,
+    official_url: parsed.officialUrl,
     opening_hours: parsed.openingHours,
     closed_days: parsed.closedDays,
     is_sponsored: parsed.isSponsored,
@@ -260,6 +263,7 @@ export async function updateRestaurantAction(id: string, formData: FormData) {
       reservation_url: parsed.reservationUrl,
       reservation_url_intl: parsed.reservationUrlIntl,
       instagram_url: parsed.instagramUrl,
+      official_url: parsed.officialUrl,
       opening_hours: parsed.openingHours,
       closed_days: parsed.closedDays,
       is_sponsored: parsed.isSponsored,

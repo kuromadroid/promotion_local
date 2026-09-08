@@ -201,6 +201,18 @@
   font-weight: 950;
 }
 
+.officialButton {
+  width: 100%;
+  border: 1.5px solid #111;
+  border-radius: 12px;
+  padding: 13px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 950;
+  text-align: center;
+}
+
 .bottomCta {
   position: fixed;
   left: 0;

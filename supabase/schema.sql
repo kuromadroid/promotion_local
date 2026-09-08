@@ -41,6 +41,7 @@ create table if not exists restaurants (
   reservation_url text,
   reservation_url_intl text,
   instagram_url text,
+  official_url text,
   opening_hours text,
   closed_days text,
   is_sponsored boolean not null default false,
@@ -49,6 +50,10 @@ create table if not exists restaurants (
 );
 
 alter table restaurants add column if not exists reservation_url_intl text;
+
+-- Optional link to the restaurant's own official website, shown on the detail page
+-- and editable from the admin panel.
+alter table restaurants add column if not exists official_url text;
 
 -- Display-order priority (0-100, higher shows first), applied everywhere the
 -- restaurant is listed (pre-genre view, per-genre filter, and the full list).

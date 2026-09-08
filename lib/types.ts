@@ -43,6 +43,7 @@ export interface Restaurant {
   reservationUrl?: string;
   reservationUrlIntl?: string;
   instagramUrl?: string;
+  officialUrl?: string;
   openingHours?: string;
   closedDays?: string;
   isSponsored?: boolean;
@@ -95,6 +96,7 @@ export interface RestaurantView {
   reservationUrl?: string;
   reservationUrlIntl?: string;
   instagramUrl?: string;
+  officialUrl?: string;
   openingHours?: string;
   closedDays?: string;
   isSponsored?: boolean;
@@ -120,6 +122,7 @@ export const ANALYTICS_EVENT_NAMES = [
   "map_click",
   "reservation_click",
   "instagram_click",
+  "official_site_click",
   "phone_click",
 ] as const;
 

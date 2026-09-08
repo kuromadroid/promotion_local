@@ -122,6 +122,7 @@ interface RestaurantJoinRow {
     reservation_url: string | null;
     reservation_url_intl: string | null;
     instagram_url: string | null;
+    official_url: string | null;
     opening_hours: string | null;
     closed_days: string | null;
     is_sponsored: boolean;
@@ -156,7 +157,7 @@ export async function getRestaurantsForHotel(
     .select(
       `distance_m, walking_minutes, display_priority, is_visible,
        restaurants (
-         id, area_id, price_min, price_max, latitude, longitude, phone, google_maps_url, reservation_url, reservation_url_intl, instagram_url, opening_hours, closed_days, is_sponsored, photos, priority,
+         id, area_id, price_min, price_max, latitude, longitude, phone, google_maps_url, reservation_url, reservation_url_intl, instagram_url, official_url, opening_hours, closed_days, is_sponsored, photos, priority,
          areas ( id, name ),
          restaurant_translations ( locale, name, description, recommended_dish ),
          restaurant_tags ( tags ( id, type, name ) )
@@ -206,6 +207,7 @@ export async function getRestaurantsForHotel(
         reservationUrl: r.reservation_url ?? undefined,
         reservationUrlIntl: r.reservation_url_intl ?? undefined,
         instagramUrl: r.instagram_url ?? undefined,
+        officialUrl: r.official_url ?? undefined,
         openingHours: r.opening_hours ?? undefined,
         closedDays: r.closed_days ?? undefined,
         isSponsored: r.is_sponsored,

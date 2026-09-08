@@ -13,6 +13,7 @@ export interface RestaurantFormInitial {
   reservationUrl: string;
   reservationUrlIntl: string;
   instagramUrl: string;
+  officialUrl: string;
   openingHours: string;
   closedDays: string;
   isSponsored: boolean;
@@ -222,6 +223,15 @@ export function RestaurantForm({
               type="url"
               name="instagram_url"
               defaultValue={initial?.instagramUrl}
+              className={inputClass}
+            />
+          </label>
+          <label className={labelClass}>
+            公式サイトのURL
+            <input
+              type="url"
+              name="official_url"
+              defaultValue={initial?.officialUrl}
               className={inputClass}
             />
           </label>
