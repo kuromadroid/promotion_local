@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { selectLocaleAction } from "@/app/h/[hotelId]/actions";
 import { Locale } from "@/lib/types";
 import { getAnalyticsSessionId } from "@/lib/analyticsSession";
@@ -75,6 +76,15 @@ export function LanguageGate({
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="pb-2 text-center">
+        <Link
+          href="/privacy"
+          className="text-xs text-white/40 underline underline-offset-2 transition-colors hover:text-white/70"
+        >
+          プライバシーポリシー
+        </Link>
       </div>
     </div>
   );

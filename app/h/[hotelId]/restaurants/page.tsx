@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getHotel,
@@ -90,6 +91,15 @@ export default async function RestaurantListPage({
               </div>
             )}
           </div>
+        </div>
+
+        <div className="mt-10 border-t border-(--color-line) pt-6 text-center">
+          <Link
+            href="/privacy"
+            className="text-xs text-(--color-ink-soft) underline underline-offset-2 transition-colors hover:text-(--color-ink)"
+          >
+            プライバシーポリシー
+          </Link>
         </div>
       </main>
     </>
