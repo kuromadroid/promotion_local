@@ -1,6 +1,7 @@
 import "server-only";
 import crypto from "crypto";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
+import { isAdminAuthenticated } from "@/lib/adminAuth";
 import { ANALYTICS_EVENT_NAMES, AnalyticsEventName, LOCALES, Locale } from "@/lib/types";
 
 export interface TrackInput {
@@ -96,10 +97,24 @@ function hashIp(ip: string | null) {
   return crypto.createHmac("sha256", salt).update(ip).digest("hex");
 }
 
+async function isAdminBrowser() {
+  try {
+    return await isAdminAuthenticated();
+  } catch {
+    // e.g. ADMIN_PASSWORD unset — never let this block guest tracking.
+    return false;
+  }
+}
+
 export async function recordServerEvent(input: TrackInput, ip: string | null) {
   if (!isAnalyticsEventName(input.eventName)) throw new Error("invalid eventName");
   const sessionId = normalizeSessionId(input.sessionId);
   if (!sessionId) throw new Error("valid sessionId required");
+
+  // Staff checking guest pages from a browser that is logged into the admin
+  // panel are not guests — drop their events so they don't inflate analytics.
+  // The client sees the same success response either way.
+  if (await isAdminBrowser()) return { ok: true as const };
 
   // Every field is normalised here, so both callers (the /api/track route and
   // the language-select server action) get the same guarantees regardless of
