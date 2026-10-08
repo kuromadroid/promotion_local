@@ -71,6 +71,7 @@ events (計測イベント)
 4. Database → Extensions で **pg_cron** を有効化してから、`supabase/migrations/202609070001_events_retention.sql` を実行(`events` を180日で自動削除する日次ジョブを登録。業務データには影響しません)
    - 続けて `supabase/migrations/202610080001_language_analytics.sql` を実行(言語別Analytics用の読み取り専用RPC `admin_language_analytics` を追加。テーブル・index・既存RPCは変更しません)
    - 続けて `supabase/migrations/202610080002_korean_copy.sql` を実行(エリア・タグ・サンプル店舗 r001〜r010 の韓国語表記を自然な表現に更新。`ko` の値だけを書き換え、管理画面で追加した店舗には触れません)
+   - 続けて `supabase/migrations/202610090001_demo_hotels.sql` を実行(`hotels.is_demo` を追加し、営業用デモホテル `hotel-d76a4d81` を除外対象に設定。Analyticsは「本番ホテル」と「デモホテル(営業用)」を切り替えて表示します。**アプリのデプロイより先に実行**してください)
 5. Settings → API から **Project URL**、**anon / public key**、**service_role key** を取得
 6. `.env.local`(ローカル)および Vercel の Environment Variables(本番)に設定:
    ```

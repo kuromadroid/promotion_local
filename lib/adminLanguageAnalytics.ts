@@ -1,6 +1,6 @@
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
-import { AnalyticsPeriod } from "@/lib/adminAnalytics";
+import { AnalyticsPeriod, AnalyticsScope } from "@/lib/adminAnalytics";
 import { LOCALES } from "@/lib/types";
 
 export const LANGUAGE_KEYS = [...LOCALES, "unknown"] as const;
@@ -88,12 +88,14 @@ export function eventCount(counts: EventCounts, event: string): EventCount {
  */
 export async function getLanguageAnalytics(
   period: AnalyticsPeriod,
+  scope: AnalyticsScope,
   language?: LanguageKey
 ): Promise<LanguageAnalytics> {
   const { data, error } = await supabaseAdmin.rpc("admin_language_analytics", {
     p_start: period.start,
     p_end: period.end,
     p_language: language ?? null,
+    p_hotel_scope: scope,
   });
   if (error) throw new Error(`Language analytics query failed: ${error.message}`);
 

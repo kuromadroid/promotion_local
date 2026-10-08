@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AnalyticsPeriod, AnalyticsPeriodKey } from "@/lib/adminAnalytics";
+import { AnalyticsPeriod, AnalyticsPeriodKey, AnalyticsScope } from "@/lib/adminAnalytics";
 
 const PERIOD_OPTIONS: Array<{ key: AnalyticsPeriodKey; label: string }> = [
   { key: "7d", label: "過去7日" },
@@ -9,16 +9,61 @@ const PERIOD_OPTIONS: Array<{ key: AnalyticsPeriodKey; label: string }> = [
   { key: "all", label: "全期間" },
 ];
 
-export function PeriodFilter({ path, period }: { path: string; period: AnalyticsPeriod }) {
+const SCOPE_OPTIONS: Array<{ key: AnalyticsScope; label: string }> = [
+  { key: "live", label: "本番ホテル" },
+  { key: "demo", label: "デモホテル（営業用）" },
+];
+
+export function PeriodFilter({
+  path,
+  period,
+  scope,
+}: {
+  path: string;
+  period: AnalyticsPeriod;
+  scope: AnalyticsScope;
+}) {
+  const scopeParam = scope === "demo" ? "&scope=demo" : "";
+  const periodParams = new URLSearchParams({ period: period.key });
+  if (period.key === "custom") {
+    periodParams.set("start", period.startDate);
+    periodParams.set("end", period.endDate);
+  }
+
   return (
     <div className="rounded-2xl border border-(--color-line) bg-white p-4">
+      <div className="mb-4 flex flex-wrap items-center gap-2 border-b border-(--color-line) pb-4">
+        <span className="mr-1 text-xs font-bold text-(--color-ink-soft)">集計対象</span>
+        {SCOPE_OPTIONS.map((option) => {
+          const active = scope === option.key;
+          return (
+            <Link
+              key={option.key}
+              href={`${path}?${periodParams.toString()}${option.key === "demo" ? "&scope=demo" : ""}`}
+              className={`rounded-full px-3 py-2 text-xs font-bold transition-colors ${
+                active
+                  ? "bg-(--color-coral) text-white"
+                  : "bg-(--color-snow-muted) text-(--color-ink-soft) hover:text-(--color-navy)"
+              }`}
+            >
+              {option.label}
+            </Link>
+          );
+        })}
+        <span className="text-[11px] text-(--color-ink-soft)">
+          {scope === "demo"
+            ? "デモホテル経由のアクセスだけを表示しています（本番の統計には含まれません）"
+            : "デモホテル経由のアクセスは除外しています"}
+        </span>
+      </div>
+
       <div className="flex flex-wrap gap-2">
         {PERIOD_OPTIONS.map((option) => {
           const active = period.key === option.key;
           return (
             <Link
               key={option.key}
-              href={`${path}?period=${option.key}`}
+              href={`${path}?period=${option.key}${scopeParam}`}
               className={`rounded-full px-3 py-2 text-xs font-bold transition-colors ${
                 active
                   ? "bg-(--color-navy) text-white"
@@ -33,6 +78,7 @@ export function PeriodFilter({ path, period }: { path: string; period: Analytics
 
       <form action={path} method="get" className="mt-4 flex flex-wrap items-end gap-3 border-t border-(--color-line) pt-4">
         <input type="hidden" name="period" value="custom" />
+        {scope === "demo" && <input type="hidden" name="scope" value="demo" />}
         <label className="text-xs font-medium text-(--color-ink-soft)">
           開始日
           <input

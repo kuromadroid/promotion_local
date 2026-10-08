@@ -5,6 +5,9 @@ export type AnalyticsPeriodKey = "7d" | "30d" | "this_month" | "last_month" | "a
 
 export type AnalyticsSearchParams = Record<string, string | string[] | undefined>;
 
+/** "live" = real hotels only (demo hotels excluded); "demo" = demo hotels only, for sales outreach. */
+export type AnalyticsScope = "live" | "demo";
+
 export interface AnalyticsPeriod {
   key: AnalyticsPeriodKey;
   label: string;
@@ -180,6 +183,21 @@ export function resolveAnalyticsPeriod(searchParams: AnalyticsSearchParams): Ana
   return makeBoundedPeriod(key, shiftDateKey(today, -(days - 1)), today, `過去${days}日`);
 }
 
+export function resolveAnalyticsScope(searchParams: AnalyticsSearchParams): AnalyticsScope {
+  return firstValue(searchParams.scope) === "demo" ? "demo" : "live";
+}
+
+/** Query string that carries the current period and scope across analytics pages. */
+export function analyticsQuery(period: AnalyticsPeriod, scope: AnalyticsScope) {
+  const params = new URLSearchParams({ period: period.key });
+  if (period.key === "custom") {
+    params.set("start", period.startDate);
+    params.set("end", period.endDate);
+  }
+  if (scope === "demo") params.set("scope", "demo");
+  return params.toString();
+}
+
 const ZERO_METRICS: AnalyticsMetrics = {
   viewEvents: 0,
   viewSessions: 0,
@@ -195,10 +213,14 @@ const ZERO_METRICS: AnalyticsMetrics = {
   highIntentSessions: 0,
 };
 
-export async function getAnalyticsOverview(period: AnalyticsPeriod): Promise<AnalyticsOverview> {
+export async function getAnalyticsOverview(
+  period: AnalyticsPeriod,
+  scope: AnalyticsScope
+): Promise<AnalyticsOverview> {
   const { data, error } = await supabaseAdmin.rpc("admin_analytics_overview", {
     p_start: period.start,
     p_end: period.end,
+    p_hotel_scope: scope,
   });
   if (error) throw new Error(`Analytics overview query failed: ${error.message}`);
 
@@ -212,12 +234,14 @@ export async function getAnalyticsOverview(period: AnalyticsPeriod): Promise<Ana
 
 export async function getRestaurantAnalytics(
   restaurantId: string,
-  period: AnalyticsPeriod
+  period: AnalyticsPeriod,
+  scope: AnalyticsScope
 ): Promise<RestaurantAnalytics> {
   const { data, error } = await supabaseAdmin.rpc("admin_restaurant_analytics", {
     p_restaurant_id: restaurantId,
     p_start: period.start,
     p_end: period.end,
+    p_hotel_scope: scope,
   });
   if (error) throw new Error(`Restaurant analytics query failed: ${error.message}`);
 

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  AnalyticsPeriod,
   AnalyticsSearchParams,
+  analyticsQuery,
   resolveAnalyticsPeriod,
+  resolveAnalyticsScope,
 } from "@/lib/adminAnalytics";
 import {
   eventCount,
@@ -22,15 +23,6 @@ import {
   SessionWithTotal,
 } from "@/components/admin/AnalyticsUi";
 
-function periodQuery(period: AnalyticsPeriod) {
-  const params = new URLSearchParams({ period: period.key });
-  if (period.key === "custom") {
-    params.set("start", period.startDate);
-    params.set("end", period.endDate);
-  }
-  return params.toString();
-}
-
 // Filters and card views are list-level actions, so the per-restaurant table
 // only shows the columns that belong to a single restaurant.
 const RESTAURANT_COLUMNS = LANGUAGE_METRIC_COLUMNS.filter(
@@ -47,8 +39,10 @@ export default async function LanguageAnalyticsDetailPage({
   const language = decodeURIComponent((await params).language);
   if (!isLanguageKey(language)) notFound();
 
-  const period = resolveAnalyticsPeriod(await searchParams);
-  const data = await getLanguageAnalytics(period, language);
+  const resolvedSearchParams = await searchParams;
+  const period = resolveAnalyticsPeriod(resolvedSearchParams);
+  const scope = resolveAnalyticsScope(resolvedSearchParams);
+  const data = await getLanguageAnalytics(period, scope, language);
   const row = data.languages.find((item) => item.language === language);
   const byEvent = row?.byEvent ?? {};
   const view = eventCount(byEvent, "restaurant_detail_view");
@@ -60,7 +54,7 @@ export default async function LanguageAnalyticsDetailPage({
     <div className="space-y-8">
       <div>
         <Link
-          href={`/admin/analytics/languages?${periodQuery(period)}`}
+          href={`/admin/analytics/languages?${analyticsQuery(period, scope)}`}
           className="text-xs font-bold text-(--color-ink-soft) hover:text-(--color-coral-deep)"
         >
           ← 言語別一覧へ
@@ -70,7 +64,7 @@ export default async function LanguageAnalyticsDetailPage({
         <p className="mt-2 text-sm text-(--color-ink-soft)">{period.label}・日本時間</p>
       </div>
 
-      <PeriodFilter path={`/admin/analytics/languages/${encodeURIComponent(language)}`} period={period} />
+      <PeriodFilter path={`/admin/analytics/languages/${encodeURIComponent(language)}`} period={period} scope={scope} />
 
       {!row && (
         <div className="rounded-2xl border border-dashed border-(--color-line) bg-white px-5 py-8 text-center">

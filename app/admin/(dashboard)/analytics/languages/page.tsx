@@ -1,8 +1,9 @@
 import Link from "next/link";
 import {
-  AnalyticsPeriod,
   AnalyticsSearchParams,
+  analyticsQuery,
   resolveAnalyticsPeriod,
+  resolveAnalyticsScope,
 } from "@/lib/adminAnalytics";
 import {
   eventCount,
@@ -18,23 +19,16 @@ import {
   SessionWithTotal,
 } from "@/components/admin/AnalyticsUi";
 
-function periodQuery(period: AnalyticsPeriod) {
-  const params = new URLSearchParams({ period: period.key });
-  if (period.key === "custom") {
-    params.set("start", period.startDate);
-    params.set("end", period.endDate);
-  }
-  return params.toString();
-}
-
 export default async function AdminLanguageAnalyticsPage({
   searchParams,
 }: {
   searchParams: Promise<AnalyticsSearchParams>;
 }) {
-  const period = resolveAnalyticsPeriod(await searchParams);
-  const data = await getLanguageAnalytics(period);
-  const query = periodQuery(period);
+  const resolvedSearchParams = await searchParams;
+  const period = resolveAnalyticsPeriod(resolvedSearchParams);
+  const scope = resolveAnalyticsScope(resolvedSearchParams);
+  const data = await getLanguageAnalytics(period, scope);
+  const query = analyticsQuery(period, scope);
   const totalInferred = data.languages.reduce((sum, row) => sum + row.inferredEvents, 0);
 
   return (
@@ -53,7 +47,7 @@ export default async function AdminLanguageAnalyticsPage({
         </p>
       </div>
 
-      <PeriodFilter path="/admin/analytics/languages" period={period} />
+      <PeriodFilter path="/admin/analytics/languages" period={period} scope={scope} />
 
       <Panel
         title="言語別Analytics"

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  AnalyticsPeriod,
   AnalyticsSearchParams,
+  analyticsQuery,
   getRestaurantAnalytics,
   resolveAnalyticsPeriod,
+  resolveAnalyticsScope,
 } from "@/lib/adminAnalytics";
 import {
   conversionRate,
@@ -14,15 +15,6 @@ import {
   PeriodFilter,
 } from "@/components/admin/AnalyticsUi";
 
-function periodQuery(period: AnalyticsPeriod) {
-  const params = new URLSearchParams({ period: period.key });
-  if (period.key === "custom") {
-    params.set("start", period.startDate);
-    params.set("end", period.endDate);
-  }
-  return params.toString();
-}
-
 export default async function RestaurantAnalyticsPage({
   params,
   searchParams,
@@ -31,8 +23,10 @@ export default async function RestaurantAnalyticsPage({
   searchParams: Promise<AnalyticsSearchParams>;
 }) {
   const { restaurantId } = await params;
-  const period = resolveAnalyticsPeriod(await searchParams);
-  const data = await getRestaurantAnalytics(restaurantId, period);
+  const resolvedSearchParams = await searchParams;
+  const period = resolveAnalyticsPeriod(resolvedSearchParams);
+  const scope = resolveAnalyticsScope(resolvedSearchParams);
+  const data = await getRestaurantAnalytics(restaurantId, period, scope);
   if (!data.restaurant.id) notFound();
 
   const highIntentRate = conversionRate(data.highIntentSessions, data.viewSessions);
@@ -51,7 +45,7 @@ export default async function RestaurantAnalyticsPage({
     <div className="space-y-8">
       <div>
         <Link
-          href={`/admin/analytics?${periodQuery(period)}`}
+          href={`/admin/analytics?${analyticsQuery(period, scope)}`}
           className="text-xs font-bold text-(--color-ink-soft) hover:text-(--color-coral-deep)"
         >
           ← Analytics一覧へ
@@ -73,7 +67,7 @@ export default async function RestaurantAnalyticsPage({
         </div>
       </div>
 
-      <PeriodFilter path={detailPath} period={period} />
+      <PeriodFilter path={detailPath} period={period} scope={scope} />
 
       <section>
         <div className="mb-3 flex items-end justify-between gap-4">

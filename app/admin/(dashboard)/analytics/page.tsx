@@ -1,9 +1,10 @@
 import Link from "next/link";
 import {
-  AnalyticsPeriod,
   AnalyticsSearchParams,
+  analyticsQuery,
   getAnalyticsOverview,
   resolveAnalyticsPeriod,
+  resolveAnalyticsScope,
 } from "@/lib/adminAnalytics";
 import {
   conversionRate,
@@ -14,27 +15,20 @@ import {
   SessionWithTotal,
 } from "@/components/admin/AnalyticsUi";
 
-function periodQuery(period: AnalyticsPeriod) {
-  const params = new URLSearchParams({ period: period.key });
-  if (period.key === "custom") {
-    params.set("start", period.startDate);
-    params.set("end", period.endDate);
-  }
-  return params.toString();
-}
-
 export default async function AdminAnalyticsPage({
   searchParams,
 }: {
   searchParams: Promise<AnalyticsSearchParams>;
 }) {
-  const period = resolveAnalyticsPeriod(await searchParams);
-  const data = await getAnalyticsOverview(period);
+  const resolvedSearchParams = await searchParams;
+  const period = resolveAnalyticsPeriod(resolvedSearchParams);
+  const scope = resolveAnalyticsScope(resolvedSearchParams);
+  const data = await getAnalyticsOverview(period, scope);
   const { summary } = data;
   const viewRate = conversionRate(summary.viewSessions, summary.siteSessions);
   const highIntentRate = conversionRate(summary.highIntentSessions, summary.viewSessions);
   const isEmpty = summary.siteSessions === 0 && summary.viewEvents === 0 && summary.highIntentEvents === 0;
-  const query = periodQuery(period);
+  const query = analyticsQuery(period, scope);
 
   return (
     <div className="space-y-8">
@@ -52,7 +46,7 @@ export default async function AdminAnalyticsPage({
         </Link>
       </div>
 
-      <PeriodFilter path="/admin/analytics" period={period} />
+      <PeriodFilter path="/admin/analytics" period={period} scope={scope} />
 
       {isEmpty && (
         <div className="rounded-2xl border border-dashed border-(--color-line) bg-white px-5 py-8 text-center">
