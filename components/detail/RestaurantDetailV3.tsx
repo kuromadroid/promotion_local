@@ -9,6 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkMinutes, walkSubtitle, isStationDistance } from "@/lib/distanceDisplay";
+import { formatOpeningHours, formatClosedDays } from "@/lib/hoursDisplay";
 import styles from "./restaurant-detail-v3.module.css";
 
 export function RestaurantDetailV3({
@@ -25,6 +26,8 @@ export function RestaurantDetailV3({
   const cuisineTags = restaurant.tags.filter((tag) => tag.type === "cuisine");
   const paymentTags = restaurant.tags.filter((tag) => tag.type === "payment");
   const reservationUrl = resolveReservationUrl(restaurant, locale);
+  const openingHours = formatOpeningHours(restaurant.openingHours, locale);
+  const closedDays = formatClosedDays(restaurant.closedDays, locale);
 
   const handleMap = () => {
     trackEvent({ eventName: "map_click", hotelId, restaurantId: restaurant.id });
@@ -132,7 +135,7 @@ export function RestaurantDetailV3({
             <span>
               ¥{restaurant.priceMin.toLocaleString()}〜{restaurant.priceMax.toLocaleString()}
             </span>
-            {restaurant.openingHours && <span>{restaurant.openingHours}</span>}
+            {openingHours && <span>{openingHours}</span>}
           </div>
 
           {restaurant.tags.length > 0 && (
@@ -184,16 +187,16 @@ export function RestaurantDetailV3({
           <section className={styles.section}>
             <h2>{t("infoSectionTitle")}</h2>
             <div className={styles.infoList}>
-              {restaurant.openingHours && (
+              {openingHours && (
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>{t("openingHours")}</div>
-                  <div className={styles.infoValue}>{restaurant.openingHours}</div>
+                  <div className={styles.infoValue}>{openingHours}</div>
                 </div>
               )}
-              {restaurant.closedDays && (
+              {closedDays && (
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>{t("closedDays")}</div>
-                  <div className={styles.infoValue}>{restaurant.closedDays}</div>
+                  <div className={styles.infoValue}>{closedDays}</div>
                 </div>
               )}
               <div className={styles.infoRow}>
