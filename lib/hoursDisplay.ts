@@ -114,8 +114,11 @@ type Phrases = Record<Exclude<Locale, "ja">, string>;
 
 /** Ordered longest-first so e.g. 土日祝 wins over 祝. */
 const PHRASES: [RegExp, Phrases][] = [
-  [/ラストオーダー|\bL\.?O\.?(?![A-Za-z])/g, { en: "Last order ", ko: "라스트 오더 ", "zh-CN": "最后点餐 ", "zh-TW": "最後點餐 " }],
-  [/年中無休/g, { en: "Open every day", ko: "연중무휴", "zh-CN": "全年无休", "zh-TW": "全年無休" }],
+  [/ラストオーダー|\bL\.?O\.?(?![A-Za-z])/g, { en: "last order ", ko: "라스트 오더 ", "zh-CN": "最后点餐 ", "zh-TW": "最後點餐 " }],
+  [/料理|フード/g, { en: "Food ", ko: "음식 ", "zh-CN": "餐点", "zh-TW": "餐點" }],
+  [/ドリンク/g, { en: "Drinks ", ko: "음료 ", "zh-CN": "饮品", "zh-TW": "飲品" }],
+  // One entry, so the 無休 inside the zh output 全年無休 isn't matched a second time.
+  [/^(?:なし|無し)$|(?:年中)?無休/g, { en: "Open every day", ko: "연중무휴", "zh-CN": "全年无休", "zh-TW": "全年無休" }],
   [/年末年始/g, { en: "New Year holidays", ko: "연말연시", "zh-CN": "年末年初", "zh-TW": "年末年初" }],
   [/不定休/g, { en: "Irregular holidays", ko: "비정기 휴무", "zh-CN": "不定期休息", "zh-TW": "不定期公休" }],
   [/土日祝日?/g, { en: "Weekends & holidays", ko: "주말·공휴일", "zh-CN": "周末及节假日", "zh-TW": "週末及國定假日" }],
@@ -129,11 +132,18 @@ const PHRASES: [RegExp, Phrases][] = [
   [/ランチ/g, { en: "Lunch", ko: "점심", "zh-CN": "午餐", "zh-TW": "午餐" }],
   [/ディナー/g, { en: "Dinner", ko: "저녁", "zh-CN": "晚餐", "zh-TW": "晚餐" }],
   [/定休日?|休業日?/g, { en: "Closed", ko: "휴무", "zh-CN": "休息", "zh-TW": "公休" }],
-  [/無休/g, { en: "Open every day", ko: "연중무휴", "zh-CN": "全年无休", "zh-TW": "全年無休" }],
 ];
 
 const DAY_RANGE_RE = /([日月火水木金土])(?:曜日?)?\s*[〜～~\-–]\s*([日月火水木金土])(?:曜日?)?/g;
 const SINGLE_DAY_RE = /([日月火水木金土])曜日?/g;
+// A weekday written as a lone kanji ("月・水 11:30〜", "日、祝日:", "（日）") — but not
+// the 日 inside words like 祝日 / 翌日, hence the no-kanji/kana-neighbour guards.
+const JP_CHAR = String.raw`\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}`;
+const BARE_DAY_RE = new RegExp(`(?<![${JP_CHAR}])[日月火水木金土](?![${JP_CHAR}])`, "gu");
+const LIST_BEFORE_RE = /[日月火水木金土][・、,]$/;
+const LIST_AFTER_RE = /^[・、,][日月火水木金土일월화수목금토]/;
+// "(LO30分前)" / "L.O.は閉店30分前"
+const LO_BEFORE_CLOSE_RE = /(?:ラストオーダー|\bL\.?O\.?)\s*(?:は)?\s*(?:閉店)?\s*(\d+)\s*分前/g;
 
 function translateWords(text: string, locale: Exclude<Locale, "ja">) {
   const names = DAY_NAMES[locale];
@@ -147,12 +157,27 @@ function translateWords(text: string, locale: Exclude<Locale, "ja">) {
   out = out.replace(SINGLE_DAY_RE, (_, d) =>
     locale === "en" ? names.short[dayIndex(d)] : names.long[dayIndex(d)]
   );
+  out = out.replace(BARE_DAY_RE, (d, offset: number, whole: string) => {
+    const inList =
+      LIST_BEFORE_RE.test(whole.slice(Math.max(0, offset - 2), offset)) ||
+      LIST_AFTER_RE.test(whole.slice(offset + 1, offset + 3));
+    return locale === "en" || inList ? names.short[dayIndex(d)] : names.long[dayIndex(d)];
+  });
+  out = out.replace(LO_BEFORE_CLOSE_RE, (_, min) =>
+    ({
+      en: `last order ${min} min before closing`,
+      ko: `라스트 오더는 마감 ${min}분 전`,
+      "zh-CN": `闭店前${min}分钟最后点餐`,
+      "zh-TW": `打烊前${min}分鐘最後點餐`,
+    })[locale]
+  );
   for (const [re, phrases] of PHRASES) out = out.replace(re, phrases[locale]);
 
   if (locale === "en" || locale === "ko") {
     out = out
       .replace(/（/g, " (")
       .replace(/）/g, ")")
+      .replace(/(\S)\(/g, "$1 (")
       .replace(/、/g, ", ")
       .replace(/・/g, locale === "en" ? ", " : "·")
       .replace(/[〜～]/g, locale === "en" ? "–" : "~");
