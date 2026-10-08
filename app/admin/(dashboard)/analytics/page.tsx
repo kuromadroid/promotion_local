@@ -44,6 +44,12 @@ export default async function AdminAnalyticsPage({
         <p className="mt-2 max-w-2xl text-sm leading-6 text-(--color-ink-soft)">
           営業成果は「利用セッション」を主指標にしています。同じセッション内で複数回押された場合も、利用セッションは1として集計します。
         </p>
+        <Link
+          href={`/admin/analytics/languages?${query}`}
+          className="mt-4 inline-block rounded-full bg-(--color-navy) px-4 py-2 text-xs font-bold text-white hover:bg-(--color-coral-deep)"
+        >
+          言語別の反応を見る →
+        </Link>
       </div>
 
       <PeriodFilter path="/admin/analytics" period={period} />

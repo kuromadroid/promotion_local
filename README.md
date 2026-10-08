@@ -69,6 +69,7 @@ events (計測イベント)
 2. Supabaseダッシュボードの SQL Editor で `supabase/schema.sql` を実行
 3. 続けて `supabase/migrations/202608260001_session_analytics.sql` を実行(session_id・集計用index・Admin専用RPCを追加)
 4. Database → Extensions で **pg_cron** を有効化してから、`supabase/migrations/202609070001_events_retention.sql` を実行(`events` を180日で自動削除する日次ジョブを登録。業務データには影響しません)
+   - 続けて `supabase/migrations/202610080001_language_analytics.sql` を実行(言語別Analytics用の読み取り専用RPC `admin_language_analytics` を追加。テーブル・index・既存RPCは変更しません)
 5. Settings → API から **Project URL**、**anon / public key**、**service_role key** を取得
 6. `.env.local`(ローカル)および Vercel の Environment Variables(本番)に設定:
    ```
