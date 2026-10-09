@@ -2,12 +2,21 @@ import { AnalyticsEvent, Locale, LOCALES } from "@/lib/types";
 import { getAnalyticsSessionId } from "@/lib/analyticsSession";
 import { LOCALE_COOKIE } from "@/lib/i18n/localeCookie";
 
+let displayedLocale: Locale | undefined;
+
+/** Called by LocaleProvider so events carry the language actually on screen. */
+export function setAnalyticsLocale(locale: Locale) {
+  displayedLocale = locale;
+}
+
 /**
- * The language the guest explicitly picked (the locale cookie). Before they
- * pick one — e.g. on the language gate — this is undefined rather than the
- * default locale, so those events are not misattributed to Japanese.
+ * The language the guest is viewing: the one LocaleProvider rendered (which
+ * may have been auto-detected from the browser), else the locale cookie.
+ * Outside any guest page this is undefined rather than the default locale,
+ * so those events are not misattributed to Japanese.
  */
 function getSelectedLocale(): Locale | undefined {
+  if (displayedLocale) return displayedLocale;
   try {
     const match = document.cookie
       .split("; ")

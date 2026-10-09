@@ -9,7 +9,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Locale } from "@/lib/types";
 import { LOCALE_COOKIE } from "@/lib/i18n/localeCookie";
-import { trackEvent } from "@/lib/analytics";
+import { setAnalyticsLocale, trackEvent } from "@/lib/analytics";
 
 interface LocaleContextValue {
   locale: Locale;
@@ -29,6 +29,7 @@ export function LocaleProvider({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  setAnalyticsLocale(locale);
 
   const t = useCallback(
     (key: string, vars?: Record<string, string | number>) => {

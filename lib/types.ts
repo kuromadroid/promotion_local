@@ -29,6 +29,8 @@ export interface Hotel {
   latitude: number;
   longitude: number;
   heroPhotos: string[];
+  /** 営業用デモホテル (hotels.is_demo) */
+  isDemo: boolean;
 }
 
 export interface Restaurant {
