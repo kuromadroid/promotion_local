@@ -24,7 +24,7 @@ export function PrivacyPolicyEn() {
             Information about access to and use of the Service
             <br />
             Pages viewed, date and time of access, hotel and restaurant pages used, filtering by area or tag, the
-            language selected, and use of links to booking sites, maps, Instagram, phone calls, and similar.
+            display language, and use of links to booking sites, maps, Instagram, phone calls, and similar.
           </li>
           <li>
             Session information
@@ -45,7 +45,12 @@ export function PrivacyPolicyEn() {
           <li>
             Language settings
             <br />
-            We may use a cookie to store the display language you have selected.
+            We refer to the language settings sent by your browser (Accept-Language) to determine the display
+            language automatically. The value of those settings itself is not stored in the analytics database, but
+            the display language determined from it is recorded as part of the usage information described in item 1
+            above.
+            <br />
+            We may also use a cookie to store the display language you have selected.
           </li>
           <li>
             Technical information associated with providing the Service
@@ -184,7 +189,8 @@ export function PrivacyPolicyEn() {
             Language cookie
             <br />
             We use a cookie so that the display language you selected is applied on your next visit. This cookie is,
-            as a rule, retained for up to one year.
+            as a rule, retained for up to one year. If this cookie is not stored, the display language is
+            determined from your browser&rsquo;s language settings.
           </li>
           <li>
             Session storage
@@ -217,7 +223,7 @@ export function PrivacyPolicyEn() {
             Actions such as page views, restaurant views, filtering, and selection of external links
           </li>
           <li>Information identifying the hotel, restaurant, area, tag, etc. used</li>
-          <li>The display language selected</li>
+          <li>The display language (selected by you, or determined from your browser&rsquo;s language settings)</li>
           <li>Information identifying the QR code</li>
           <li>Other information necessary to understand how the Service is used</li>
         </ul>
@@ -325,6 +331,10 @@ export function PrivacyPolicyEn() {
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">Published:</dt>
             <dd>September 26, 2026</dd>
+          </div>
+          <div className="flex gap-2">
+            <dt className="shrink-0 text-(--color-ink-soft)">Last revised:</dt>
+            <dd>October 9, 2026</dd>
           </div>
         </dl>
       </section>
