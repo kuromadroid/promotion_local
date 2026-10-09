@@ -7,6 +7,11 @@
   --soft: #efefeb;
   --green: #20764a;
 
+  /* The body is a flex column, where `margin: auto` alone would shrink-wrap
+     this to its widest content and overflow narrow phones; pin it to the
+     viewport width instead. */
+  width: 100%;
+  min-width: 0;
   max-width: 760px;
   margin: auto;
   padding-bottom: 106px;
