@@ -8,7 +8,7 @@ import { trackEvent } from "@/lib/analytics";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkLabel } from "@/lib/distanceDisplay";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
-import { GenreGridPreview } from "@/components/editorial/GenreGridPreview";
+import { MobileHomePreview } from "@/components/editorial/MobileHomePreview";
 import { isUiPreviewHotel } from "@/lib/uiPreview";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import styles from "./sapporo-bites-editorial-v2.module.css";
@@ -157,13 +157,6 @@ export function EditorialHomeV2({
     return restaurants.filter((r) => r.tags.some((tag) => tag.id === activeGenre));
   }, [restaurants, activeGenre]);
 
-  const uiPreview = isUiPreviewHotel(hotelId);
-  const genres = uiPreview ? DEMO_FOOD_TAGS : FOOD_TAGS;
-  const genreCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const r of restaurants) for (const tag of r.tags) counts[tag.id] = (counts[tag.id] ?? 0) + 1;
-    return counts;
-  }, [restaurants]);
 
   const featured = restaurants[0];
   const sidePicks = restaurants.slice(1, 3);
@@ -181,6 +174,20 @@ export function EditorialHomeV2({
 
     return [...curated, ...autoFilled].slice(0, HERO_IMAGE_LIMIT);
   })();
+
+  if (isUiPreviewHotel(hotelId)) {
+    return (
+      <MobileHomePreview
+        hotelId={hotelId}
+        hotelName={hotelName}
+        heroImages={heroImages}
+        restaurants={restaurants}
+        genres={DEMO_FOOD_TAGS}
+        locale={locale}
+        t={t}
+      />
+    );
+  }
 
   const handleReserve = (r: RestaurantView) => {
     trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });
@@ -288,30 +295,18 @@ export function EditorialHomeV2({
             <div className={styles.index}>01 / GENRE</div>
           </div>
 
-          {uiPreview ? (
-            <GenreGridPreview
-              genres={genres}
-              counts={genreCounts}
-              total={restaurants.length}
-              active={activeGenre}
-              onChange={setActiveGenre}
-              locale={locale}
-              t={t}
-            />
-          ) : (
-            <div className={styles.genreGrid}>
-              {genres.map((food) => (
-                <button
-                  type="button"
-                  key={food.tagId}
-                  className={`${styles.genreCell} ${activeGenre === food.tagId ? styles.genreCellActive : ""}`}
-                  onClick={() => setActiveGenre(food.tagId)}
-                >
-                  {food.label[locale]}
-                </button>
-              ))}
-            </div>
-          )}
+          <div className={styles.genreGrid}>
+            {FOOD_TAGS.map((food) => (
+              <button
+                type="button"
+                key={food.tagId}
+                className={`${styles.genreCell} ${activeGenre === food.tagId ? styles.genreCellActive : ""}`}
+                onClick={() => setActiveGenre(food.tagId)}
+              >
+                {food.label[locale]}
+              </button>
+            ))}
+          </div>
 
           <div style={{ marginTop: 14 }}>{renderListGrid(genreFiltered)}</div>
         </section>
