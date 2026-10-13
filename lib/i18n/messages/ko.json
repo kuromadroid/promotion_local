@@ -49,6 +49,7 @@
   "distanceFromStation": "{station}역에서 {meters}m",
   "priceRange": "가격대",
   "noResults": "조건에 맞는 가게를 찾지 못했어요",
+  "genreResultCount": "{genre}: {count}곳",
   "clearFilters": "필터 초기화",
   "viewDetails": "자세히 보기",
   "openingHours": "영업시간",

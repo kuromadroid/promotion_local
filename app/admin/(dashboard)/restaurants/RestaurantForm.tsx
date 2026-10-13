@@ -1,6 +1,7 @@
 import { Area, Hotel, Tag } from "@/lib/types";
 import { AddressLookup } from "@/components/admin/AddressLookup";
 import { RestaurantPhotoManager } from "@/components/admin/RestaurantPhotoManager";
+import { DEMO_ONLY_TAG_IDS } from "@/lib/demoTags";
 
 export interface RestaurantFormInitial {
   areaId: string;
@@ -399,6 +400,9 @@ export function RestaurantForm({
                 className="rounded border-(--color-line)"
               />
               {tag.name.ja}
+              {DEMO_ONLY_TAG_IDS.has(tag.id) && (
+                <span className="text-xs text-(--color-ink-soft)">(UI確認用ホテルのみ)</span>
+              )}
             </label>
           ))}
         </div>

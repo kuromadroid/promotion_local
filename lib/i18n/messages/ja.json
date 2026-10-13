@@ -49,6 +49,7 @@
   "distanceFromStation": "{station}駅から{meters}m",
   "priceRange": "価格帯",
   "noResults": "条件に合うお店が見つかりませんでした",
+  "genreResultCount": "{genre}：{count}件",
   "clearFilters": "絞り込みをリセット",
   "viewDetails": "詳細を見る",
   "openingHours": "営業時間",

@@ -44,7 +44,7 @@ export default async function RestaurantListPage({
 
   const [areas, allTags, restaurants] = await Promise.all([
     getAreasResolved(locale),
-    getTagsResolved(locale),
+    getTagsResolved(locale, hotelId),
     getRestaurantsForHotel(hotelId, locale, {
       areaId: sp.area,
       tagIds,

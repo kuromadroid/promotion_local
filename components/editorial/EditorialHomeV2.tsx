@@ -8,6 +8,8 @@ import { trackEvent } from "@/lib/analytics";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkLabel } from "@/lib/distanceDisplay";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
+import { GenreGridPreview } from "@/components/editorial/GenreGridPreview";
+import { isUiPreviewHotel } from "@/lib/uiPreview";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import styles from "./sapporo-bites-editorial-v2.module.css";
 
@@ -66,6 +68,52 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   },
 ];
 
+const foodTag = (tagId: string) => FOOD_TAGS.find((tag) => tag.tagId === tagId)!;
+
+// UI preview hotel trial (see lib/demoTags.ts): 居酒屋 is split into three genres,
+// and カフェ / スイーツ are added.
+const DEMO_FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
+  foodTag("genghis-khan"),
+  foodTag("seafood"),
+  foodTag("yakiniku"),
+  {
+    tagId: "yakitori-kushi",
+    label: {
+      ja: "焼き鳥・串",
+      en: "Yakitori & Skewers",
+      "zh-CN": "烤鸡串・串烧",
+      "zh-TW": "烤雞串・串燒",
+      ko: "야키토리・꼬치",
+    },
+  },
+  {
+    tagId: "creative-izakaya",
+    label: {
+      ja: "創作居酒屋",
+      en: "Creative Izakaya",
+      "zh-CN": "创意居酒屋",
+      "zh-TW": "創意居酒屋",
+      ko: "창작 이자카야",
+    },
+  },
+  {
+    tagId: "taishu-sakaba",
+    label: { ja: "大衆酒場", en: "Casual Pub", "zh-CN": "大众酒馆", "zh-TW": "大眾酒館", ko: "대중 술집" },
+  },
+  foodTag("bar"),
+  foodTag("washoku"),
+  foodTag("ramen"),
+  foodTag("soup-curry"),
+  {
+    tagId: "cafe",
+    label: { ja: "カフェ", en: "Cafe", "zh-CN": "咖啡馆", "zh-TW": "咖啡廳", ko: "카페" },
+  },
+  {
+    tagId: "sweets",
+    label: { ja: "スイーツ", en: "Sweets", "zh-CN": "甜点", "zh-TW": "甜點", ko: "디저트" },
+  },
+];
+
 function metaText(r: RestaurantView, t: T) {
   return [walkLabel(r, t), `¥${r.priceMin.toLocaleString()}〜`].filter(Boolean).join(" · ");
 }
@@ -108,6 +156,14 @@ export function EditorialHomeV2({
     if (activeGenre === "all") return restaurants;
     return restaurants.filter((r) => r.tags.some((tag) => tag.id === activeGenre));
   }, [restaurants, activeGenre]);
+
+  const uiPreview = isUiPreviewHotel(hotelId);
+  const genres = uiPreview ? DEMO_FOOD_TAGS : FOOD_TAGS;
+  const genreCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const r of restaurants) for (const tag of r.tags) counts[tag.id] = (counts[tag.id] ?? 0) + 1;
+    return counts;
+  }, [restaurants]);
 
   const featured = restaurants[0];
   const sidePicks = restaurants.slice(1, 3);
@@ -232,18 +288,30 @@ export function EditorialHomeV2({
             <div className={styles.index}>01 / GENRE</div>
           </div>
 
-          <div className={styles.genreGrid}>
-            {FOOD_TAGS.map((food) => (
-              <button
-                type="button"
-                key={food.tagId}
-                className={`${styles.genreCell} ${activeGenre === food.tagId ? styles.genreCellActive : ""}`}
-                onClick={() => setActiveGenre(food.tagId)}
-              >
-                {food.label[locale]}
-              </button>
-            ))}
-          </div>
+          {uiPreview ? (
+            <GenreGridPreview
+              genres={genres}
+              counts={genreCounts}
+              total={restaurants.length}
+              active={activeGenre}
+              onChange={setActiveGenre}
+              locale={locale}
+              t={t}
+            />
+          ) : (
+            <div className={styles.genreGrid}>
+              {genres.map((food) => (
+                <button
+                  type="button"
+                  key={food.tagId}
+                  className={`${styles.genreCell} ${activeGenre === food.tagId ? styles.genreCellActive : ""}`}
+                  onClick={() => setActiveGenre(food.tagId)}
+                >
+                  {food.label[locale]}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div style={{ marginTop: 14 }}>{renderListGrid(genreFiltered)}</div>
         </section>

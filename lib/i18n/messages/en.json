@@ -49,6 +49,7 @@
   "distanceFromStation": "{meters}m from {station} Station",
   "priceRange": "Price range",
   "noResults": "No restaurants match your filters",
+  "genreResultCount": "{genre}: {count} places",
   "clearFilters": "Clear filters",
   "viewDetails": "View details",
   "openingHours": "Opening hours",

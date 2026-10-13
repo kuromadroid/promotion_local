@@ -8,6 +8,7 @@ import {
   Hotel,
 } from "@/lib/types";
 import { nearestStation } from "@/lib/stations";
+import { isTagVisibleForHotel } from "@/lib/demoTags";
 
 function resolveName(record: Record<Locale, string>, locale: Locale) {
   return record[locale] ?? record.en ?? record[DEFAULT_LOCALE];
@@ -56,9 +57,9 @@ export async function getTags(): Promise<Tag[]> {
   }));
 }
 
-export async function getTagsResolved(locale: Locale) {
+export async function getTagsResolved(locale: Locale, hotelId?: string) {
   const tags = await getTags();
-  return tags.map((tag) => ({
+  return tags.filter((tag) => isTagVisibleForHotel(tag.id, hotelId ?? "")).map((tag) => ({
     id: tag.id,
     type: tag.type,
     name: resolveName(tag.name, locale),
@@ -186,6 +187,7 @@ export async function getRestaurantsForHotel(
       const restaurantTags = (r.restaurant_tags ?? [])
         .map((rt) => rt.tags)
         .filter((tag): tag is NonNullable<typeof tag> => tag != null)
+        .filter((tag) => isTagVisibleForHotel(tag.id, hotelId))
         .map((tag) => ({
           id: tag.id,
           type: tag.type,
