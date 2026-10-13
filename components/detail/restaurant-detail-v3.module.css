@@ -191,6 +191,9 @@
 .infoRow:last-child { border-bottom: 0; }
 .infoLabel { color: var(--muted); font-weight: 750; }
 .infoValue { font-weight: 850; }
+.hoursList { display: grid; gap: 10px; }
+.hoursDays { font-weight: 950; }
+.hoursNote { color: var(--muted); font-weight: 750; }
 
 .mapCard { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
 .mapTitle { font-size: 13px; font-weight: 950; }

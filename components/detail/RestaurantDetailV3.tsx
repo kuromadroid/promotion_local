@@ -9,7 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkMinutes, walkSubtitle, isStationDistance } from "@/lib/distanceDisplay";
-import { formatOpeningHours, formatClosedDays } from "@/lib/hoursDisplay";
+import { openingHoursLines, formatClosedDays } from "@/lib/hoursDisplay";
 import styles from "./restaurant-detail-v3.module.css";
 
 export function RestaurantDetailV3({
@@ -26,7 +26,12 @@ export function RestaurantDetailV3({
   const cuisineTags = restaurant.tags.filter((tag) => tag.type === "cuisine");
   const paymentTags = restaurant.tags.filter((tag) => tag.type === "payment");
   const reservationUrl = resolveReservationUrl(restaurant, locale);
-  const openingHours = formatOpeningHours(restaurant.openingHours, locale);
+  const hoursLines = openingHoursLines(restaurant.openingHours, locale);
+  // The summary line under the name only has room for plain hours
+  // ("午後5:00〜午後11:00 / …"); day-by-day schedules live in the info section.
+  const summaryHours = hoursLines.some((line) => line.label)
+    ? undefined
+    : hoursLines.map((line) => line.hours).join(" / ") || undefined;
   const closedDays = formatClosedDays(restaurant.closedDays, locale);
 
   const handleMap = () => {
@@ -135,7 +140,7 @@ export function RestaurantDetailV3({
             <span>
               ¥{restaurant.priceMin.toLocaleString()}〜{restaurant.priceMax.toLocaleString()}
             </span>
-            {openingHours && <span>{openingHours}</span>}
+            {summaryHours && <span>{summaryHours}</span>}
           </div>
 
           {restaurant.tags.length > 0 && (
@@ -187,10 +192,18 @@ export function RestaurantDetailV3({
           <section className={styles.section}>
             <h2>{t("infoSectionTitle")}</h2>
             <div className={styles.infoList}>
-              {openingHours && (
+              {hoursLines.length > 0 && (
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>{t("openingHours")}</div>
-                  <div className={styles.infoValue}>{openingHours}</div>
+                  <div className={`${styles.infoValue} ${styles.hoursList}`}>
+                    {hoursLines.map((line, i) => (
+                      <div key={i}>
+                        {line.label && <div className={styles.hoursDays}>{line.label}</div>}
+                        <div>{line.hours}</div>
+                        {line.note && <div className={styles.hoursNote}>{line.note}</div>}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
               {closedDays && (

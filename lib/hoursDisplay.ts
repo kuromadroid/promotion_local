@@ -213,6 +213,104 @@ export function formatOpeningHours(raw: string | undefined, locale: Locale) {
     .replace(/\u0000(\d+)\u0000/g, (_, i) => formatted[Number(i)]);
 }
 
+// ---------------------------------------------------------------------------
+// Line-by-line opening hours
+// ---------------------------------------------------------------------------
+
+export interface OpeningHoursLine {
+  /** Which days this line is for ("月〜金、祝前日"), when the source says. */
+  label?: string;
+  hours: string;
+  /** Bracketed extras, typically last orders. */
+  note?: string;
+}
+
+// Longest alternatives first so 祝前日 / 土日祝 aren't cut short by 祝 / 土.
+const DAY_WORD = String.raw`(?:祝前日|祝日|土日祝日?|土日|平日|[日月火水木金土](?:曜日?)?|祝)`;
+const DAY_LABEL = String.raw`${DAY_WORD}(?:\s*[〜～~\-–・、,]\s*${DAY_WORD})*`;
+// "月～金、祝前日: 15:00〜" — a label introduced with a colon
+const COLON_LABEL_RE = new RegExp(`(?:^|\\s)(${DAY_LABEL})\\s*:\\s*`, "gu");
+// "月・水・木・土 11:30〜" — a label straight before a time
+const LEADING_LABEL_RE = new RegExp(`^(${DAY_LABEL})\\s*(?=翌|\\d)`, "u");
+// "20:00〜3:00（日）" — a label in brackets after the time
+const TRAILING_LABEL_RE = new RegExp(`[（(](${DAY_LABEL})[)）]\\s*$`, "u");
+const BRACKETED_RE = /[（(]([^（()）]*)[)）]/g;
+// "料理L.O. 22:30 ドリンクL.O. 22:30" → one "L.O. 22:30" when both match
+const SPLIT_LO_RE =
+  /^(?:料理|フード)\s*(?:L\.?O\.?|ラストオーダー)\s*(\S+)\s*[/／]?\s*ドリンク\s*(?:L\.?O\.?|ラストオーダー)\s*(\S+)$/;
+
+/** Splits on "/" between schedules, but not on one inside brackets ("(料理L.O.5:00 / ドリンクL.O.5:30)"). */
+function splitSchedules(text: string) {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+  for (const ch of text) {
+    if (ch === "(" || ch === "（") depth++;
+    else if (ch === ")" || ch === "）") depth = Math.max(0, depth - 1);
+    if (depth === 0 && (ch === "/" || ch === "／" || ch === "\n")) {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+    current += ch;
+  }
+  parts.push(current);
+  return parts.map((p) => p.trim()).filter(Boolean);
+}
+
+/** "月～金、祝前日: …　土: …" → one chunk per colon label. */
+function splitAtColonLabels(segment: string) {
+  const starts = [...segment.matchAll(COLON_LABEL_RE)].map((m) => m.index ?? 0);
+  if (starts.length === 0) return [segment];
+  const bounds = starts[0] > 0 ? [0, ...starts] : starts;
+  return bounds.map((start, i) => segment.slice(start, bounds[i + 1]).trim()).filter(Boolean);
+}
+
+/**
+ * Opening hours as separate lines (one per day group / time slot) so long
+ * schedules like "月～金、祝前日: 15:00～翌3:00 （料理L.O. 翌2:30 ドリンクL.O. 翌2:30）
+ * 土: …" read as a list instead of one run-on sentence.
+ */
+export function openingHoursLines(raw: string | undefined, locale: Locale): OpeningHoursLine[] {
+  if (!raw) return [];
+  const chunks = splitSchedules(normalize(raw)).flatMap(splitAtColonLabels);
+
+  return chunks.map((chunk) => {
+    let rest = chunk;
+    let label: string | undefined;
+
+    const colon = rest.match(new RegExp(`^(${DAY_LABEL})\\s*:\\s*`, "u"));
+    const leading = rest.match(LEADING_LABEL_RE);
+    const trailing = rest.match(TRAILING_LABEL_RE);
+    if (colon) {
+      label = colon[1];
+      rest = rest.slice(colon[0].length);
+    } else if (leading) {
+      label = leading[1];
+      rest = rest.slice(leading[0].length);
+    } else if (trailing) {
+      label = trailing[1];
+      rest = rest.slice(0, trailing.index);
+    }
+
+    const notes = [...rest.matchAll(BRACKETED_RE)].map((m) => {
+      // "L.O.22:00" / "L.O23:30" / "LO30分前" → "L.O. 22:00"
+      const note = m[1].trim().replace(/(?<![A-Za-z])L\.?O\.?(?![A-Za-z])\s*/g, "L.O. ");
+      const lo = note.match(SPLIT_LO_RE);
+      return lo && lo[1] === lo[2] ? `L.O. ${lo[1]}` : note;
+    });
+    const hours = rest.replace(BRACKETED_RE, " ").replace(/\s{2,}/g, " ").trim();
+
+    const formatLabel = (text: string) =>
+      locale === "ja" ? text.replace(/[～~]/g, "〜") : translateWords(text, locale);
+    return {
+      label: label ? formatLabel(label) : undefined,
+      hours: formatOpeningHours(hours, locale) ?? hours,
+      note: notes.length > 0 ? formatOpeningHours(notes.join(" / "), locale) : undefined,
+    };
+  });
+}
+
 export function formatClosedDays(raw: string | undefined, locale: Locale) {
   if (!raw || locale === "ja") return raw;
   const text = normalize(raw).replace(/\s+/g, "");
