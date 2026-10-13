@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
@@ -13,6 +13,36 @@ import editorial from "./sapporo-bites-editorial-v2.module.css";
 import styles from "./mobile-home-preview.module.css";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
+
+// List layout: "large" = full-width photo, ~2.5 shops per screen, with
+// reserve/map buttons; "grid" = two columns of square photos, ~5 shops per
+// screen, tap for details. Remembered per device; when storage is unavailable
+// (private mode etc.) it lasts for the visit only.
+type ListView = "large" | "grid";
+const VIEW_STORAGE_KEY = "sb-list-view";
+let memoryView: ListView = "large";
+const viewListeners = new Set<() => void>();
+
+function readView(): ListView {
+  try {
+    const saved = localStorage.getItem(VIEW_STORAGE_KEY);
+    if (saved === "large" || saved === "grid") return saved;
+  } catch {}
+  return memoryView;
+}
+
+function changeView(next: ListView) {
+  memoryView = next;
+  try {
+    localStorage.setItem(VIEW_STORAGE_KEY, next);
+  } catch {}
+  viewListeners.forEach((notify) => notify());
+}
+
+function subscribeView(notify: () => void) {
+  viewListeners.add(notify);
+  return () => viewListeners.delete(notify);
+}
 
 /**
  * Phone-first hotel top page, shown only on the UI preview hotel
@@ -43,6 +73,8 @@ export function MobileHomePreview({
   const [showToTop, setShowToTop] = useState(false);
   const listTop = useRef<HTMLDivElement>(null);
   const pendingScroll = useRef(false);
+
+  const view = useSyncExternalStore(subscribeView, readView, () => "large" as const);
 
   useEffect(() => {
     const onScroll = () => setShowToTop(window.scrollY > window.innerHeight);
@@ -174,9 +206,24 @@ export function MobileHomePreview({
         </div>
 
         <div ref={listTop} className={styles.listTop} />
-        <p className={styles.result} aria-live="polite">
-          {t("genreResultCount", { genre: activeLabel, count: filtered.length })}
-        </p>
+        <div className={styles.resultRow}>
+          <p className={styles.result} aria-live="polite">
+            {t("genreResultCount", { genre: activeLabel, count: filtered.length })}
+          </p>
+          <div className={styles.viewSwitch} role="group" aria-label={t("viewSwitchLabel")}>
+            {(["large", "grid"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                aria-pressed={view === v}
+                className={`${styles.viewButton} ${view === v ? styles.viewButtonActive : ""}`}
+                onClick={() => changeView(v)}
+              >
+                {t(v === "large" ? "viewLarge" : "viewGrid")}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {filtered.length === 0 ? (
           <div className={styles.empty}>
@@ -185,6 +232,27 @@ export function MobileHomePreview({
               {t("clearFilters")}
             </button>
           </div>
+        ) : view === "grid" ? (
+          <ul className={styles.grid}>
+            {filtered.map((r) => (
+              <li key={r.id} className={styles.tile}>
+                <Link
+                  href={`/h/${hotelId}/restaurants/${r.id}`}
+                  onClick={() => handleView(r)}
+                  className={styles.tileLink}
+                >
+                  <div className={styles.tilePhoto}>
+                    <Image src={r.photos[0]} alt="" fill sizes="50vw" loading="lazy" />
+                  </div>
+                  <div className={styles.tileBody}>
+                    <h3 className={styles.tileName}>{r.name}</h3>
+                    <p className={styles.tileMeta}>{walkLabel(r, t)}</p>
+                    <p className={styles.tileMeta}>¥{r.priceMin.toLocaleString()}〜</p>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
         ) : (
           <ul className={styles.list}>
             {filtered.map((r) => {
@@ -196,15 +264,15 @@ export function MobileHomePreview({
                     onClick={() => handleView(r)}
                     className={styles.cardLink}
                   >
-                    <div className={styles.thumb}>
-                      <Image src={r.photos[0]} alt="" fill sizes="104px" loading="lazy" />
+                    <div className={styles.photo}>
+                      <Image src={r.photos[0]} alt="" fill sizes="(max-width: 560px) 100vw, 560px" loading="lazy" />
+                      <div className={styles.photoShade} />
+                      {cuisine(r) && <p className={styles.badge}>{cuisine(r)}</p>}
+                      <div className={styles.photoText}>
+                        <h3 className={styles.name}>{r.name}</h3>
+                        <p className={styles.photoMeta}>{meta(r)}</p>
+                      </div>
                     </div>
-                    <div className={styles.cardText}>
-                      <h3 className={styles.name}>{r.name}</h3>
-                      <p className={styles.meta}>{meta(r)}</p>
-                      {cuisine(r) && <p className={styles.cuisine}>{cuisine(r)}</p>}
-                    </div>
-                    <p className={styles.desc}>{r.description}</p>
                   </Link>
                   {(reservable || r.googleMapsUrl) && (
                     <div className={styles.actions}>
