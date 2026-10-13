@@ -20,6 +20,7 @@ type T = (key: string, vars?: Record<string, string | number>) => string;
 // (private mode etc.) it lasts for the visit only.
 type ListView = "large" | "grid";
 const VIEW_STORAGE_KEY = "sb-list-view";
+const TOPBAR_HEIGHT = 53; // keep in sync with --topbar-h in mobile-home-preview.module.css
 let memoryView: ListView = "large";
 const viewListeners = new Set<() => void>();
 
@@ -71,13 +72,21 @@ export function MobileHomePreview({
 }) {
   const [active, setActive] = useState("all");
   const [showToTop, setShowToTop] = useState(false);
+  // True once every genre chip has scrolled up behind the header; the sticky
+  // result row then offers a jump back to them.
+  const [chipsHidden, setChipsHidden] = useState(false);
+  const chipsRef = useRef<HTMLDivElement>(null);
   const listTop = useRef<HTMLDivElement>(null);
   const pendingScroll = useRef(false);
 
   const view = useSyncExternalStore(subscribeView, readView, () => "large" as const);
 
   useEffect(() => {
-    const onScroll = () => setShowToTop(window.scrollY > window.innerHeight);
+    const onScroll = () => {
+      setShowToTop(window.scrollY > window.innerHeight);
+      const chips = chipsRef.current?.getBoundingClientRect();
+      setChipsHidden(Boolean(chips && chips.bottom < TOPBAR_HEIGHT));
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -105,7 +114,7 @@ export function MobileHomePreview({
   };
 
   // After the list re-renders for a new genre, bring the start of the results
-  // up under the sticky chip bar. Done here rather than in the click handler
+  // up under the header. Done here rather than in the click handler
   // so the scroll isn't cut short by the list changing height.
   useEffect(() => {
     if (!pendingScroll.current) return;
@@ -180,7 +189,7 @@ export function MobileHomePreview({
           {t("genreSectionTitle")}
         </h2>
 
-        <div className={styles.chipBar}>
+        <div ref={chipsRef} className={styles.chipArea}>
           <div className={styles.chips} role="group" aria-labelledby="genre-title">
             {[{ tagId: "all", name: t("all"), count: restaurants.length }, ...genres.map((g) => ({
               tagId: g.tagId,
@@ -210,6 +219,16 @@ export function MobileHomePreview({
           <p className={styles.result} aria-live="polite">
             {t("genreResultCount", { genre: activeLabel, count: filtered.length })}
           </p>
+          {chipsHidden && (
+            <button
+              type="button"
+              className={styles.genreJump}
+              onClick={() => chipsRef.current?.scrollIntoView({ block: "start" })}
+            >
+              {t("cuisine")}
+              <span aria-hidden="true">↑</span>
+            </button>
+          )}
           <div className={styles.viewSwitch} role="group" aria-label={t("viewSwitchLabel")}>
             {(["large", "grid"] as const).map((v) => (
               <button
