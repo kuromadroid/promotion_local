@@ -57,7 +57,12 @@ export default function HeroCollage({ images }: HeroCollageProps) {
             fill
             sizes={heroImageSizes(safeImages.length, index)}
             quality={85}
-            preload={index === 0}
+            // The collage is the first thing on screen: lazy loading only
+            // delays it, and some in-app browsers (QR scans) never trigger
+            // it, leaving every photo but the first blank. Next's docs advise
+            // eager + fetchPriority over `preload` when `loading` is set.
+            loading="eager"
+            fetchPriority={index === 0 ? "high" : "auto"}
           />
         </div>
       ))}
