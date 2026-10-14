@@ -222,24 +222,22 @@ export function PrivacyPolicyJa() {
         <dl className="mt-3 space-y-1.5 text-sm leading-relaxed text-(--color-ink)">
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">運営者名称：</dt>
-            <dd>株式会社BLANCO</dd>
+            <dd>Sapporo Bites</dd>
+          </div>
+          <div className="flex gap-2">
+            <dt className="shrink-0 text-(--color-ink-soft)">運営者：</dt>
+            <dd>黒澤 州（個人事業主）</dd>
           </div>
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">所在地：</dt>
-            <dd>北海道札幌市手稲区前田5条10丁目5-9</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="shrink-0 text-(--color-ink-soft)">代表者：</dt>
-            <dd>代表取締役 片山 修</dd>
+            <dd>北海道札幌市北区北27条西13丁目6-14</dd>
           </div>
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">お問い合わせ・苦情申出先：</dt>
             <dd>
-              <a
-                href="mailto:kurosawa@japan-blanco.com"
-                className="text-(--color-coral-deep) underline underline-offset-2"
-              >
-                kurosawa@japan-blanco.com
+              電話：
+              <a href="tel:+818055848259" className="text-(--color-coral-deep) underline underline-offset-2">
+                080-5584-8259
               </a>
             </dd>
           </div>
@@ -253,7 +251,7 @@ export function PrivacyPolicyJa() {
           </div>
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">最終改定日：</dt>
-            <dd>2026年10月9日</dd>
+            <dd>2026年10月14日</dd>
           </div>
         </dl>
       </section>

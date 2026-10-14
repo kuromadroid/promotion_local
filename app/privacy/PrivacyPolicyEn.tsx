@@ -303,24 +303,22 @@ export function PrivacyPolicyEn() {
         <dl className="mt-3 space-y-1.5 text-sm leading-relaxed text-(--color-ink)">
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">Operator:</dt>
-            <dd>BLANCO Co., Ltd. (株式会社BLANCO)</dd>
+            <dd>Sapporo Bites</dd>
+          </div>
+          <div className="flex gap-2">
+            <dt className="shrink-0 text-(--color-ink-soft)">Run by:</dt>
+            <dd>Shu Kurosawa (黒澤 州), sole proprietor</dd>
           </div>
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">Address:</dt>
-            <dd>5-9, Maeda 5-jo 10-chome, Teine-ku, Sapporo, Hokkaido, Japan</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="shrink-0 text-(--color-ink-soft)">Representative:</dt>
-            <dd>Osamu Katayama, Representative Director</dd>
+            <dd>6-14, Kita 27-jo Nishi 13-chome, Kita-ku, Sapporo, Hokkaido, Japan</dd>
           </div>
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">Inquiries and complaints:</dt>
             <dd>
-              <a
-                href="mailto:kurosawa@japan-blanco.com"
-                className="text-(--color-coral-deep) underline underline-offset-2"
-              >
-                kurosawa@japan-blanco.com
+              Phone:{" "}
+              <a href="tel:+818055848259" className="text-(--color-coral-deep) underline underline-offset-2">
+                +81 80-5584-8259
               </a>
             </dd>
           </div>
@@ -334,7 +332,7 @@ export function PrivacyPolicyEn() {
           </div>
           <div className="flex gap-2">
             <dt className="shrink-0 text-(--color-ink-soft)">Last revised:</dt>
-            <dd>October 9, 2026</dd>
+            <dd>October 14, 2026</dd>
           </div>
         </dl>
       </section>
