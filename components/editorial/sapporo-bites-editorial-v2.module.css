@@ -155,7 +155,8 @@
 
 .genreGrid {
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  /* 9 genres → a full 3×3, and cells wide enough for スープカレー / ジンギスカン */
+  grid-template-columns:repeat(3,1fr);
   margin:2px 1px 12px;
   border-radius:16px;
   border-style:solid;

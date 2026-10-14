@@ -66,12 +66,16 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
       ko: "수프카레",
     },
   },
+  {
+    tagId: "cafe",
+    label: { ja: "カフェ", en: "Cafe", "zh-CN": "咖啡馆", "zh-TW": "咖啡廳", ko: "카페" },
+  },
 ];
 
 const foodTag = (tagId: string) => FOOD_TAGS.find((tag) => tag.tagId === tagId)!;
 
 // UI preview hotel trial (see lib/demoTags.ts): 居酒屋 is split into three genres,
-// and カフェ / スイーツ are added.
+// and スイーツ is added.
 const DEMO_FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   foodTag("genghis-khan"),
   foodTag("seafood"),
@@ -104,10 +108,7 @@ const DEMO_FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   foodTag("washoku"),
   foodTag("ramen"),
   foodTag("soup-curry"),
-  {
-    tagId: "cafe",
-    label: { ja: "カフェ", en: "Cafe", "zh-CN": "咖啡馆", "zh-TW": "咖啡廳", ko: "카페" },
-  },
+  foodTag("cafe"),
   {
     tagId: "sweets",
     label: { ja: "スイーツ", en: "Sweets", "zh-CN": "甜点", "zh-TW": "甜點", ko: "디저트" },

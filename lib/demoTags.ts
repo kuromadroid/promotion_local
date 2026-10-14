@@ -14,7 +14,6 @@ export const DEMO_ONLY_TAG_IDS = new Set([
   "yakitori-kushi",
   "creative-izakaya",
   "taishu-sakaba",
-  "cafe",
   "sweets",
 ]);
 
