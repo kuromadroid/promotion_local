@@ -56,7 +56,7 @@
   "clearFilters": "絞り込みをリセット",
   "viewDetails": "詳細を見る",
   "openingHours": "営業時間",
-  "hoursAsOf": "{date}現在の情報です",
+  "hoursAsOf": "※掲載情報は{date}時点のものです。最新の情報は、各店舗へ直接お問い合わせください。",
   "closedDays": "定休日",
   "recommendedDish": "おすすめメニュー",
   "viewOnMap": "Google Mapsを見る",

@@ -10,13 +10,14 @@ import { Locale } from "@/lib/types";
 
 /**
  * The date the opening hours / closed days on the site were last checked,
- * shown as "10月15日現在の情報です". One date for every restaurant — bump it
+ * shown as "※掲載情報は2026年10月15日時点のものです。…". One date for every restaurant — bump it
  * (YYYY-MM-DD) after re-checking the hours.
  */
 export const HOURS_AS_OF = "2026-10-15";
 
 export function formatHoursAsOf(locale: Locale) {
   return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
     month: "long",
     day: "numeric",
     timeZone: "UTC",

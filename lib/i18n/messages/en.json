@@ -56,7 +56,7 @@
   "clearFilters": "Clear filters",
   "viewDetails": "View details",
   "openingHours": "Opening hours",
-  "hoursAsOf": "Information as of {date}",
+  "hoursAsOf": "*Information as of {date}. Please contact each restaurant directly for the latest details.",
   "closedDays": "Closed",
   "recommendedDish": "Recommended dish",
   "viewOnMap": "View on Google Maps",

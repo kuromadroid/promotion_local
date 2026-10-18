@@ -56,7 +56,7 @@
   "clearFilters": "필터 초기화",
   "viewDetails": "자세히 보기",
   "openingHours": "영업시간",
-  "hoursAsOf": "{date} 기준 정보입니다",
+  "hoursAsOf": "※게재 정보는 {date} 기준입니다. 최신 정보는 각 매장에 직접 문의해 주세요.",
   "closedDays": "휴무일",
   "recommendedDish": "추천 메뉴",
   "viewOnMap": "구글 지도에서 보기",
