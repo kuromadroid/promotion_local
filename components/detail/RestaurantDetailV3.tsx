@@ -9,7 +9,7 @@ import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkMinutes, walkSubtitle, isStationDistance } from "@/lib/distanceDisplay";
-import { openingHoursLines, formatClosedDays } from "@/lib/hoursDisplay";
+import { openingHoursLines, formatClosedDays, formatHoursAsOf } from "@/lib/hoursDisplay";
 import styles from "./restaurant-detail-v3.module.css";
 
 export function RestaurantDetailV3({
@@ -33,6 +33,8 @@ export function RestaurantDetailV3({
     ? undefined
     : hoursLines.map((line) => line.hours).join(" / ") || undefined;
   const closedDays = formatClosedDays(restaurant.closedDays, locale);
+  // Shown once, under whichever of hours / closed days comes last.
+  const hoursAsOf = <div className={styles.hoursAsOf}>{t("hoursAsOf", { date: formatHoursAsOf(locale) })}</div>;
 
   const handleMap = () => {
     trackEvent({ eventName: "map_click", hotelId, restaurantId: restaurant.id });
@@ -203,13 +205,17 @@ export function RestaurantDetailV3({
                         {line.note && <div className={styles.hoursNote}>{line.note}</div>}
                       </div>
                     ))}
+                    {!closedDays && hoursAsOf}
                   </div>
                 </div>
               )}
               {closedDays && (
                 <div className={styles.infoRow}>
                   <div className={styles.infoLabel}>{t("closedDays")}</div>
-                  <div className={styles.infoValue}>{closedDays}</div>
+                  <div className={styles.infoValue}>
+                    {closedDays}
+                    {hoursAsOf}
+                  </div>
                 </div>
               )}
               <div className={styles.infoRow}>

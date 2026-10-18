@@ -8,6 +8,21 @@ import { Locale } from "@/lib/types";
  * parser doesn't recognise is passed through with only the known words swapped.
  */
 
+/**
+ * The date the opening hours / closed days on the site were last checked,
+ * shown as "10月15日現在の情報です". One date for every restaurant — bump it
+ * (YYYY-MM-DD) after re-checking the hours.
+ */
+export const HOURS_AS_OF = "2026-10-15";
+
+export function formatHoursAsOf(locale: Locale) {
+  return new Intl.DateTimeFormat(locale, {
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${HOURS_AS_OF}T00:00:00Z`));
+}
+
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 type WeekdayKanji = (typeof WEEKDAYS)[number];
 
