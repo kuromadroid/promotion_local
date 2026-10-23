@@ -7,7 +7,14 @@ type PhotoItem =
   | { kind: "existing"; key: string; url: string }
   | { kind: "new"; key: string; blob: Blob; previewUrl: string };
 
-export function RestaurantPhotoManager({ initialPhotos }: { initialPhotos: string[] }) {
+export function RestaurantPhotoManager({
+  initialPhotos,
+  downloadName = "photo",
+}: {
+  initialPhotos: string[];
+  /** Base filename for saved photos, e.g. the restaurant name → "店名-1.jpg". */
+  downloadName?: string;
+}) {
   const [items, setItems] = useState<PhotoItem[]>(
     initialPhotos.map((url) => ({ kind: "existing", key: url, url }))
   );
@@ -89,7 +96,7 @@ export function RestaurantPhotoManager({ initialPhotos }: { initialPhotos: strin
     <div>
       <span className="block text-sm font-medium text-(--color-ink)">写真</span>
       <p className="mt-1 text-xs text-(--color-ink-soft)">
-        先頭の写真がサムネイル(一覧などの代表写真)になります。↑↓で並び替え、✕で削除。追加した写真はその場で枠に合わせて調整できます。
+        先頭の写真がサムネイル(一覧などの代表写真)になります。↑↓で並び替え、⬇でPCに保存、✕で削除。追加した写真はその場で枠に合わせて調整できます。
       </p>
 
       {items.length > 0 && (
@@ -131,14 +138,30 @@ export function RestaurantPhotoManager({ initialPhotos }: { initialPhotos: strin
                     ↓
                   </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.key)}
-                  className="rounded bg-white/90 px-1.5 py-0.5 text-xs font-bold text-(--color-coral-deep)"
-                  aria-label="削除"
-                >
-                  ✕
-                </button>
+                <div className="flex gap-1">
+                  {item.kind === "existing" && (
+                    // Supabase serves the file as an attachment when ?download= is present,
+                    // so this saves to the PC instead of opening the image.
+                    <a
+                      href={`${item.url}?download=${encodeURIComponent(
+                        `${(downloadName || "photo").replace(/[\\/:*?"<>|]/g, "_")}-${index + 1}.jpg`
+                      )}`}
+                      className="rounded bg-white/90 px-1.5 py-0.5 text-xs font-bold"
+                      aria-label="PCに保存"
+                      title="PCに保存"
+                    >
+                      ⬇
+                    </a>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.key)}
+                    className="rounded bg-white/90 px-1.5 py-0.5 text-xs font-bold text-(--color-coral-deep)"
+                    aria-label="削除"
+                  >
+                    ✕
+                  </button>
+                </div>
               </div>
             </div>
           ))}

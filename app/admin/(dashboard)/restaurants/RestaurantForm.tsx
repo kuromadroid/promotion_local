@@ -238,7 +238,7 @@ export function RestaurantForm({
           </label>
         </div>
 
-        <RestaurantPhotoManager initialPhotos={initial?.photos ?? []} />
+        <RestaurantPhotoManager initialPhotos={initial?.photos ?? []} downloadName={initial?.nameJa} />
       </section>
 
       <section className="bg-white border border-(--color-line) rounded-2xl p-6 space-y-4">
