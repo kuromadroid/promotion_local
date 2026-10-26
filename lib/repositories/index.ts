@@ -6,6 +6,7 @@ import {
   Area,
   Tag,
   Hotel,
+  Ad,
 } from "@/lib/types";
 import { nearestStation } from "@/lib/stations";
 import { isTagVisibleForHotel } from "@/lib/demoTags";
@@ -292,4 +293,24 @@ export async function getNearestForHotel(
     sort: "distance",
   });
   return all.slice(0, limit);
+}
+
+/** Active ads, in list order. Returns none (rather than failing the page) if
+ * the ads table isn't there yet — see supabase/migrations/202610260001_ads.sql. */
+export async function getActiveAds(): Promise<Ad[]> {
+  const { data, error } = await supabase
+    .from("ads")
+    .select("id, title, subtitle, image_url, link_url, position")
+    .eq("is_active", true)
+    .order("position", { ascending: true })
+    .order("created_at", { ascending: true });
+  if (error) return [];
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    title: a.title,
+    subtitle: a.subtitle ?? undefined,
+    imageUrl: a.image_url,
+    linkUrl: a.link_url,
+    position: a.position,
+  }));
 }

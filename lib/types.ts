@@ -113,6 +113,17 @@ export interface RestaurantView {
   displayPriority: number;
 }
 
+/** An ad slot mixed into the restaurant list (non-Japanese locales only). */
+export interface Ad {
+  id: string;
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  linkUrl: string;
+  /** Shown after this many restaurants (0 = at the top). */
+  position: number;
+}
+
 export const ANALYTICS_EVENT_NAMES = [
   "qr_scan",
   "page_view",
@@ -126,6 +137,7 @@ export const ANALYTICS_EVENT_NAMES = [
   "instagram_click",
   "official_site_click",
   "phone_click",
+  "ad_click",
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENT_NAMES)[number];

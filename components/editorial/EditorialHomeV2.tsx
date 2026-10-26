@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Locale, RestaurantView } from "@/lib/types";
+import { Ad, Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { walkLabel } from "@/lib/distanceDisplay";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
@@ -136,6 +136,7 @@ export function EditorialHomeV2({
   hotelName,
   heroPhotos,
   restaurants,
+  ads,
   messages,
   locale,
 }: {
@@ -143,6 +144,7 @@ export function EditorialHomeV2({
   hotelName: string;
   heroPhotos: string[];
   restaurants: RestaurantView[];
+  ads: Ad[];
   messages: Record<string, string>;
   locale: Locale;
 }) {
@@ -184,6 +186,7 @@ export function EditorialHomeV2({
         hotelName={hotelName}
         heroImages={heroImages}
         restaurants={restaurants}
+        ads={ads}
         genres={DEMO_FOOD_TAGS}
         locale={locale}
         t={t}
@@ -195,7 +198,7 @@ export function EditorialHomeV2({
     trackEvent({ eventName: "restaurant_view", hotelId, restaurantId: r.id });
   };
 
-  const renderListGrid = (list: RestaurantView[]) => (
+  const renderListGrid = (list: RestaurantView[], listAds: Ad[]) => (
     <div className={cardStyles.cards}>
       <div className={cardStyles.cardsHead}>
         <ListViewSwitch view={listView} t={t} />
@@ -205,7 +208,7 @@ export function EditorialHomeV2({
           {t("noResults")}
         </div>
       ) : (
-        <RestaurantCards restaurants={list} view={listView} hotelId={hotelId} locale={locale} t={t} />
+        <RestaurantCards restaurants={list} ads={listAds} view={listView} hotelId={hotelId} locale={locale} t={t} />
       )}
     </div>
   );
@@ -265,7 +268,7 @@ export function EditorialHomeV2({
             ))}
           </div>
 
-          {renderListGrid(genreFiltered)}
+          {renderListGrid(genreFiltered, activeGenre === "all" ? ads : [])}
         </section>
 
         {/* 02. TONIGHT (featured picks, swipe sideways) */}

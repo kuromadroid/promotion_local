@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Locale, RestaurantView } from "@/lib/types";
+import { Ad, Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { walkLabel } from "@/lib/distanceDisplay";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
@@ -29,6 +29,7 @@ export function MobileHomePreview({
   hotelName,
   heroImages,
   restaurants,
+  ads,
   genres,
   locale,
   t,
@@ -37,6 +38,7 @@ export function MobileHomePreview({
   hotelName: string;
   heroImages: HeroCollageImage[];
   restaurants: RestaurantView[];
+  ads: Ad[];
   genres: { tagId: string; label: Record<Locale, string> }[];
   locale: Locale;
   t: T;
@@ -196,7 +198,7 @@ export function MobileHomePreview({
             </button>
           </div>
         ) : (
-          <RestaurantCards restaurants={filtered} view={view} hotelId={hotelId} locale={locale} t={t} />
+          <RestaurantCards restaurants={filtered} ads={active === "all" ? ads : []} view={view} hotelId={hotelId} locale={locale} t={t} />
         )}
       </section>
 

@@ -39,6 +39,7 @@
   "features": "Features",
   "all": "All",
   "genreAll": "All",
+  "adLabel": "AD",
   "sortBy": "Sort by",
   "sortPriority": "Recommended",
   "sortDistance": "Nearest to hotel",

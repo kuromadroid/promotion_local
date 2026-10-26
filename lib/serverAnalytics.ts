@@ -32,7 +32,7 @@ export function normalizeSessionId(value: unknown) {
  * actually sends, coerce each value to a short string, and drop everything else.
  * Returns null when nothing usable remains (so the column stays NULL, as before).
  */
-const META_ALLOWED_KEYS = ["qrId", "screen", "source"] as const;
+const META_ALLOWED_KEYS = ["qrId", "screen", "source", "adId"] as const;
 const META_MAX_VALUE_LENGTH = 200;
 // A QR id is an issue code we print on a physical placement. If a value does
 // not match that shape it is not one of ours — drop it entirely rather than
