@@ -14,6 +14,20 @@ export default async function AdminAdsPage() {
   ]);
   const hotelNameById = new Map((hotels ?? []).map((h) => [h.id, h.name]));
 
+  // Clicks recorded as ad_click events (events are kept for 180 days).
+  const clickCounts = new Map(
+    await Promise.all(
+      (ads ?? []).map(async (ad) => {
+        const { count } = await supabaseAdmin
+          .from("events")
+          .select("id", { count: "exact", head: true })
+          .eq("event_name", "ad_click")
+          .eq("meta->>adId", ad.id);
+        return [ad.id, count ?? 0] as const;
+      })
+    )
+  );
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -29,7 +43,7 @@ export default async function AdminAdsPage() {
       </div>
 
       <p className="mb-6 text-sm text-(--color-ink-soft)">
-        日本語以外の言語で見ているお客様にだけ、店舗一覧に「AD」付きのカードとして混ざって表示されます。
+        日本語以外の言語で見ているお客様にだけ、店舗一覧に「AD」付きのカードとして混ざって表示されます。クリック数は直近180日分です。
       </p>
 
       {error ? (
@@ -53,6 +67,9 @@ export default async function AdminAdsPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <h2 className="truncate font-bold text-(--color-ink)">{ad.title}</h2>
+                  <span className="shrink-0 rounded-full bg-(--color-navy)/10 px-2 py-0.5 text-xs font-bold text-(--color-navy)">
+                    クリック {(clickCounts.get(ad.id) ?? 0).toLocaleString()}
+                  </span>
                   {!ad.is_active && (
                     <span className="shrink-0 rounded-full bg-(--color-line) px-2 py-0.5 text-xs text-(--color-ink-soft)">
                       非公開
