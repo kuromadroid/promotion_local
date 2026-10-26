@@ -38,6 +38,7 @@
   "cuisine": "Cuisine",
   "features": "Features",
   "all": "All",
+  "genreAll": "All",
   "sortBy": "Sort by",
   "sortPriority": "Recommended",
   "sortDistance": "Nearest to hotel",

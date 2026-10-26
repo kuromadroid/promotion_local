@@ -188,6 +188,8 @@
   transition:background .14s, color .14s;
 }
 
+.genreCellAll { grid-column:1 / -1; }
+
 .genreCellActive {
   background:#111;
   color:#fff;
