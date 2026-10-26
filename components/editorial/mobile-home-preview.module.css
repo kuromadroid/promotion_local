@@ -15,10 +15,31 @@
   letter-spacing:.02em;
 }
 
+/* Restaurant cards (and the large/grid switch) used on the regular hotel
+   top page, outside .root. */
+.cards {
+  --line:#8a8478;
+  --radius-card:12px;
+  --radius-control:8px;
+  --muted-strong:#5f5a51;
+  letter-spacing:.02em;
+}
+
+.cardsHead {
+  display:flex;
+  justify-content:flex-end;
+  margin:14px 0 12px;
+}
+
+@media (min-width:1025px) {
+  .cards .list { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:22px; }
+  .cards .grid { grid-template-columns:repeat(4, minmax(0, 1fr)); gap:16px; }
+}
+
 .root .topbar { height:var(--topbar-h); }
 .root .lang { min-height:44px; font-size:14px; font-weight:700; }
 
-.root :focus-visible {
+:is(.root, .cards) :focus-visible {
   outline:3px solid #000;
   outline-offset:2px;
   box-shadow:0 0 0 5px #ffd43d;
@@ -211,7 +232,7 @@
   overflow:hidden;
 }
 
-.root .viewButton {
+:is(.root, .cards) .viewButton {
   min-height:44px;
   min-width:56px;
   padding:0 10px;
@@ -222,7 +243,7 @@
   font-weight:700;
 }
 
-.root .viewButtonActive {
+:is(.root, .cards) .viewButtonActive {
   background:#111;
   color:#fff;
 }
@@ -366,7 +387,7 @@
   border-top:1px solid var(--line);
 }
 
-.root .action {
+:is(.root, .cards) .action {
   flex:1;
   min-height:48px;
   padding:0 12px;
@@ -379,7 +400,7 @@
   letter-spacing:.02em;
 }
 
-.root .actionPrimary {
+:is(.root, .cards) .actionPrimary {
   background:#111;
   color:#fff;
 }

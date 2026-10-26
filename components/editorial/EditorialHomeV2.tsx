@@ -5,13 +5,14 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
-import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkLabel } from "@/lib/distanceDisplay";
 import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
 import { MobileHomePreview } from "@/components/editorial/MobileHomePreview";
+import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
 import { isUiPreviewHotel } from "@/lib/uiPreview";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import styles from "./sapporo-bites-editorial-v2.module.css";
+import cardStyles from "./mobile-home-preview.module.css";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
@@ -152,6 +153,7 @@ export function EditorialHomeV2({
   };
 
   const [activeGenre, setActiveGenre] = useState<string>("all");
+  const listView = useListView();
 
   const genreFiltered = useMemo(() => {
     if (activeGenre === "all") return restaurants;
@@ -190,76 +192,24 @@ export function EditorialHomeV2({
     );
   }
 
-  const handleReserve = (r: RestaurantView) => {
-    trackEvent({ eventName: "reservation_click", hotelId, restaurantId: r.id });
-    const url = resolveReservationUrl(r, locale);
-    if (url) window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const handleMap = (r: RestaurantView) => {
-    trackEvent({ eventName: "map_click", hotelId, restaurantId: r.id });
-    if (r.googleMapsUrl) window.open(r.googleMapsUrl, "_blank", "noopener,noreferrer");
-  };
-
   const handleView = (r: RestaurantView) => {
     trackEvent({ eventName: "restaurant_view", hotelId, restaurantId: r.id });
   };
 
-  const renderListGrid = (list: RestaurantView[]) =>
-    list.length === 0 ? (
-      <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--muted)", fontWeight: 700 }}>
-        {t("noResults")}
+  const renderListGrid = (list: RestaurantView[]) => (
+    <div className={cardStyles.cards}>
+      <div className={cardStyles.cardsHead}>
+        <ListViewSwitch view={listView} t={t} />
       </div>
-    ) : (
-      <div className={styles.allGrid}>
-        {list.map((r) => (
-          <article className={styles.listCard} key={r.id}>
-            <Link
-              href={`/h/${hotelId}/restaurants/${r.id}`}
-              className={styles.listPhoto}
-              onClick={() => handleView(r)}
-            >
-              <Image
-                src={r.photos[0]}
-                alt={r.name}
-                fill
-                sizes="(max-width: 1024px) calc(100vw - 24px), 560px"
-                loading="lazy"
-              />
-            </Link>
-
-            <div className={styles.listBody}>
-              <Link
-                href={`/h/${hotelId}/restaurants/${r.id}`}
-                className={styles.listTextLink}
-                onClick={() => handleView(r)}
-              >
-                <h3>{r.name}</h3>
-                <div className={styles.meta}>{metaText(r, t)}</div>
-                <div className={styles.desc}>{r.description}</div>
-              </Link>
-
-              <div className={styles.actions}>
-                {resolveReservationUrl(r, locale) && (
-                  <button
-                    type="button"
-                    className={`${styles.button} ${styles.primaryButton}`}
-                    onClick={() => handleReserve(r)}
-                  >
-                    {t("makeReservation")}
-                  </button>
-                )}
-                {r.googleMapsUrl && (
-                  <button type="button" className={styles.button} onClick={() => handleMap(r)}>
-                    {t("viewOnMap")}
-                  </button>
-                )}
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-    );
+      {list.length === 0 ? (
+        <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--muted)", fontWeight: 700 }}>
+          {t("noResults")}
+        </div>
+      ) : (
+        <RestaurantCards restaurants={list} view={listView} hotelId={hotelId} locale={locale} t={t} />
+      )}
+    </div>
+  );
 
   return (
     <main className={styles.page}>
@@ -309,7 +259,7 @@ export function EditorialHomeV2({
             ))}
           </div>
 
-          <div style={{ marginTop: 14 }}>{renderListGrid(genreFiltered)}</div>
+          {renderListGrid(genreFiltered)}
         </section>
 
         {/* 02. TONIGHT (featured triptych) */}
