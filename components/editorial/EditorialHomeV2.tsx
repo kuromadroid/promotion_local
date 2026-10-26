@@ -161,8 +161,7 @@ export function EditorialHomeV2({
   }, [restaurants, activeGenre]);
 
 
-  const featured = restaurants[0];
-  const sidePicks = restaurants.slice(1, 3);
+  const featuredPicks = restaurants.slice(0, 3);
   const hotelNameLines = heroHotelNameLines(hotelName);
 
   const HERO_IMAGE_LIMIT = 5;
@@ -262,8 +261,8 @@ export function EditorialHomeV2({
           {renderListGrid(genreFiltered)}
         </section>
 
-        {/* 02. TONIGHT (featured triptych) */}
-        {featured && (
+        {/* 02. TONIGHT (featured picks, swipe sideways) */}
+        {featuredPicks.length > 0 && (
           <section className={styles.section}>
             <div className={styles.sectionHead}>
               <div>
@@ -273,56 +272,28 @@ export function EditorialHomeV2({
               <div className={styles.index}>02 / TONIGHT</div>
             </div>
 
-            <div className={styles.triptych}>
-              <Link
-                href={`/h/${hotelId}/restaurants/${featured.id}`}
-                onClick={() => handleView(featured)}
-                className={`${styles.storyCard} ${styles.bigStory}`}
-              >
-                <div className={styles.storyPhoto}>
-                  <Image
-                    src={featured.photos[0]}
-                    alt={featured.name}
-                    fill
-                    sizes="(max-width: 1024px) calc(100vw - 24px), 560px"
-                    loading="lazy"
-                  />
-                </div>
-                <div className={styles.storyCopy}>
-                  <div className={styles.bigStoryTitle}>{featured.name}</div>
-                  <div className={styles.meta}>{metaText(featured, t)}</div>
-                  <div className={styles.copy}>{featured.description}</div>
-                  {featured.tags.find((tag) => tag.type === "cuisine")?.name && (
-                    <span className={styles.microTag}>
-                      {featured.tags.find((tag) => tag.type === "cuisine")?.name}
-                    </span>
-                  )}
-                </div>
-              </Link>
-
-              {sidePicks.map((r) => (
-                <Link
-                  key={r.id}
-                  href={`/h/${hotelId}/restaurants/${r.id}`}
-                  onClick={() => handleView(r)}
-                  className={styles.storyCard}
-                >
-                  <div className={styles.storyPhoto}>
-                    <Image
-                      src={r.photos[0]}
-                      alt={r.name}
-                      fill
-                      sizes="(max-width: 1024px) calc(50vw - 18px), 300px"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className={styles.storyCopy}>
-                    <div className={styles.storyTitle}>{r.name}</div>
-                    <div className={styles.meta}>{metaText(r, t)}</div>
-                    <div className={styles.copy}>{r.description}</div>
-                  </div>
-                </Link>
-              ))}
+            <div className={styles.storyRail}>
+              {featuredPicks.map((r) => {
+                const cuisineTag = r.tags.find((tag) => tag.type === "cuisine")?.name;
+                return (
+                  <Link
+                    key={r.id}
+                    href={`/h/${hotelId}/restaurants/${r.id}`}
+                    onClick={() => handleView(r)}
+                    className={styles.storyCard}
+                  >
+                    <div className={styles.storyPhoto}>
+                      <Image src={r.photos[0]} alt={r.name} fill sizes="(max-width: 1024px) 80vw, 380px" loading="lazy" />
+                    </div>
+                    <div className={styles.storyCopy}>
+                      <div className={styles.storyTitle}>{r.name}</div>
+                      <div className={styles.meta}>{metaText(r, t)}</div>
+                      <div className={styles.copy}>{r.description}</div>
+                      {cuisineTag && <span className={styles.microTag}>{cuisineTag}</span>}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         )}

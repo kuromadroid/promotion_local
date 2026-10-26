@@ -201,6 +201,28 @@
   align-items:stretch;
 }
 
+/* Featured picks: one row that scrolls sideways */
+.storyRail {
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(0, 380px);
+  gap:12px;
+  margin:0 -16px;
+  padding:0 16px 6px;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  scroll-padding:0 16px;
+  scrollbar-width:none;
+}
+.storyRail::-webkit-scrollbar { display:none; }
+.storyRail .storyCard { scroll-snap-align:start; }
+.storyRail .copy {
+  display:-webkit-box;
+  -webkit-line-clamp:3;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
 .storyCard {
   position:relative;
   display:block;
@@ -484,6 +506,7 @@
   .section h2 { font-size:29px; }
 
   .triptych { grid-template-columns:1fr 1fr; }
+  .storyRail { grid-auto-columns:80%; margin:0 -12px; padding:0 12px 6px; scroll-padding:0 12px; }
 
   .bigStory { grid-column:1 / -1; }
 
