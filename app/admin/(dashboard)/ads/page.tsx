@@ -4,11 +4,15 @@ import { deleteAdAction } from "@/app/admin/adActions";
 import { DeleteAdButton } from "./DeleteAdButton";
 
 export default async function AdminAdsPage() {
-  const { data: ads, error } = await supabaseAdmin
-    .from("ads")
-    .select("id, title, subtitle, image_url, link_url, position, is_active")
-    .order("position", { ascending: true })
-    .order("created_at", { ascending: true });
+  const [{ data: ads, error }, { data: hotels }] = await Promise.all([
+    supabaseAdmin
+      .from("ads")
+      .select("*")
+      .order("position", { ascending: true })
+      .order("created_at", { ascending: true }),
+    supabaseAdmin.from("hotels").select("id, name"),
+  ]);
+  const hotelNameById = new Map((hotels ?? []).map((h) => [h.id, h.name]));
 
   return (
     <div>
@@ -25,7 +29,7 @@ export default async function AdminAdsPage() {
       </div>
 
       <p className="mb-6 text-sm text-(--color-ink-soft)">
-        日本語以外の言語で見ているお客様にだけ、全ホテルの店舗一覧に「AD」付きのカードとして混ざって表示されます。
+        日本語以外の言語で見ているお客様にだけ、店舗一覧に「AD」付きのカードとして混ざって表示されます。
       </p>
 
       {error ? (
@@ -56,7 +60,12 @@ export default async function AdminAdsPage() {
                   )}
                 </div>
                 {ad.subtitle && <p className="truncate text-sm text-(--color-ink-soft)">{ad.subtitle}</p>}
-                <p className="mt-1 text-xs text-(--color-ink-soft)">{ad.position}店舗目の後に表示</p>
+                <p className="mt-1 text-xs text-(--color-ink-soft)">
+                  {ad.position}店舗目の後に表示 ·{" "}
+                  {ad.hotel_ids?.length
+                    ? (ad.hotel_ids as string[]).map((id) => hotelNameById.get(id) ?? id).join("、")
+                    : "全ホテル"}
+                </p>
                 <a
                   href={ad.link_url}
                   target="_blank"

@@ -33,6 +33,7 @@ function parseAdForm(formData: FormData) {
   const linkUrl = emptyToNull(formData.get("link_url"));
   if (!title) throw new Error("タイトルを入力してください。");
   if (!linkUrl || !/^https?:\/\//.test(linkUrl)) throw new Error("リンク先URLは http(s):// から入力してください。");
+  const hotelIds = formData.getAll("hotel_ids").map(String);
 
   return {
     title,
@@ -40,6 +41,8 @@ function parseAdForm(formData: FormData) {
     link_url: linkUrl,
     position: Math.max(0, Math.floor(Number(formData.get("position") ?? 3)) || 0),
     is_active: formData.get("is_active") === "on",
+    // No hotel picked = every hotel.
+    hotel_ids: hotelIds.length > 0 ? hotelIds : null,
   };
 }
 

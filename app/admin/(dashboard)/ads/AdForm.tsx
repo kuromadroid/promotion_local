@@ -5,6 +5,7 @@ export interface AdFormInitial {
   linkUrl: string;
   position: number;
   isActive: boolean;
+  hotelIds: string[];
 }
 
 const inputClass =
@@ -13,10 +14,12 @@ const labelClass = "block text-sm font-medium text-(--color-ink)";
 
 export function AdForm({
   action,
+  hotels,
   initial,
   submitLabel,
 }: {
   action: (formData: FormData) => Promise<void>;
+  hotels: { id: string; name: string }[];
   initial?: AdFormInitial;
   submitLabel: string;
 }) {
@@ -24,7 +27,7 @@ export function AdForm({
     <form action={action} className="space-y-6">
       <section className="space-y-4 rounded-2xl border border-(--color-line) bg-white p-6">
         <p className="text-xs text-(--color-ink-soft)">
-          広告は、日本語以外の言語で見ているお客様にだけ、全ホテルのトップページの店舗一覧（「一覧」を選んでいるとき）に「AD」付きのカードとして表示されます。押すとリンク先URLが別タブで開きます。
+          広告は、日本語以外の言語で見ているお客様にだけ、トップページの店舗一覧（「一覧」を選んでいるとき）に「AD」付きのカードとして表示されます。押すとリンク先URLが別タブで開きます。
         </p>
 
         <label className={labelClass}>
@@ -84,6 +87,29 @@ export function AdForm({
           />
           公開する
         </label>
+      </section>
+
+      <section className="space-y-4 rounded-2xl border border-(--color-line) bg-white p-6">
+        <div>
+          <span className={labelClass}>表示するホテル</span>
+          <p className="mt-1 text-xs text-(--color-ink-soft)">
+            何も選ばなければ全ホテルに表示されます。選んだ場合は、そのホテルだけに表示されます。
+          </p>
+        </div>
+        <div className="grid max-h-72 grid-cols-1 gap-2 overflow-y-auto sm:grid-cols-2">
+          {hotels.map((h) => (
+            <label key={h.id} className="flex items-center gap-2 text-sm text-(--color-ink)">
+              <input
+                type="checkbox"
+                name="hotel_ids"
+                value={h.id}
+                defaultChecked={initial?.hotelIds.includes(h.id)}
+                className="accent-(--color-coral)"
+              />
+              <span className="truncate">{h.name}</span>
+            </label>
+          ))}
+        </div>
       </section>
 
       <section className="space-y-4 rounded-2xl border border-(--color-line) bg-white p-6">

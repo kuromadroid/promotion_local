@@ -19,7 +19,7 @@ export default async function HotelTopPage({
     getHotel(hotelId),
     getRestaurantsForHotel(hotelId, locale, { sort: "priority" }),
     // Ad slots are for overseas guests only.
-    locale === "ja" ? [] : getActiveAds(),
+    locale === "ja" ? [] : getActiveAds(hotelId),
   ]);
   const topRestaurants = restaurants.map((restaurant) => ({
     ...restaurant,

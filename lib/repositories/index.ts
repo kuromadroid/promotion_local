@@ -295,13 +295,16 @@ export async function getNearestForHotel(
   return all.slice(0, limit);
 }
 
-/** Active ads, in list order. Returns none (rather than failing the page) if
- * the ads table isn't there yet — see supabase/migrations/202610260001_ads.sql. */
-export async function getActiveAds(): Promise<Ad[]> {
+/** Active ads for this hotel (ads with no hotel_ids go to every hotel), in
+ * list order. Returns none (rather than failing the page) if the ads table or
+ * column isn't there yet — see supabase/migrations/202610260001_ads.sql and
+ * 202610260002_ads_hotels.sql. */
+export async function getActiveAds(hotelId: string): Promise<Ad[]> {
   const { data, error } = await supabase
     .from("ads")
     .select("id, title, subtitle, image_url, link_url, position")
     .eq("is_active", true)
+    .or(`hotel_ids.is.null,hotel_ids.cs.{${hotelId}}`)
     .order("position", { ascending: true })
     .order("created_at", { ascending: true });
   if (error) return [];
