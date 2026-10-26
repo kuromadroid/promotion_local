@@ -2,6 +2,10 @@ import { Area, Hotel, Tag } from "@/lib/types";
 import { AddressLookup } from "@/components/admin/AddressLookup";
 import { RestaurantPhotoManager } from "@/components/admin/RestaurantPhotoManager";
 import { DEMO_ONLY_TAG_IDS } from "@/lib/demoTags";
+import {
+  ALLOWED_RESERVATION_URL_PATTERN,
+  BLOCKED_RESERVATION_URL_MESSAGE,
+} from "@/lib/reservationUrl";
 
 export interface RestaurantFormInitial {
   areaId: string;
@@ -205,6 +209,8 @@ export function RestaurantForm({
               type="url"
               name="reservation_url"
               defaultValue={initial?.reservationUrl}
+              pattern={ALLOWED_RESERVATION_URL_PATTERN}
+              title={BLOCKED_RESERVATION_URL_MESSAGE}
               className={inputClass}
             />
           </label>
@@ -215,6 +221,8 @@ export function RestaurantForm({
               name="reservation_url_intl"
               defaultValue={initial?.reservationUrlIntl}
               placeholder="未入力なら上の予約URLを使用"
+              pattern={ALLOWED_RESERVATION_URL_PATTERN}
+              title={BLOCKED_RESERVATION_URL_MESSAGE}
               className={inputClass}
             />
           </label>

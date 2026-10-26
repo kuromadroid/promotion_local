@@ -7,6 +7,7 @@ import { setAdminSession, clearAdminSession, requireAdmin } from "@/lib/adminAut
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
 import { haversineMeters } from "@/lib/geo";
 import { Locale } from "@/lib/types";
+import { BLOCKED_RESERVATION_URL_MESSAGE, isBlockedReservationUrl } from "@/lib/reservationUrl";
 
 export async function loginAction(formData: FormData) {
   const password = formData.get("password");
@@ -80,6 +81,12 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     }
   }
 
+  const reservationUrl = emptyToNull(formData.get("reservation_url"));
+  const reservationUrlIntl = emptyToNull(formData.get("reservation_url_intl"));
+  if ([reservationUrl, reservationUrlIntl].some((url) => url && isBlockedReservationUrl(url))) {
+    throw new Error(BLOCKED_RESERVATION_URL_MESSAGE);
+  }
+
   return {
     areaId: String(formData.get("area_id") ?? ""),
     priceMin: Number(formData.get("price_min") ?? 0),
@@ -88,8 +95,8 @@ function parseRestaurantForm(formData: FormData): ParsedRestaurantForm {
     longitude: Number(formData.get("longitude") ?? 0),
     phone: emptyToNull(formData.get("phone")),
     googleMapsUrl: emptyToNull(formData.get("google_maps_url")),
-    reservationUrl: emptyToNull(formData.get("reservation_url")),
-    reservationUrlIntl: emptyToNull(formData.get("reservation_url_intl")),
+    reservationUrl,
+    reservationUrlIntl,
     instagramUrl: emptyToNull(formData.get("instagram_url")),
     officialUrl: emptyToNull(formData.get("official_url")),
     openingHours: emptyToNull(formData.get("opening_hours")),
