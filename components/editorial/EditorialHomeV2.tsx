@@ -327,17 +327,6 @@ export function EditorialHomeV2({
           </section>
         )}
 
-        {/* 03. ALL */}
-        <section className={styles.section} id="all">
-          <div className={styles.sectionHead}>
-            <div>
-              <h2>{t("allSectionTitle")}</h2>
-            </div>
-            <div className={styles.index}>03 / ALL</div>
-          </div>
-
-          {renderListGrid(restaurants)}
-        </section>
       </div>
 
       <button
