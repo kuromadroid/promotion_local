@@ -184,7 +184,7 @@ export function EditorialHomeV2({
       <MobileHomePreview
         hotelId={hotelId}
         hotelName={hotelName}
-        heroImages={heroImages}
+        heroPhotos={heroPhotos}
         restaurants={restaurants}
         ads={ads}
         genres={DEMO_FOOD_TAGS}

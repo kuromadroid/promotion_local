@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Ad, Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { walkLabel } from "@/lib/distanceDisplay";
-import { HeroCollageImage } from "@/components/editorial/HeroCollage";
 import HeroSlideshow, { HeroSlide } from "@/components/editorial/HeroSlideshow";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
@@ -23,13 +22,13 @@ const TOPBAR_HEIGHT = 53; // keep in sync with --topbar-h in mobile-home-preview
  *   - one restaurant list instead of two (genre list + "all" list)
  *   - genre chips stick under the header, so the filter is always in reach
  *   - compact cards (thumbnail beside the text) with 48px action buttons
- *   - hero is a food slideshow (close crop + slow zoom) instead of the collage
+ *   - hero is one full-bleed food photo (random per visit) instead of the collage
  *   - DADS-aligned sizes: 14px+ text, 44px+ targets, yellow/black focus ring
  */
 export function MobileHomePreview({
   hotelId,
   hotelName,
-  heroImages,
+  heroPhotos,
   restaurants,
   ads,
   genres,
@@ -38,7 +37,7 @@ export function MobileHomePreview({
 }: {
   hotelId: string;
   hotelName: string;
-  heroImages: HeroCollageImage[];
+  heroPhotos: string[];
   restaurants: RestaurantView[];
   ads: Ad[];
   genres: { tagId: string; label: Record<Locale, string> }[];
@@ -80,15 +79,15 @@ export function MobileHomePreview({
 
   const picks = restaurants.slice(0, 3);
 
-  // Food photos from the restaurants themselves (hotel-curated hero photos
-  // may be rooms or exteriors); fall back to them only if no restaurant has one.
+  // The hotel's own hero photos (set in admin; meant to be close-up food
+  // shots). Until it has some, fall back to each restaurant's first photo.
   const slides: HeroSlide[] = useMemo(() => {
-    const food = restaurants
+    if (heroPhotos.length > 0) return heroPhotos.map((src, i) => ({ id: `hero-${i}`, src }));
+    return restaurants
       .filter((r) => Boolean(r.photos[0]))
       .slice(0, 6)
       .map((r) => ({ id: r.id, src: r.photos[0], caption: r.name }));
-    return food.length > 0 ? food : heroImages.map((img) => ({ id: img.id, src: img.src }));
-  }, [restaurants, heroImages]);
+  }, [heroPhotos, restaurants]);
   const activeLabel = active === "all" ? t("all") : genres.find((g) => g.tagId === active)?.label[locale] ?? t("all");
 
   const selectGenre = (tagId: string) => {
