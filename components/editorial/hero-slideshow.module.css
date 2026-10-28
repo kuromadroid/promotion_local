@@ -1,0 +1,88 @@
+.root {
+  position:absolute;
+  inset:0;
+}
+
+.slide {
+  position:absolute;
+  inset:0;
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+
+.active {
+  opacity:1;
+}
+
+/* Cropped in close, then a slow push-in: reads as a macro food shot. */
+.photo {
+  object-fit:cover;
+  transform:scale(1.35);
+  filter:saturate(1.15) contrast(1.05);
+}
+
+.active .photo {
+  animation:pushIn 6.2s ease-out forwards;
+}
+
+@keyframes pushIn {
+  from { transform:scale(1.35); }
+  to { transform:scale(1.6); }
+}
+
+.caption {
+  position:absolute;
+  z-index:12;
+  top:36px;
+  left:16px;
+  max-width:calc(100% - 32px);
+  margin:0;
+  padding:4px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Story-style segments along the top edge, one per slide. */
+.dots {
+  position:absolute;
+  z-index:12;
+  top:0;
+  left:12px;
+  right:12px;
+  display:flex;
+  gap:4px;
+}
+
+/* Each segment is a 32px-tall tap target around a thin visible bar. */
+.dot {
+  flex:1;
+  height:32px;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
+}
+
+.dot::before {
+  content:"";
+  display:block;
+  height:3px;
+  margin-top:10px;
+  border-radius:2px;
+  background:rgba(255,255,255,.45);
+}
+
+.dotActive::before {
+  background:#fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide { transition:none; }
+  .active .photo { animation:none; }
+}

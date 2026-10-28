@@ -48,7 +48,7 @@
 /* Hero: short, so the first content shows on the first screen */
 .hero {
   position:relative;
-  height:200px;
+  height:min(62vh, 420px);
   overflow:hidden;
   background:#111;
 }

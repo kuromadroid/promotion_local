@@ -6,7 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Ad, Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { walkLabel } from "@/lib/distanceDisplay";
-import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollage";
+import { HeroCollageImage } from "@/components/editorial/HeroCollage";
+import HeroSlideshow, { HeroSlide } from "@/components/editorial/HeroSlideshow";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
 import editorial from "./sapporo-bites-editorial-v2.module.css";
@@ -22,6 +23,7 @@ const TOPBAR_HEIGHT = 53; // keep in sync with --topbar-h in mobile-home-preview
  *   - one restaurant list instead of two (genre list + "all" list)
  *   - genre chips stick under the header, so the filter is always in reach
  *   - compact cards (thumbnail beside the text) with 48px action buttons
+ *   - hero is a food slideshow (close crop + slow zoom) instead of the collage
  *   - DADS-aligned sizes: 14px+ text, 44px+ targets, yellow/black focus ring
  */
 export function MobileHomePreview({
@@ -77,6 +79,16 @@ export function MobileHomePreview({
   );
 
   const picks = restaurants.slice(0, 3);
+
+  // Food photos from the restaurants themselves (hotel-curated hero photos
+  // may be rooms or exteriors); fall back to them only if no restaurant has one.
+  const slides: HeroSlide[] = useMemo(() => {
+    const food = restaurants
+      .filter((r) => Boolean(r.photos[0]))
+      .slice(0, 6)
+      .map((r) => ({ id: r.id, src: r.photos[0], caption: r.name }));
+    return food.length > 0 ? food : heroImages.map((img) => ({ id: img.id, src: img.src }));
+  }, [restaurants, heroImages]);
   const activeLabel = active === "all" ? t("all") : genres.find((g) => g.tagId === active)?.label[locale] ?? t("all");
 
   const selectGenre = (tagId: string) => {
@@ -108,7 +120,7 @@ export function MobileHomePreview({
       </header>
 
       <section className={styles.hero}>
-        <HeroCollage images={heroImages} />
+        <HeroSlideshow slides={slides} />
         <div className={styles.heroShade} />
         <div className={styles.heroCopy}>
           <p className={styles.heroKicker}>{t("heroCollageLabel")}</p>
