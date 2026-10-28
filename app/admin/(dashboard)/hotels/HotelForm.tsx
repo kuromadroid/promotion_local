@@ -1,5 +1,6 @@
 import { Area } from "@/lib/types";
 import { AddressLookup } from "@/components/admin/AddressLookup";
+import { HeroCropEditor } from "@/components/admin/HeroCropEditor";
 
 export interface HotelFormInitial {
   name: string;
@@ -18,11 +19,14 @@ export function HotelForm({
   areas,
   initial,
   submitLabel,
+  heroCropEditor = false,
 }: {
   action: (formData: FormData) => Promise<void>;
   areas: Area[];
   initial?: HotelFormInitial;
   submitLabel: string;
+  /** Show the phone-hero framing editor (UI preview hotel only). */
+  heroCropEditor?: boolean;
 }) {
   return (
     <form action={action} className="space-y-6">
@@ -113,6 +117,7 @@ export function HotelForm({
             ))}
           </div>
         )}
+        {heroCropEditor && initial && <HeroCropEditor photos={initial.heroPhotos} />}
         <input type="hidden" name="existing_hero_photos" value={initial?.heroPhotos.join("|") ?? ""} />
 
         <input

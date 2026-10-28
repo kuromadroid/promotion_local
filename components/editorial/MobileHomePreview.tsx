@@ -7,6 +7,7 @@ import { Ad, Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { walkLabel } from "@/lib/distanceDisplay";
 import HeroSlideshow, { HeroSlide } from "@/components/editorial/HeroSlideshow";
+import { parseHeroPhoto } from "@/lib/heroCrop";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
 import editorial from "./sapporo-bites-editorial-v2.module.css";
@@ -82,7 +83,12 @@ export function MobileHomePreview({
   // The hotel's own hero photos (set in admin; meant to be close-up food
   // shots). Until it has some, fall back to each restaurant's first photo.
   const slides: HeroSlide[] = useMemo(() => {
-    if (heroPhotos.length > 0) return heroPhotos.map((src, i) => ({ id: `hero-${i}`, src }));
+    if (heroPhotos.length > 0) {
+      return heroPhotos.map((stored, i) => {
+        const { src, crop } = parseHeroPhoto(stored);
+        return { id: `hero-${i}`, src, crop: crop ?? undefined };
+      });
+    }
     return restaurants
       .filter((r) => Boolean(r.photos[0]))
       .slice(0, 6)

@@ -2,12 +2,15 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { DEFAULT_HERO_CROP, HeroCrop, heroCropStyle } from "@/lib/heroCrop";
 import styles from "./hero-slideshow.module.css";
 
 export type HeroSlide = {
   id: string;
   src: string;
   caption?: string;
+  /** Framing set in admin; defaults to a 2x center crop. */
+  crop?: HeroCrop;
 };
 
 const INTERVAL_MS = 5000;
@@ -15,8 +18,8 @@ const INTERVAL_MS = 5000;
 /**
  * Full-bleed food photo for the UI preview hero. Starts on a random photo
  * each visit and switches to the next every 5s, with no transition; bars
- * along the top show which photo is up and let guests jump. Photos
- * are cropped in tight (see .photo) so ingredients fill the frame.
+ * along the top show which photo is up and let guests jump. Photos are
+ * cropped in tight (lib/heroCrop.ts) so ingredients fill the frame.
  */
 export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   // null until mounted: picked on the client so server and client renders match.
@@ -46,13 +49,14 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
           src={s.src}
           alt=""
           fill
-          // Cropped to 1/2 (see .photo), so fetch twice the pixels to stay sharp.
+          // Zoomed in (default 2x), so fetch extra pixels to stay sharp.
           sizes="200vw"
           quality={85}
           // First thing on screen; see HeroCollage for why not lazy.
           loading="eager"
           fetchPriority={i === index ? "high" : "auto"}
           className={styles.photo}
+          style={heroCropStyle(s.crop ?? DEFAULT_HERO_CROP)}
           hidden={i !== index}
         />
       ))}

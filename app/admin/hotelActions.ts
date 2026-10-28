@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
 import { requireAdmin } from "@/lib/adminAuth";
+import { parseHeroPhoto } from "@/lib/heroCrop";
 
 const HERO_PHOTO_BUCKET = "restaurant-photos";
 
@@ -33,7 +34,14 @@ async function resolveHeroPhotos(hotelId: string, formData: FormData): Promise<s
     .split("|")
     .filter(Boolean);
   const deleted = formData.getAll("delete_hero_photos").map(String);
-  const kept = existing.filter((url) => !deleted.includes(url));
+  // Phone-hero framing from HeroCropEditor (UI preview hotel only), keyed by
+  // the photo's URL without its #crop fragment.
+  const crops = new Map(
+    formData.getAll("hero_photo_crops").map((v) => [parseHeroPhoto(String(v)).src, String(v)])
+  );
+  const kept = existing
+    .filter((url) => !deleted.includes(url))
+    .map((url) => crops.get(parseHeroPhoto(url).src) ?? url);
   const uploaded = await uploadHeroPhotoFiles(hotelId, formData);
   return [...kept, ...uploaded];
 }

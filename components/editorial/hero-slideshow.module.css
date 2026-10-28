@@ -3,10 +3,9 @@
   inset:0;
 }
 
-/* Show only the middle half of each photo: ingredients fill the frame. */
+/* Zoom and position come inline from lib/heroCrop.ts. */
 .photo {
   object-fit:cover;
-  transform:scale(2);
 }
 
 .caption {

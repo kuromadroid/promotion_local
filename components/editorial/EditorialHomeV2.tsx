@@ -10,6 +10,7 @@ import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollag
 import { MobileHomePreview } from "@/components/editorial/MobileHomePreview";
 import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
 import { isUiPreviewHotel } from "@/lib/uiPreview";
+import { parseHeroPhoto } from "@/lib/heroCrop";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import styles from "./sapporo-bites-editorial-v2.module.css";
 import cardStyles from "./mobile-home-preview.module.css";
@@ -168,7 +169,8 @@ export function EditorialHomeV2({
 
   const HERO_IMAGE_LIMIT = 5;
   const heroImages: HeroCollageImage[] = (() => {
-    const curated = heroPhotos.map((src, i) => ({ id: `hero-${i}`, src, alt: hotelName }));
+    // parseHeroPhoto drops a #crop fragment (UI preview framing) if present.
+    const curated = heroPhotos.map((stored, i) => ({ id: `hero-${i}`, src: parseHeroPhoto(stored).src, alt: hotelName }));
     if (curated.length >= HERO_IMAGE_LIMIT) return curated.slice(0, HERO_IMAGE_LIMIT);
 
     const curatedSrcs = new Set(curated.map((img) => img.src));

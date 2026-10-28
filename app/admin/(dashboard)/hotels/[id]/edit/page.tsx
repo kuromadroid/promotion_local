@@ -3,6 +3,7 @@ import { supabaseAdmin } from "@/lib/supabase/adminClient";
 import { updateHotelAction } from "@/app/admin/hotelActions";
 import { HotelForm, HotelFormInitial } from "../../HotelForm";
 import { Area } from "@/lib/types";
+import { isUiPreviewHotel } from "@/lib/uiPreview";
 
 export default async function EditHotelPage({
   params,
@@ -34,6 +35,7 @@ export default async function EditHotelPage({
         areas={(areas ?? []) as unknown as Area[]}
         initial={initial}
         submitLabel="更新する"
+        heroCropEditor={isUiPreviewHotel(id)}
       />
     </div>
   );
