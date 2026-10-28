@@ -14,7 +14,8 @@ const INTERVAL_MS = 5000;
 
 /**
  * Full-bleed food photo for the UI preview hero. Starts on a random photo
- * each visit and switches to the next every 5s, with no transition. Photos
+ * each visit and switches to the next every 5s, with no transition; bars
+ * along the top show which photo is up and let guests jump. Photos
  * are cropped in tight (see .photo) so ingredients fill the frame.
  */
 export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
@@ -37,7 +38,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
   const slide = slides[index];
 
   return (
-    <div className={styles.root} aria-hidden="true">
+    <div className={styles.root}>
       {/* Every photo stays mounted (hidden) so the next one is already loaded. */}
       {slides.map((s, i) => (
         <Image
@@ -56,6 +57,21 @@ export default function HeroSlideshow({ slides }: { slides: HeroSlide[] }) {
         />
       ))}
       {slide.caption && <p className={styles.caption}>{slide.caption}</p>}
+
+      {count > 1 && (
+        <div className={styles.dots}>
+          {slides.map((s, i) => (
+            <button
+              type="button"
+              key={s.id}
+              aria-label={`${i + 1} / ${count}`}
+              aria-current={i === index}
+              className={`${styles.dot} ${i === index ? styles.dotActive : ""}`}
+              onClick={() => setIndex(i)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
