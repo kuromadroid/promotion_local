@@ -3,8 +3,10 @@
   inset:0;
 }
 
+/* Show only the middle half of each photo: ingredients fill the frame. */
 .photo {
   object-fit:cover;
+  transform:scale(2);
 }
 
 .caption {
