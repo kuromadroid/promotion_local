@@ -245,14 +245,18 @@ export function RestaurantDetailV3({
         {restaurant.googleMapsUrl && (
           <section className={styles.section}>
             <h2>{isStationDistance(restaurant) ? t("stationSectionTitle") : t("hotelSectionTitle")}</h2>
-            <div className={styles.mapCard}>
-              <div className={styles.mapTitle}>
-                {t("walkMinutesShort", { minutes: walkMinutes(restaurant) })}
+            <div className={styles.distanceCard}>
+              <div className={styles.distanceTop}>
+                <div>
+                  <div className={styles.distanceMain}>
+                    {t("walkMinutesShort", { minutes: walkMinutes(restaurant) })}
+                  </div>
+                  <div className={styles.distanceSub}>{walkSubtitle(restaurant, t)}</div>
+                </div>
+                <button type="button" className={styles.route} onClick={handleMap}>
+                  {t("viewOnMap")}
+                </button>
               </div>
-              <div className={styles.mapCopy}>{t("mapCardCopy")}</div>
-              <button type="button" className={styles.mapButton} onClick={handleMap}>
-                {t("viewOnMap")}
-              </button>
             </div>
           </section>
         )}

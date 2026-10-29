@@ -83,6 +83,5 @@
   "walkMinutesShort": "도보 {minutes}분",
   "walkSubtitleShort": "숙소에서 걸어갈 때 예상 소요 시간",
   "walkSubtitleStation": "가장 가까운 역에서 걸어갈 때 예상 소요 시간",
-  "mapCardCopy": "정확한 위치와 가는 길은 구글 지도에서 확인하세요.",
   "paymentMethod": "결제 수단"
 }
