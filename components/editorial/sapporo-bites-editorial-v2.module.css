@@ -146,13 +146,6 @@
   font-weight:800;
 }
 
-.index {
-  font-size:11px;
-  color:var(--muted);
-  font-weight:900;
-  letter-spacing:.12em;
-}
-
 .genreGrid {
   display:grid;
   /* 9 genres → a full 3×3, and cells wide enough for スープカレー / ジンギスカン */

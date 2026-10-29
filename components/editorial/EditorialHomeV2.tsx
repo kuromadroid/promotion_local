@@ -269,7 +269,7 @@ export function EditorialHomeV2({
           {renderListGrid(genreFiltered, activeGenre === "all" ? ads : [])}
         </section>
 
-        {/* 02. TONIGHT (featured picks, swipe sideways) */}
+        {/* TONIGHT (featured picks, swipe sideways) */}
         {featuredPicks.length > 0 && (
           <section className={styles.section}>
             <div className={styles.sectionHead}>
@@ -277,7 +277,6 @@ export function EditorialHomeV2({
                 <h2>{t("featuredSectionTitle")}</h2>
                 <p className={styles.lead}>{t("featuredSectionSubtitle")}</p>
               </div>
-              <div className={styles.index}>02 / TONIGHT</div>
             </div>
 
             <div className={styles.storyRail}>
