@@ -240,14 +240,10 @@ export function EditorialHomeV2({
           </div>
         </section>
 
-        {/* 01. GENRE (with inline filtered list) */}
+        {/* GENRE (with inline filtered list) */}
         <section className={styles.section} id="genre">
           <div className={styles.sectionHead}>
-            <div>
-              <h2>{t("genreSectionTitle")}</h2>
-              <p className={styles.lead}>{t("genreSectionSubtitle")}</p>
-            </div>
-            <div className={styles.index}>01 / GENRE</div>
+            <h2>{t("genreSectionTitle")}</h2>
           </div>
 
           <div className={styles.genreGrid}>
