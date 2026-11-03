@@ -12,6 +12,7 @@ import { ListViewSwitch, RestaurantCards, useListView } from "@/components/edito
 import { isUiPreviewHotel } from "@/lib/uiPreview";
 import { parseHeroPhoto } from "@/lib/heroCrop";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { CouponRibbon, hasCoupon } from "@/components/CouponRibbon";
 import styles from "./sapporo-bites-editorial-v2.module.css";
 import cardStyles from "./mobile-home-preview.module.css";
 
@@ -291,6 +292,7 @@ export function EditorialHomeV2({
                   >
                     <div className={styles.storyPhoto}>
                       <Image src={r.photos[0]} alt={r.name} fill sizes="(max-width: 1024px) 80vw, 380px" loading="lazy" />
+                      {hasCoupon(r) && <CouponRibbon label={t("couponLabel")} />}
                     </div>
                     <div className={styles.storyCopy}>
                       <div className={styles.storyTitle}>{r.name}</div>

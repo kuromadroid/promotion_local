@@ -3,6 +3,7 @@ import Image from "next/image";
 import { RestaurantView } from "@/lib/types";
 import { DistanceBadge } from "@/components/DistanceBadge";
 import { TagPill } from "@/components/TagPill";
+import { CouponRibbon, hasCoupon } from "@/components/CouponRibbon";
 import { walkLabel, distanceLabel } from "@/lib/distanceDisplay";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
@@ -35,6 +36,7 @@ export function RestaurantCard({
             {t("sponsoredLabel")}
           </span>
         )}
+        {hasCoupon(restaurant) && <CouponRibbon label={t("couponLabel")} />}
         <div className="absolute bottom-3 left-3">
           <DistanceBadge
             walkLabel={walkLabel(restaurant, t)}

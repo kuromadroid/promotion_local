@@ -7,6 +7,7 @@ import { Ad, Locale, RestaurantView } from "@/lib/types";
 import { trackEvent } from "@/lib/analytics";
 import { resolveReservationUrl } from "@/lib/reservationUrl";
 import { walkLabel } from "@/lib/distanceDisplay";
+import { CouponRibbon, hasCoupon } from "@/components/CouponRibbon";
 import styles from "./mobile-home-preview.module.css";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
@@ -154,6 +155,7 @@ export function RestaurantCards({
               >
                 <div className={styles.tilePhoto}>
                   <Image src={r.photos[0]} alt="" fill sizes="50vw" loading="lazy" />
+                  {hasCoupon(r) && <CouponRibbon label={t("couponLabel")} />}
                 </div>
                 <div className={styles.tileBody}>
                   <h3 className={styles.tileName}>{r.name}</h3>
@@ -202,6 +204,7 @@ export function RestaurantCards({
                 <Image src={r.photos[0]} alt="" fill sizes="(max-width: 560px) 100vw, 560px" loading="lazy" />
                 <div className={styles.photoShade} />
                 {cuisine(r) && <p className={styles.badge}>{cuisine(r)}</p>}
+                {hasCoupon(r) && <CouponRibbon label={t("couponLabel")} />}
                 <div className={styles.photoText}>
                   <h3 className={styles.name}>{r.name}</h3>
                   <p className={styles.photoMeta}>{meta(r)}</p>
