@@ -5,11 +5,15 @@ import { supabaseAdmin } from "@/lib/supabase/adminClient";
 import { deleteHotelAction } from "@/app/admin/hotelActions";
 import { DeleteHotelButton } from "./DeleteHotelButton";
 
-// Each hotel has two QR codes: the original one (?qr=<hotel id>, already
-// printed for lobbies etc.) and one for guest rooms (?qr=room). Both open the
+// Each hotel's lobby QR comes in two sign designs, red (?qr=<hotel id>-r) and
+// orange (?qr=<hotel id>-o), plus one for guest rooms (?qr=room). All open the
 // same page; the qr value is recorded on the qr_scan event so they can be
-// counted separately.
+// counted separately. Signs printed before the redesign use ?qr=<hotel id>
+// and still work; those scans are counted as "old".
 const ROOM_QR_ID = "room";
+const DESIGN_SUFFIXES = { red: "-r", orange: "-o" } as const;
+
+type ScanCounts = { red: number; orange: number; old: number; room: number };
 
 async function getBaseUrl() {
   const h = await headers();
@@ -18,10 +22,10 @@ async function getBaseUrl() {
   return `${proto}://${host}`;
 }
 
-/** QR scans per hotel, split into room QR and the original QR. Events are
- * kept for 180 days, so these are the last 180 days. */
+/** QR scans per hotel, split by sign design, old signs and room QR. Events
+ * are kept for 180 days, so these are the last 180 days. */
 async function getQrScanCounts() {
-  const counts = new Map<string, { main: number; room: number }>();
+  const counts = new Map<string, ScanCounts>();
   const PAGE = 1000;
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabaseAdmin
@@ -33,9 +37,12 @@ async function getQrScanCounts() {
     if (error) throw error;
     for (const e of data ?? []) {
       if (!e.hotel_id) continue;
-      const c = counts.get(e.hotel_id) ?? { main: 0, room: 0 };
-      if ((e.meta as { qrId?: string } | null)?.qrId === ROOM_QR_ID) c.room++;
-      else c.main++;
+      const c = counts.get(e.hotel_id) ?? { red: 0, orange: 0, old: 0, room: 0 };
+      const qrId = (e.meta as { qrId?: string } | null)?.qrId;
+      if (qrId === ROOM_QR_ID) c.room++;
+      else if (qrId === e.hotel_id + DESIGN_SUFFIXES.red) c.red++;
+      else if (qrId === e.hotel_id + DESIGN_SUFFIXES.orange) c.orange++;
+      else c.old++;
       counts.set(e.hotel_id, c);
     }
     if (!data || data.length < PAGE) break;
@@ -53,10 +60,23 @@ export default async function AdminHotelsPage() {
 
   const rows = await Promise.all(
     (hotels ?? []).map(async (h) => {
-      const counts = scanCounts.get(h.id) ?? { main: 0, room: 0 };
+      const counts = scanCounts.get(h.id) ?? { red: 0, orange: 0, old: 0, room: 0 };
       const codes = await Promise.all(
         [
-          { kind: "main", label: "通常QR", qrId: h.id, scans: counts.main, file: `${h.id}-qr.png` },
+          {
+            kind: "red",
+            label: "通常QR（赤）",
+            qrId: h.id + DESIGN_SUFFIXES.red,
+            scans: counts.red,
+            file: `${h.id}-qr-r.png`,
+          },
+          {
+            kind: "orange",
+            label: "通常QR（オレンジ）",
+            qrId: h.id + DESIGN_SUFFIXES.orange,
+            scans: counts.orange,
+            file: `${h.id}-qr-o.png`,
+          },
           { kind: "room", label: "客室用QR", qrId: ROOM_QR_ID, scans: counts.room, file: `${h.id}-room-qr.png` },
         ].map(async (code) => {
           const url = `${baseUrl}/h/${h.id}?qr=${encodeURIComponent(code.qrId)}`;
@@ -64,7 +84,7 @@ export default async function AdminHotelsPage() {
           return { ...code, url, qr };
         })
       );
-      return { ...h, codes };
+      return { ...h, codes, oldScans: counts.old };
     })
   );
 
@@ -81,7 +101,7 @@ export default async function AdminHotelsPage() {
       </div>
 
       <p className="mb-6 text-sm text-(--color-ink-soft)">
-        各ホテルに「通常QR」と「客室用QR」があります。開くページは同じで、読み取り回数を別々に数えます（直近180日）。
+        各ホテルに「通常QR（赤・オレンジの札デザイン別）」と「客室用QR」があります。開くページは同じで、読み取り回数を別々に数えます（直近180日）。デザイン変更前に印刷した通常QRも引き続き使え、「旧デザイン」として数えます。
       </p>
 
       {rows.length === 0 ? (
@@ -109,7 +129,7 @@ export default async function AdminHotelsPage() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-4">
+              <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {h.codes.map((code) => (
                   <div key={code.kind} className="min-w-0">
                     <div className="flex items-baseline justify-between gap-2">
@@ -142,6 +162,10 @@ export default async function AdminHotelsPage() {
                   </div>
                 ))}
               </div>
+              <p className="mt-3 text-xs text-(--color-ink-soft)">
+                旧デザインの通常QR 読み取り{" "}
+                <span className="font-bold text-(--color-navy)">{h.oldScans.toLocaleString()}</span>
+              </p>
             </div>
           ))}
         </div>
