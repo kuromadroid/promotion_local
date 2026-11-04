@@ -147,6 +147,7 @@ function CouponScreen({
               sizes="(max-width: 480px) 150px, 210px"
               className={styles.couponDrinkImage}
             />
+            <p className={styles.couponOffer}>{t("couponOffer")}</p>
             <button type="button" onClick={handleUse} className={styles.couponStaffButton}>
               使用する
             </button>

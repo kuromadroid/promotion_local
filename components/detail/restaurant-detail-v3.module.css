@@ -239,6 +239,15 @@
   object-fit: contain;
   filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .18));
 }
+.couponOffer {
+  margin: 8px 0 0;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 950;
+  letter-spacing: -.02em;
+  overflow-wrap: anywhere;
+}
 .couponStaffPress {
   margin: 7px 0 0;
   color: var(--ink);
