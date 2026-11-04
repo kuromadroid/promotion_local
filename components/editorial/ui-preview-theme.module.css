@@ -1,0 +1,90 @@
+.root {
+  --bg: #f7f7f5;
+  --card: #fff;
+  --paper: #fff;
+  --ink: #111;
+  --muted: #6a6a67;
+  --line: #e4e4df;
+  --soft: #efefeb;
+  --green: #20764a;
+  --radius-card: 15px;
+  --radius-control: 10px;
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+  letter-spacing: -.01em;
+}
+
+.root.root {
+  --topbar-h: 56px;
+}
+
+.root .topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 56px;
+  height: 56px;
+  padding: 0 14px;
+  background: rgba(247, 247, 245, .95);
+  border-bottom-color: var(--line);
+}
+
+.root .brand {
+  min-width: 0;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.root select {
+  max-width: 92px;
+  min-height: 38px;
+  padding: 5px 9px;
+  border: 1.4px solid var(--ink);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.root .section {
+  padding: 24px 14px 0;
+}
+
+.root .section h2 {
+  margin-bottom: 12px;
+  font-size: 23px;
+  line-height: 1.2;
+  font-weight: 850;
+  letter-spacing: -.04em;
+}
+
+.root .resultRow {
+  margin-right: -14px;
+  margin-left: -14px;
+  padding-right: 14px;
+  padding-left: 14px;
+  background: rgba(247, 247, 245, .96);
+  border-bottom-color: var(--line);
+}
+
+.restaurantList > li {
+  border-color: var(--line);
+  border-radius: var(--radius-card);
+  background: var(--card);
+}
+
+.root :global(button):focus-visible,
+.root :global(a):focus-visible,
+.root :global(select):focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+  box-shadow: none;
+}

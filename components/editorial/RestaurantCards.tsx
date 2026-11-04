@@ -88,6 +88,7 @@ export function RestaurantCards({
   hotelId,
   locale,
   t,
+  className,
 }: {
   restaurants: RestaurantView[];
   ads?: Ad[];
@@ -95,7 +96,9 @@ export function RestaurantCards({
   hotelId: string;
   locale: Locale;
   t: T;
+  className?: string;
 }) {
+  const listClassName = (base: string) => (className ? `${base} ${className}` : base);
   const items = mixInAds(restaurants, ads);
   const meta = (r: RestaurantView) =>
     [walkLabel(r, t), `¥${r.priceMin.toLocaleString()}〜`].filter(Boolean).join(" · ");
@@ -126,7 +129,7 @@ export function RestaurantCards({
 
   if (view === "grid") {
     return (
-      <ul className={styles.grid}>
+      <ul className={listClassName(styles.grid)}>
         {items.map((item) => {
           if (item.kind === "ad") {
             const { ad } = item;
@@ -171,7 +174,7 @@ export function RestaurantCards({
   }
 
   return (
-    <ul className={styles.list}>
+    <ul className={listClassName(styles.list)}>
       {items.map((item) => {
         if (item.kind === "ad") {
           const { ad } = item;

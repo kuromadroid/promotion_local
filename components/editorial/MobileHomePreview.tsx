@@ -12,10 +12,11 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
 import editorial from "./sapporo-bites-editorial-v2.module.css";
 import styles from "./mobile-home-preview.module.css";
+import theme from "./ui-preview-theme.module.css";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-const TOPBAR_HEIGHT = 53; // keep in sync with --topbar-h in mobile-home-preview.module.css
+const TOPBAR_HEIGHT = 56; // keep in sync with --topbar-h in ui-preview-theme.module.css
 
 /**
  * Phone-first hotel top page, shown only on the UI preview hotel
@@ -118,9 +119,9 @@ export function MobileHomePreview({
     trackEvent({ eventName: "restaurant_view", hotelId, restaurantId: r.id });
 
   return (
-    <main className={`${editorial.page} ${styles.root}`}>
-      <header className={`${editorial.topbar} ${styles.topbar}`}>
-        <span className={editorial.brand}>SAPPORO BITES</span>
+    <main className={`${editorial.page} ${styles.root} ${theme.root}`}>
+      <header className={`${editorial.topbar} ${styles.topbar} ${theme.topbar}`}>
+        <span className={`${editorial.brand} ${theme.brand}`}>SAPPORO BITES</span>
         <LanguageSwitcher wrapperClassName="" selectClassName={`${editorial.lang} ${styles.lang}`} />
       </header>
 
@@ -134,7 +135,7 @@ export function MobileHomePreview({
       </section>
 
       {picks.length > 0 && (
-        <section className={styles.section} aria-labelledby="picks-title">
+        <section className={`${styles.section} ${theme.section}`} aria-labelledby="picks-title">
           <h2 id="picks-title" className={styles.h2}>
             {t("featuredSectionTitle")}
           </h2>
@@ -159,7 +160,7 @@ export function MobileHomePreview({
         </section>
       )}
 
-      <section className={styles.section} aria-labelledby="genre-title">
+      <section className={`${styles.section} ${theme.section}`} aria-labelledby="genre-title">
         <h2 id="genre-title" className={styles.h2}>
           {t("genreSectionTitle")}
         </h2>
@@ -190,7 +191,7 @@ export function MobileHomePreview({
         </div>
 
         <div ref={listTop} className={styles.listTop} />
-        <div className={styles.resultRow}>
+        <div className={`${styles.resultRow} ${theme.resultRow}`}>
           <p className={styles.result} aria-live="polite">
             {t("genreResultCount", { genre: activeLabel, count: filtered.length })}
           </p>
@@ -215,7 +216,7 @@ export function MobileHomePreview({
             </button>
           </div>
         ) : (
-          <RestaurantCards restaurants={filtered} ads={active === "all" ? ads : []} view={view} hotelId={hotelId} locale={locale} t={t} />
+          <RestaurantCards restaurants={filtered} ads={active === "all" ? ads : []} view={view} hotelId={hotelId} locale={locale} t={t} className={theme.restaurantList} />
         )}
       </section>
 
