@@ -138,6 +138,8 @@ export const ANALYTICS_EVENT_NAMES = [
   "official_site_click",
   "phone_click",
   "ad_click",
+  "coupon_open",
+  "coupon_use",
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENT_NAMES)[number];
