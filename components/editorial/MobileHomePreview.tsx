@@ -118,9 +118,9 @@ export function MobileHomePreview({
         <LanguageSwitcher wrapperClassName="" selectClassName={`${editorial.lang} ${styles.lang}`} />
       </header>
 
-      <section className={styles.hero}>
+      <section className={`${styles.hero} ${theme.hero}`}>
         <HeroSlideshow slides={slides} />
-        <div className={styles.heroShade} />
+        <div className={`${styles.heroShade} ${theme.heroShade}`} />
         <div className={styles.heroCopy}>
           <p className={styles.heroKicker}>{t("heroCollageLabel")}</p>
           <h1 className={styles.heroName}>{hotelName}</h1>

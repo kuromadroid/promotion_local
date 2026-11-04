@@ -20,6 +20,15 @@
   --topbar-h: 56px;
 }
 
+.root .hero {
+  height:min(84svh, 700px);
+  min-height:280px;
+}
+
+.root .heroShade {
+  background:linear-gradient(180deg, rgba(0,0,0,0) 68%, rgba(0,0,0,.82) 100%);
+}
+
 .root .topbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
