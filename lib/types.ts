@@ -82,6 +82,14 @@ export interface ResolvedTag {
   name: string;
 }
 
+/** A coupon resolved for the current locale. Managed at /admin/coupons. */
+export interface ResolvedCoupon {
+  id: string;
+  offer: string;
+  terms: string[];
+  imageUrl: string;
+}
+
 /** Restaurant fully resolved for a specific hotel + locale, ready for UI use. */
 export interface RestaurantView {
   id: string;
@@ -111,6 +119,8 @@ export interface RestaurantView {
   nearestStationWalkingMinutes: number;
   /** 0-100, higher shows first. Set on the restaurant itself, so the same order applies everywhere it's listed. */
   displayPriority: number;
+  /** Only set on the UI preview hotel for now. */
+  coupon?: ResolvedCoupon;
 }
 
 /** An ad slot mixed into the restaurant list (non-Japanese locales only). */

@@ -7,10 +7,12 @@ import {
   Tag,
   Hotel,
   Ad,
+  ResolvedCoupon,
 } from "@/lib/types";
 import { nearestStation } from "@/lib/stations";
 import { isTagVisibleForHotel } from "@/lib/demoTags";
 import { DEFAULT_GENRES, Genre } from "@/lib/genres";
+import { isUiPreviewHotel } from "@/lib/uiPreview";
 
 function resolveName(record: Record<Locale, string>, locale: Locale) {
   return record[locale] ?? record.en ?? record[DEFAULT_LOCALE];
@@ -146,6 +148,31 @@ interface RestaurantJoinRow {
   } | null;
 }
 
+/** Active coupons by restaurant; the newest wins where a restaurant has several.
+ * Returns none (rather than failing the page) if the coupons table isn't there
+ * yet — see supabase/migrations/202611040002_coupons.sql. */
+async function getCouponsByRestaurant(locale: Locale) {
+  const coupons = new Map<string, ResolvedCoupon>();
+  const { data, error } = await supabase
+    .from("coupons")
+    .select("id, offer, terms, image_url, restaurant_ids")
+    .eq("is_active", true)
+    .order("created_at", { ascending: true });
+  if (error) return coupons;
+
+  for (const c of data ?? []) {
+    const terms = c.terms as Record<Locale, string[]>;
+    const coupon: ResolvedCoupon = {
+      id: c.id,
+      offer: resolveName(c.offer as Record<Locale, string>, locale),
+      terms: terms[locale] ?? terms.en ?? terms[DEFAULT_LOCALE] ?? [],
+      imageUrl: c.image_url,
+    };
+    for (const restaurantId of c.restaurant_ids as string[]) coupons.set(restaurantId, coupon);
+  }
+  return coupons;
+}
+
 /**
  * Fetches every visible restaurant linked to a hotel, fully resolved for the
  * given locale. Area/tag/sort filtering happens in-memory after the fetch,
@@ -228,6 +255,11 @@ export async function getRestaurantsForHotel(
     })
     .filter((v): v is RestaurantView => v !== null);
 
+  if (isUiPreviewHotel(hotelId)) {
+    const coupons = await getCouponsByRestaurant(locale);
+    views = views.map((v) => ({ ...v, coupon: coupons.get(v.id) }));
+  }
+
   if (filter.areaId) {
     views = views.filter((v) => v.area.id === filter.areaId);
   }
@@ -296,10 +328,6 @@ export async function getNearestForHotel(
   return all.slice(0, limit);
 }
 
-/** Active ads for this hotel (ads with no hotel_ids go to every hotel), in
- * list order. Returns none (rather than failing the page) if the ads table or
- * column isn't there yet — see supabase/migrations/202610260001_ads.sql and
- * 202610260002_ads_hotels.sql. */
 export async function getGenres(): Promise<Genre[]> {
   const { data, error } = await supabase
     .from("genres")
@@ -309,6 +337,10 @@ export async function getGenres(): Promise<Genre[]> {
   return (data ?? []).map((g) => ({ tagId: g.tag_id, label: g.label as Record<Locale, string> }));
 }
 
+/** Active ads for this hotel (ads with no hotel_ids go to every hotel), in
+ * list order. Returns none (rather than failing the page) if the ads table or
+ * column isn't there yet — see supabase/migrations/202610260001_ads.sql and
+ * 202610260002_ads_hotels.sql. */
 export async function getActiveAds(hotelId: string): Promise<Ad[]> {
   const { data, error } = await supabase
     .from("ads")

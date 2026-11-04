@@ -15,8 +15,6 @@ export const DEMO_ONLY_TAG_IDS = new Set([
   "creative-izakaya",
   "taishu-sakaba",
   "sweets",
-  // Coupon ribbon trial (components/CouponRibbon.tsx).
-  "coupon",
 ]);
 
 export function isTagVisibleForHotel(tagId: string, hotelId: string) {

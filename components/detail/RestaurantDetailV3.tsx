@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useState } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { hasCoupon } from "@/components/CouponRibbon";
 import { CouponButton } from "@/components/detail/CouponButton";
 import { trackEvent } from "@/lib/analytics";
 import { RestaurantView } from "@/lib/types";
@@ -157,8 +156,13 @@ export function RestaurantDetailV3({
             </div>
           )}
 
-          {hasCoupon(restaurant) && (
-            <CouponButton hotelId={hotelId} restaurantId={restaurant.id} restaurantName={restaurant.name} />
+          {restaurant.coupon && (
+            <CouponButton
+              hotelId={hotelId}
+              restaurantId={restaurant.id}
+              restaurantName={restaurant.name}
+              coupon={restaurant.coupon}
+            />
           )}
 
           <div className={styles.distanceCard}>

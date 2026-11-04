@@ -26,6 +26,9 @@ export default async function AdminDashboardLayout({
             <Link href="/admin/ads" className="shrink-0 whitespace-nowrap text-xs text-white/80 hover:text-white sm:text-sm">
               広告枠
             </Link>
+            <Link href="/admin/coupons" className="shrink-0 whitespace-nowrap text-xs text-white/80 hover:text-white sm:text-sm">
+              クーポン
+            </Link>
             <Link href="/admin/genres" className="shrink-0 whitespace-nowrap text-xs text-white/80 hover:text-white sm:text-sm">
               ジャンル
             </Link>

@@ -1,10 +1,7 @@
 import { RestaurantView } from "@/lib/types";
 
-/** Restaurants tagged with this id (202611030001_coupon_tag.sql) offer a coupon. */
-export const COUPON_TAG_ID = "coupon";
-
 export function hasCoupon(restaurant: RestaurantView) {
-  return restaurant.tags.some((tag) => tag.id === COUPON_TAG_ID);
+  return Boolean(restaurant.coupon);
 }
 
 /** Eye-catching COUPON mark for the top-right corner of a restaurant photo.
