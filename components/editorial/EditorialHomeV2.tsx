@@ -75,49 +75,6 @@ const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
   },
 ];
 
-const foodTag = (tagId: string) => FOOD_TAGS.find((tag) => tag.tagId === tagId)!;
-
-// UI preview hotel trial (see lib/demoTags.ts): 居酒屋 is split into three genres,
-// and スイーツ is added.
-const DEMO_FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
-  foodTag("genghis-khan"),
-  foodTag("seafood"),
-  foodTag("yakiniku"),
-  {
-    tagId: "yakitori-kushi",
-    label: {
-      ja: "焼き鳥・串",
-      en: "Yakitori & Skewers",
-      "zh-CN": "烤鸡串・串烧",
-      "zh-TW": "烤雞串・串燒",
-      ko: "야키토리・꼬치",
-    },
-  },
-  {
-    tagId: "creative-izakaya",
-    label: {
-      ja: "創作居酒屋",
-      en: "Creative Izakaya",
-      "zh-CN": "创意居酒屋",
-      "zh-TW": "創意居酒屋",
-      ko: "창작 이자카야",
-    },
-  },
-  {
-    tagId: "taishu-sakaba",
-    label: { ja: "大衆酒場", en: "Casual Pub", "zh-CN": "大众酒馆", "zh-TW": "大眾酒館", ko: "대중 술집" },
-  },
-  foodTag("bar"),
-  foodTag("washoku"),
-  foodTag("ramen"),
-  foodTag("soup-curry"),
-  foodTag("cafe"),
-  {
-    tagId: "sweets",
-    label: { ja: "スイーツ", en: "Sweets", "zh-CN": "甜点", "zh-TW": "甜點", ko: "디저트" },
-  },
-];
-
 function metaText(r: RestaurantView, t: T) {
   return [walkLabel(r, t), `¥${r.priceMin.toLocaleString()}〜`].filter(Boolean).join(" · ");
 }
@@ -190,7 +147,7 @@ export function EditorialHomeV2({
         heroPhotos={heroPhotos}
         restaurants={restaurants}
         ads={ads}
-        genres={DEMO_FOOD_TAGS}
+        genres={FOOD_TAGS}
         locale={locale}
         t={t}
       />
