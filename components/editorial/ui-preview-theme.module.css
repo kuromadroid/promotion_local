@@ -88,3 +88,15 @@
   outline-offset: 3px;
   box-shadow: none;
 }
+
+/* Genre buttons match the other hotels exactly: their font, and the width
+   they get from those pages' 12px side padding (this page has 14px). */
+.root .genreGrid {
+  margin-right: -1px;
+  margin-left: -1px;
+  font-family: "Noto Sans JP", "Noto Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+.root .genreGrid button {
+  font-family: inherit;
+}

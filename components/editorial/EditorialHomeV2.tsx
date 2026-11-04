@@ -10,6 +10,7 @@ import HeroCollage, { HeroCollageImage } from "@/components/editorial/HeroCollag
 import { MobileHomePreview } from "@/components/editorial/MobileHomePreview";
 import { ListViewSwitch, RestaurantCards, useListView } from "@/components/editorial/RestaurantCards";
 import { isUiPreviewHotel } from "@/lib/uiPreview";
+import { Genre } from "@/lib/genres";
 import { parseHeroPhoto } from "@/lib/heroCrop";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { CouponRibbon, hasCoupon } from "@/components/CouponRibbon";
@@ -17,63 +18,6 @@ import styles from "./sapporo-bites-editorial-v2.module.css";
 import cardStyles from "./mobile-home-preview.module.css";
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
-
-const FOOD_TAGS: { tagId: string; label: Record<Locale, string> }[] = [
-  {
-    tagId: "genghis-khan",
-    label: {
-      ja: "ジンギスカン",
-      en: "Genghis Khan",
-      "zh-CN": "成吉思汗烤肉",
-      "zh-TW": "成吉思汗烤肉",
-      ko: "징기스칸",
-    },
-  },
-  {
-    tagId: "seafood",
-    label: { ja: "海鮮", en: "Seafood", "zh-CN": "海鲜", "zh-TW": "海鮮", ko: "해산물" },
-  },
-  {
-    tagId: "yakiniku",
-    label: { ja: "焼肉", en: "Yakiniku", "zh-CN": "烤肉", "zh-TW": "烤肉", ko: "야키니쿠" },
-  },
-  {
-    tagId: "izakaya",
-    label: { ja: "居酒屋", en: "Izakaya", "zh-CN": "居酒屋", "zh-TW": "居酒屋", ko: "이자카야" },
-  },
-  {
-    tagId: "bar",
-    label: { ja: "BAR", en: "Bar", "zh-CN": "酒吧", "zh-TW": "酒吧", ko: "바" },
-  },
-  {
-    tagId: "washoku",
-    label: {
-      ja: "和食",
-      en: "Japanese Cuisine",
-      "zh-CN": "日本料理",
-      "zh-TW": "日本料理",
-      ko: "일식",
-    },
-  },
-  {
-    tagId: "ramen",
-    label: { ja: "ラーメン", en: "Ramen", "zh-CN": "拉面", "zh-TW": "拉麵", ko: "라멘" },
-  },
-  {
-    tagId: "soup-curry",
-    label: {
-      ja: "スープカレー",
-      en: "Soup Curry",
-      "zh-CN": "汤咖喱",
-      "zh-TW": "湯咖哩",
-      ko: "수프카레",
-    },
-  },
-  {
-    tagId: "cafe",
-    label: { ja: "カフェ", en: "Cafe", "zh-CN": "咖啡馆", "zh-TW": "咖啡廳", ko: "카페" },
-  },
-];
 
 function metaText(r: RestaurantView, t: T) {
   return [walkLabel(r, t), `¥${r.priceMin.toLocaleString()}〜`].filter(Boolean).join(" · ");
@@ -95,6 +39,7 @@ export function EditorialHomeV2({
   hotelName,
   heroPhotos,
   restaurants,
+  genres,
   ads,
   messages,
   locale,
@@ -103,6 +48,7 @@ export function EditorialHomeV2({
   hotelName: string;
   heroPhotos: string[];
   restaurants: RestaurantView[];
+  genres: Genre[];
   ads: Ad[];
   messages: Record<string, string>;
   locale: Locale;
@@ -147,7 +93,7 @@ export function EditorialHomeV2({
         heroPhotos={heroPhotos}
         restaurants={restaurants}
         ads={ads}
-        genres={FOOD_TAGS}
+        genres={genres}
         locale={locale}
         t={t}
       />
@@ -212,7 +158,7 @@ export function EditorialHomeV2({
             >
               {t("genreAll")}
             </button>
-            {FOOD_TAGS.map((food) => (
+            {genres.map((food) => (
               <button
                 type="button"
                 key={food.tagId}

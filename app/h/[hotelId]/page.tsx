@@ -1,4 +1,4 @@
-import { getActiveAds, getHotel, getRestaurantsForHotel } from "@/lib/repositories";
+import { getActiveAds, getGenres, getHotel, getRestaurantsForHotel } from "@/lib/repositories";
 import { getMessages, getServerLocale } from "@/lib/i18n/locale";
 import { TrackOnMount } from "@/components/TrackOnMount";
 import { EditorialHomeV2 } from "@/components/editorial/EditorialHomeV2";
@@ -15,9 +15,10 @@ export default async function HotelTopPage({
   const locale = await getServerLocale();
   const messages = getMessages(locale);
 
-  const [hotel, restaurants, ads] = await Promise.all([
+  const [hotel, restaurants, genres, ads] = await Promise.all([
     getHotel(hotelId),
     getRestaurantsForHotel(hotelId, locale, { sort: "priority" }),
+    getGenres(),
     // Ad slots are for overseas guests only.
     locale === "ja" ? [] : getActiveAds(hotelId),
   ]);
@@ -35,6 +36,7 @@ export default async function HotelTopPage({
         hotelName={hotel?.name ?? ""}
         heroPhotos={hotel?.heroPhotos ?? []}
         restaurants={topRestaurants}
+        genres={genres}
         ads={ads}
         messages={messages}
         locale={locale}

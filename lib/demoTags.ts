@@ -7,8 +7,8 @@ import { isUiPreviewHotel } from "@/lib/uiPreview";
  * detail pages, so the shared restaurants can carry them in the DB without
  * changing anything for real guests.
  *
- * To roll a tag out to every hotel, remove it from this set (and add it to
- * the live genre grid in EditorialHomeV2).
+ * To roll a tag out to every hotel, remove it from this set (and add it at
+ * /admin/genres).
  */
 export const DEMO_ONLY_TAG_IDS = new Set([
   "yakitori-kushi",

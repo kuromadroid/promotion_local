@@ -10,6 +10,7 @@ import {
 } from "@/lib/types";
 import { nearestStation } from "@/lib/stations";
 import { isTagVisibleForHotel } from "@/lib/demoTags";
+import { DEFAULT_GENRES, Genre } from "@/lib/genres";
 
 function resolveName(record: Record<Locale, string>, locale: Locale) {
   return record[locale] ?? record.en ?? record[DEFAULT_LOCALE];
@@ -299,6 +300,15 @@ export async function getNearestForHotel(
  * list order. Returns none (rather than failing the page) if the ads table or
  * column isn't there yet — see supabase/migrations/202610260001_ads.sql and
  * 202610260002_ads_hotels.sql. */
+export async function getGenres(): Promise<Genre[]> {
+  const { data, error } = await supabase
+    .from("genres")
+    .select("tag_id, label")
+    .order("display_order", { ascending: true });
+  if (error) return DEFAULT_GENRES;
+  return (data ?? []).map((g) => ({ tagId: g.tag_id, label: g.label as Record<Locale, string> }));
+}
+
 export async function getActiveAds(hotelId: string): Promise<Ad[]> {
   const { data, error } = await supabase
     .from("ads")

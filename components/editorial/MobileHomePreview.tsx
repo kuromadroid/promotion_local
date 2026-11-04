@@ -22,7 +22,6 @@ const TOPBAR_HEIGHT = 56; // keep in sync with --topbar-h in ui-preview-theme.mo
  * Phone-first hotel top page, shown only on the UI preview hotel
  * (lib/uiPreview.ts). Compared with EditorialHomeV2:
  *   - one restaurant list instead of two (genre list + "all" list)
- *   - genre chips stick under the header, so the filter is always in reach
  *   - compact cards (thumbnail beside the text) with 48px action buttons
  *   - hero is one full-bleed food photo (random per visit) instead of the collage
  *   - DADS-aligned sizes: 14px+ text, 44px+ targets, yellow/black focus ring
@@ -67,12 +66,6 @@ export function MobileHomePreview({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const counts = useMemo(() => {
-    const c: Record<string, number> = {};
-    for (const r of restaurants) for (const tag of r.tags) c[tag.id] = (c[tag.id] ?? 0) + 1;
-    return c;
-  }, [restaurants]);
 
   const filtered = useMemo(
     () => (active === "all" ? restaurants : restaurants.filter((r) => r.tags.some((tag) => tag.id === active))),
@@ -166,27 +159,26 @@ export function MobileHomePreview({
         </h2>
 
         <div ref={chipsRef} className={styles.chipArea}>
-          <div className={styles.chips} role="group" aria-labelledby="genre-title">
-            {[{ tagId: "all", name: t("all"), count: restaurants.length }, ...genres.map((g) => ({
-              tagId: g.tagId,
-              name: g.label[locale],
-              count: counts[g.tagId] ?? 0,
-            }))].map((g) => {
-              const pressed = active === g.tagId;
-              return (
-                <button
-                  type="button"
-                  key={g.tagId}
-                  aria-pressed={pressed}
-                  className={`${styles.chip} ${pressed ? styles.chipActive : ""}`}
-                  onClick={() => selectGenre(g.tagId)}
-                >
-                  {pressed && <span aria-hidden="true">✓</span>}
-                  {g.name}
-                  <span className={styles.chipCount}>{g.count}</span>
-                </button>
-              );
-            })}
+          <div className={`${editorial.genreGrid} ${theme.genreGrid}`} role="group" aria-labelledby="genre-title">
+            <button
+              type="button"
+              aria-pressed={active === "all"}
+              className={`${editorial.genreCell} ${editorial.genreCellAll} ${active === "all" ? editorial.genreCellActive : ""}`}
+              onClick={() => selectGenre("all")}
+            >
+              {t("genreAll")}
+            </button>
+            {genres.map((g) => (
+              <button
+                type="button"
+                key={g.tagId}
+                aria-pressed={active === g.tagId}
+                className={`${editorial.genreCell} ${active === g.tagId ? editorial.genreCellActive : ""}`}
+                onClick={() => selectGenre(g.tagId)}
+              >
+                {g.label[locale]}
+              </button>
+            ))}
           </div>
         </div>
 
