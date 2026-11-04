@@ -6,6 +6,8 @@ import { useLocale } from "@/components/LocaleProvider";
 import { trackEvent } from "@/lib/analytics";
 import styles from "./restaurant-detail-v3.module.css";
 
+const DRINK_IMAGE_SRC = "/coupon/lassi.webp";
+
 // "Used" is remembered per device, so clearing browser data or switching
 // devices resets it: this deters casual reuse, it does not strictly enforce
 // one use. When storage is unavailable (private mode etc.) it lasts for the
@@ -53,6 +55,11 @@ export function CouponButton({
     () => readUsedAt(restaurantId),
     () => null
   );
+
+  // Fetched with the page, so the photo is there the moment the coupon opens.
+  useEffect(() => {
+    new window.Image().src = DRINK_IMAGE_SRC;
+  }, []);
 
   const handleOpen = () => {
     trackEvent({ eventName: "coupon_open", hotelId, restaurantId });
@@ -140,11 +147,14 @@ function CouponScreen({
             {/* Every coupon is this drink for now. Photo: "Patiala Lassi" by Miansari66,
                 Wikimedia Commons, CC0; background removed. */}
             <Image
-              src="/coupon/lassi.png"
+              src={DRINK_IMAGE_SRC}
               alt={t("couponDrinkName")}
-              width={523}
-              height={800}
-              sizes="(max-width: 480px) 150px, 210px"
+              width={480}
+              height={734}
+              // Already a small WebP, so skip the on-demand resize that delays it.
+              unoptimized
+              loading="eager"
+              fetchPriority="high"
               className={styles.couponDrinkImage}
             />
             <p className={styles.couponOffer}>{t("couponOffer")}</p>
@@ -158,7 +168,15 @@ function CouponScreen({
                 {now.toLocaleTimeString("ja-JP", { hour12: false })}
               </span>
             </div>
-            <p className={styles.couponOnce}>{t("couponOncePerGroup")}</p>
+            <ul className={styles.couponTerms}>
+              <li>{t("couponTermShowBeforeOrdering")}</li>
+              <li>{t("couponTermOnePerGroup")}</li>
+              <li>{t("couponTermFoodOrderRequired")}</li>
+              <li>{t("couponTermNoCombinationOrCash")}</li>
+              <li>{t("couponTermNoScreenshots")}</li>
+              <li>{t("couponTermPhotoAvailability")}</li>
+              <li>{t("couponTermDairyAllergies")}</li>
+            </ul>
           </>
         )}
 
