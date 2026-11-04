@@ -207,7 +207,7 @@
 .couponPanel {
   width: min(100%, 430px);
   min-width: 0;
-  padding: 23px 19px 17px;
+  padding: 15px 19px 13px;
   border: 1px solid var(--line);
   border-radius: 21px;
   background: var(--card);
@@ -222,7 +222,7 @@
   overflow-wrap: anywhere;
 }
 .couponRestaurantName {
-  margin: 9px 0 0;
+  margin: 6px 0 0;
   color: var(--ink);
   font-size: clamp(21px, 6vw, 27px);
   line-height: 1.2;
@@ -230,19 +230,28 @@
   letter-spacing: -.035em;
   overflow-wrap: anywhere;
 }
-.couponShowStaff {
-  margin: 22px 0 0;
+.page .couponDrinkImage {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: clamp(150px, 31svh, 240px);
+  margin: 8px auto 0;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .18));
+}
+.couponStaffPress {
+  margin: 7px 0 0;
   color: var(--ink);
-  font-size: 16px;
-  line-height: 1.55;
-  font-weight: 850;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
 .couponClock {
   width: fit-content;
   max-width: 100%;
-  margin: 15px auto 0;
-  padding: 12px 19px;
+  margin: 12px auto 0;
+  padding: 9px 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -269,7 +278,7 @@
   font-variant-numeric: tabular-nums;
 }
 .couponOnce {
-  margin: 13px 0 0;
+  margin: 9px 0 0;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.55;
@@ -278,18 +287,19 @@
 }
 .page .couponStaffButton {
   width: 100%;
-  min-height: 48px;
-  margin-top: 22px;
-  padding: 11px 12px;
-  border: 1.5px solid var(--ink);
-  border-radius: 12px;
-  background: var(--ink);
+  min-height: 54px;
+  margin-top: 10px;
+  padding: 12px;
+  border: 1.5px solid var(--green);
+  border-radius: 14px;
+  background: var(--green);
   color: #fff;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.4;
-  font-weight: 850;
+  font-weight: 900;
   overflow-wrap: anywhere;
   cursor: pointer;
+  box-shadow: 0 3px 0 rgba(32, 118, 74, .2);
 }
 .couponUsedAt {
   margin: 22px 0 0;
@@ -305,7 +315,7 @@
 }
 .page .couponClose {
   max-width: 100%;
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 9px 12px;
   border: 0;
   background: transparent;

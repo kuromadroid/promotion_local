@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { trackEvent } from "@/lib/analytics";
@@ -136,7 +137,20 @@ function CouponScreen({
           <p className={styles.couponUsedAt}>{t("couponUsedAt", { time: usedAtLabel })}</p>
         ) : (
           <>
-            <p className={styles.couponShowStaff}>{t("couponShowStaff")}</p>
+            {/* Every coupon is this drink for now. Photo: "Patiala Lassi" by Miansari66,
+                Wikimedia Commons, CC0; background removed. */}
+            <Image
+              src="/coupon/lassi.png"
+              alt={t("couponDrinkName")}
+              width={523}
+              height={800}
+              sizes="(max-width: 480px) 150px, 210px"
+              className={styles.couponDrinkImage}
+            />
+            <button type="button" onClick={handleUse} className={styles.couponStaffButton}>
+              使用する
+            </button>
+            <p className={styles.couponStaffPress}>{t("couponStaffPress")}</p>
             <div className={styles.couponClock}>
               <span className={styles.couponLiveDot} aria-hidden="true" />
               <span className={styles.couponClockTime}>
@@ -144,9 +158,6 @@ function CouponScreen({
               </span>
             </div>
             <p className={styles.couponOnce}>{t("couponOncePerGroup")}</p>
-            <button type="button" onClick={handleUse} className={styles.couponStaffButton}>
-              スタッフ用：使用済みにする
-            </button>
           </>
         )}
 
