@@ -151,10 +151,10 @@
 }
 .page .couponButton:focus-visible,
 .page .couponStaffButton:focus-visible,
-.page .couponClose:focus-visible { outline: 3px solid #4d9b70; outline-offset: 3px; }
+.page .couponClose:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 .couponButtonCopy { min-width: 0; display: grid; gap: 4px; }
 .couponButtonEyebrow {
-  color: #c7d9ce;
+  color: rgba(255, 255, 255, .72);
   font-size: 9px;
   font-weight: 950;
   letter-spacing: .16em;
@@ -216,7 +216,7 @@
 }
 .couponScreenEyebrow {
   margin: 0;
-  color: var(--green);
+  color: var(--ink);
   font-size: 10px;
   font-weight: 950;
   letter-spacing: .16em;
@@ -256,36 +256,6 @@
   line-height: 1.5;
   font-weight: 800;
   overflow-wrap: anywhere;
-}
-.couponClock {
-  width: fit-content;
-  max-width: 100%;
-  margin: 12px auto 0;
-  padding: 9px 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 11px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--bg);
-  color: var(--ink);
-}
-.couponLiveDot {
-  width: 10px;
-  height: 10px;
-  flex: 0 0 10px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 4px rgba(32, 118, 74, .12);
-  animation: couponPulse 1.5s ease-in-out infinite;
-}
-.couponClockTime {
-  font-size: clamp(28px, 9vw, 36px);
-  line-height: 1;
-  font-weight: 950;
-  letter-spacing: -.04em;
-  font-variant-numeric: tabular-nums;
 }
 .couponTerms {
   margin: 12px 0 0;
@@ -340,9 +310,6 @@
   text-underline-offset: 3px;
   overflow-wrap: anywhere;
   cursor: pointer;
-}
-@keyframes couponPulse {
-  50% { opacity: .55; }
 }
 
 .distanceCard {

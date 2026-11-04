@@ -106,13 +106,6 @@ function CouponScreen({
   onClose: () => void;
 }) {
   const { t, locale } = useLocale();
-  const [now, setNow] = useState(() => new Date());
-
-  // The ticking clock lets staff tell the live screen from a screenshot.
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleUse = () => {
     if (!window.confirm("このクーポンを使用済みにしますか？元に戻せません。")) return;
@@ -162,12 +155,6 @@ function CouponScreen({
               使用する
             </button>
             <p className={styles.couponStaffPress}>{t("couponStaffPress")}</p>
-            <div className={styles.couponClock}>
-              <span className={styles.couponLiveDot} aria-hidden="true" />
-              <span className={styles.couponClockTime}>
-                {now.toLocaleTimeString("ja-JP", { hour12: false })}
-              </span>
-            </div>
             <ul className={styles.couponTerms}>
               <li>{t("couponTermShowBeforeOrdering")}</li>
               <li>{t("couponTermOnePerGroup")}</li>
