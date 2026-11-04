@@ -131,6 +131,197 @@
   font-weight: 800;
 }
 
+.page .couponButton {
+  width: 100%;
+  min-width: 0;
+  min-height: 76px;
+  margin-top: 13px;
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 15px;
+  background: var(--ink);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(17, 17, 17, .14);
+}
+.page .couponButton:focus-visible,
+.page .couponStaffButton:focus-visible,
+.page .couponClose:focus-visible { outline: 3px solid #4d9b70; outline-offset: 3px; }
+.couponButtonCopy { min-width: 0; display: grid; gap: 4px; }
+.couponButtonEyebrow {
+  color: #c7d9ce;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .16em;
+}
+.couponButtonLabel {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 900;
+}
+.couponButtonArrow {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+.page .couponButtonUsed {
+  border-color: var(--line);
+  background: var(--soft);
+  color: var(--muted);
+  box-shadow: none;
+}
+.page .couponButtonUsed .couponButtonEyebrow { color: var(--muted); }
+.page .couponButtonUsed .couponButtonArrow {
+  border-color: #c9c9c2;
+  color: var(--muted);
+}
+.page .couponButton:active { transform: translateY(1px); box-shadow: none; }
+
+.couponOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  background: rgba(17, 17, 17, .94);
+  color: var(--ink);
+  text-align: center;
+}
+.couponOverlayUsed { background: rgba(68, 68, 64, .94); }
+.couponPanel {
+  width: min(100%, 430px);
+  min-width: 0;
+  padding: 23px 19px 17px;
+  border: 1px solid var(--line);
+  border-radius: 21px;
+  background: var(--card);
+  box-shadow: 0 16px 55px rgba(0, 0, 0, .24);
+}
+.couponScreenEyebrow {
+  margin: 0;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .16em;
+  overflow-wrap: anywhere;
+}
+.couponRestaurantName {
+  margin: 9px 0 0;
+  color: var(--ink);
+  font-size: clamp(21px, 6vw, 27px);
+  line-height: 1.2;
+  font-weight: 950;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+.couponShowStaff {
+  margin: 22px 0 0;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+.couponClock {
+  width: fit-content;
+  max-width: 100%;
+  margin: 15px auto 0;
+  padding: 12px 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--ink);
+}
+.couponLiveDot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(32, 118, 74, .12);
+  animation: couponPulse 1.5s ease-in-out infinite;
+}
+.couponClockTime {
+  font-size: clamp(28px, 9vw, 36px);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+}
+.couponOnce {
+  margin: 13px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+.page .couponStaffButton {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 22px;
+  padding: 11px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.couponUsedAt {
+  margin: 22px 0 0;
+  padding: 15px 13px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+.page .couponClose {
+  max-width: 100%;
+  margin-top: 15px;
+  padding: 9px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+@keyframes couponPulse {
+  50% { opacity: .55; }
+}
+
 .distanceCard {
   margin-top: 13px;
   background: #111;

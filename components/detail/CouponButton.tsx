@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLocale } from "@/components/LocaleProvider";
 import { trackEvent } from "@/lib/analytics";
+import styles from "./restaurant-detail-v3.module.css";
 
 // "Used" is remembered per device, so clearing browser data or switching
 // devices resets it: this deters casual reuse, it does not strictly enforce
@@ -62,11 +63,13 @@ export function CouponButton({
       <button
         type="button"
         onClick={handleOpen}
-        className={`mt-4 w-full rounded-xl px-4 py-3.5 text-base font-extrabold shadow-md ${
-          usedAt ? "bg-(--color-line) text-(--color-ink-soft)" : "bg-(--color-coral) text-white"
-        }`}
+        className={`${styles.couponButton} ${usedAt ? styles.couponButtonUsed : ""}`}
       >
-        {usedAt ? t("couponUsed") : t("couponShow")}
+        <span className={styles.couponButtonCopy}>
+          <span className={styles.couponButtonEyebrow}>COUPON</span>
+          <span className={styles.couponButtonLabel}>{usedAt ? t("couponUsed") : t("couponShow")}</span>
+        </span>
+        <span className={styles.couponButtonArrow} aria-hidden="true">{usedAt ? "✓" : "→"}</span>
       </button>
       {open && (
         <CouponScreen
@@ -123,40 +126,34 @@ function CouponScreen({
       role="dialog"
       aria-modal="true"
       aria-label={restaurantName}
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-y-auto px-6 py-10 text-center text-white ${
-        usedAt ? "bg-(--color-ink-soft)" : "bg-(--color-coral)"
-      }`}
+      className={`${styles.couponOverlay} ${usedAt ? styles.couponOverlayUsed : ""}`}
     >
-      <p className="text-sm font-extrabold tracking-[0.25em]">COUPON</p>
-      <h2 className="mt-3 text-2xl font-extrabold">{restaurantName}</h2>
+      <div className={styles.couponPanel}>
+        <p className={styles.couponScreenEyebrow}>SAPPORO BITES · COUPON</p>
+        <h2 className={styles.couponRestaurantName}>{restaurantName}</h2>
 
-      {usedAtLabel ? (
-        <p className="mt-8 rounded-2xl bg-white px-6 py-5 text-lg font-extrabold text-(--color-ink)">
-          {t("couponUsedAt", { time: usedAtLabel })}
-        </p>
-      ) : (
-        <>
-          <p className="mt-8 text-lg font-bold">{t("couponShowStaff")}</p>
-          <div className="mt-5 flex items-center gap-3 rounded-2xl bg-white px-6 py-4 text-(--color-ink)">
-            <span className="h-3 w-3 animate-pulse rounded-full bg-(--color-coral)" aria-hidden="true" />
-            <span className="text-3xl font-extrabold tabular-nums">
-              {now.toLocaleTimeString("ja-JP", { hour12: false })}
-            </span>
-          </div>
-          <p className="mt-4 text-sm font-semibold">{t("couponOncePerGroup")}</p>
-          <button
-            type="button"
-            onClick={handleUse}
-            className="mt-8 rounded-xl border-2 border-white px-5 py-3 text-sm font-bold"
-          >
-            スタッフ用：使用済みにする
-          </button>
-        </>
-      )}
+        {usedAtLabel ? (
+          <p className={styles.couponUsedAt}>{t("couponUsedAt", { time: usedAtLabel })}</p>
+        ) : (
+          <>
+            <p className={styles.couponShowStaff}>{t("couponShowStaff")}</p>
+            <div className={styles.couponClock}>
+              <span className={styles.couponLiveDot} aria-hidden="true" />
+              <span className={styles.couponClockTime}>
+                {now.toLocaleTimeString("ja-JP", { hour12: false })}
+              </span>
+            </div>
+            <p className={styles.couponOnce}>{t("couponOncePerGroup")}</p>
+            <button type="button" onClick={handleUse} className={styles.couponStaffButton}>
+              スタッフ用：使用済みにする
+            </button>
+          </>
+        )}
 
-      <button type="button" onClick={onClose} className="mt-6 px-5 py-2 text-sm font-semibold underline">
-        {t("couponClose")}
-      </button>
+        <button type="button" onClick={onClose} className={styles.couponClose}>
+          {t("couponClose")}
+        </button>
+      </div>
     </div>
   );
 }
