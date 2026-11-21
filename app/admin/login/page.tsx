@@ -18,7 +18,9 @@ export default async function AdminLoginPage({
 
         {error && (
           <p className="mb-4 text-sm text-(--color-coral-deep) bg-(--color-coral)/10 rounded-lg px-3 py-2">
-            パスワードが違います
+            {error === "locked"
+              ? "ログインの失敗が続いたため、一時的にロックしています。10分ほど待ってからお試しください。"
+              : "パスワードが違います"}
           </p>
         )}
 

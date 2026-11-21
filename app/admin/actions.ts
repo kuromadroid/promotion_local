@@ -3,7 +3,7 @@
 import crypto from "crypto";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { setAdminSession, clearAdminSession, requireAdmin } from "@/lib/adminAuth";
+import { attemptAdminLogin, clearAdminSession, requireAdmin } from "@/lib/adminAuth";
 import { supabaseAdmin } from "@/lib/supabase/adminClient";
 import { haversineMeters } from "@/lib/geo";
 import { Locale } from "@/lib/types";
@@ -11,10 +11,9 @@ import { BLOCKED_RESERVATION_URL_MESSAGE, isBlockedReservationUrl } from "@/lib/
 
 export async function loginAction(formData: FormData) {
   const password = formData.get("password");
-  if (typeof password !== "string" || password !== process.env.ADMIN_PASSWORD) {
-    redirect("/admin/login?error=1");
-  }
-  await setAdminSession();
+  const result = typeof password === "string" ? await attemptAdminLogin(password) : "invalid";
+  if (result === "locked") redirect("/admin/login?error=locked");
+  if (result === "invalid") redirect("/admin/login?error=1");
   redirect("/admin");
 }
 
